@@ -1,7 +1,7 @@
 # FYS4411 - Quantum Mechanical Systems
 #
 # Project: Hartree-Fock method. On project:
-# Gøran Brekke Svaland and Audun (please fix surname)
+# Gøran Brekke Svaland and Audun Skau Hansen
 #
 # About the project:
 #
