@@ -16,9 +16,8 @@ using namespace arma;
 #define hbar 6.625*pow(10,-34)   // Planck's reduced constant
 #define masse 9.109*pow(10,-31)  // mass of electron
 
-double potential(double x, double k, double alpha, int Z){
-    return -k*Z/(x*alpha);
-}
+int comp(double, double);
+void output(double, double, int, double *);
 
 int main(int argc, char* argv[]) {
 
@@ -98,6 +97,52 @@ int main(int argc, char* argv[]) {
         }
     }
     cout << min_eig << endl;
+
+    // this (lower) part is not finished yet, I do not know why it isn't working, but the debugger say
+    // that the reference to the functions comp() and to output() is undefined.
+
+    /*Sort the matrix values, need to store the eigenvalues from smallest to largest in a vector
+      where the indexes of the original positions of the eigenvalues is the indexes of the columns
+      in the unsorted matrix containing the corresponding eigenvectors.
+      */
+
+    qsort(d,(UL) Nstep - 1,sizeof(double),(int(*)(const void *,const void *))comp);
+
+    // write to outputfile
+    output(Rmin,Rmax,Nstep,*d);
+
+    // free memory:
+    free_matrix((void **) U);
+    delete [] x;
+    delete [] d;
+    delete [] sub_d;
+
+    return 0;
+} // End: main()
+
+
+
+
+int comp(const double *val_1, const double *val_2){
+  if((*val_1) <= (*val_2))       return -1;
+  else  if((*val_1) > (*val_2))  return +1;
+  else                     return  0;
+} // End: function comp()
+
+void output(double r_min,double r_max, int N_step, double *d){
+    ofstream myfile;
+    myfile.open("results.txt");
+    myfile << "RESULTS:" << endl;
+    myfile << setiosflags(ios::showpoint | ios::uppercase);
+    myfile << "Rmin = " << setw(15) << setprecision(8) << r_min << endl;
+    myfile << "Rmax = " << setw(15) << setprecision(8) << r_max << endl;
+    myfile << "Number of steps = " << setw(15) << N_step << endl;
+    myfile << "Eigenvalues: " << endl;
+    for (int i=0;i<N_step-1;i++){
+        myfile << setw(15) << setprecision(8) << d[i] << endl;
+    }
+    myfile.close();
+} // End: function output()
     return 0;
 }
 
