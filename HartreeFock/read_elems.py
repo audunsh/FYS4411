@@ -25,7 +25,7 @@ for i in el:
             m_e = m_e.replace(" ", "")
             m_e = m_e.replace("/", "*1.0/")
             print eval(m_e), e[1], e[2], e[6], e[7]           
-            table[e[1], e[2], e[6], e[7]] = eval(m_e)
+            table[int(e[1])-1, int(e[2])-1, int(e[6])-1, int(e[7])-1] = eval(m_e)
 
 print table[2,2,3,1]
 
@@ -35,5 +35,8 @@ for i in range(3):
     for e in range(3):
         for u in range(3):
             for y in range(3):
-                print i,e,u,y, table[i,e,u,y]
+                s = str(i)+" "+str(e)+" "+str(u)+" " +str(y) + " " + str(table[i,e,u,y]) + '\n'
+                f.write(s)
+
+f.close()
             
