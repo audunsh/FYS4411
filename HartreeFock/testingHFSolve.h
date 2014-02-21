@@ -15,6 +15,7 @@ int mainf(){
 
     string filename;
     filename = "m_elements_c.dat";
+    // Make sure the filename is located in the build-folder !!!
     // Hydrogen atom:
     int Z = 2; // two protons
     int N = 2; // two electrons
