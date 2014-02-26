@@ -20,8 +20,8 @@ int mainf(){
     int Z = 2; // two protons
     int N = 2; // two electrons
     field<mat> V;
-    HFSolve object;
-    V = object.init(filename,Z,N);
+    HFSolve object (Z,N);
+    V = object.init(filename);
 
     cout << "---------------------------" << endl;
     cout << "Here comes V" << endl;

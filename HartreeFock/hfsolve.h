@@ -7,11 +7,11 @@ using namespace std;
 using namespace arma;
 
 class HFSolve{
-
+    int Z,N;
 public:
-    HFSolve();
+    HFSolve(int Zn, int Nn);
 
-    field<mat> init(string filename, int Z, int N);
+    field<mat> init(string filename);
     double state(int p, int q, int r, int s, double D, double Ex);
     double return_init();
     void Solve(field<mat> V);
@@ -19,6 +19,7 @@ public:
 private:
     double h0(int alpha,int gamma);
     mat HF(mat C, field<mat> V);
+    double calc_energy(mat C,field<mat> V);
 };
 
 #endif // HFSOLVE_H

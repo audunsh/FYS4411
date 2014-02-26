@@ -7,9 +7,11 @@
 
 using namespace arma;
 
-HFSolve::HFSolve(){
+HFSolve::HFSolve(int Zn, int Nn){
+    Z = Zn;
+    N=Nn;
 }
-field<mat> HFSolve::init(string filename, int Z, int N){
+field<mat> HFSolve::init(string filename){
     /* Read filename, and set up initial matrix
      * Z is the atomic number
      * N is the number of electrons
@@ -35,7 +37,7 @@ field<mat> HFSolve::init(string filename, int Z, int N){
             myfile >> s;
             myfile >> value;
             v(p,q)(r,s) = value;
-            //cout << p << " " << q << " " << r << " " << s << " " << value << " " << V(p,q)(r,s) << endl;
+            //cout << p << " " << q << " " << r << " " << s << " " << value << " " << v(p,q)(r,s) << endl;
         }
     }
     else
@@ -54,9 +56,9 @@ field<mat> HFSolve::init(string filename, int Z, int N){
             for (int r = 0; r < 6; ++r) {
                 for (int s= 0; s < 6; ++s) {
                     D = v(p/2,q/2)(r/2,s/2);  // Direct term
-                    Ex = v(p/2,q/2)(r/2,s/2); // Exchange term
+                    Ex = v(p/2,q/2)(s/2,r/2); // Exchange term
                     //cout << D << " " << Ex << endl;
-                    V(p,q)(r,s) = state(p,q,r,s,D,Ex);
+                    V(p,q)(r,s) = Z*state(p,q,r,s,D,Ex);
                 }
             }
         }
@@ -103,7 +105,10 @@ double HFSolve::h0(int alpha,int gamma){
 
     double h = 0;
     if (alpha == gamma){
-         h = 1;
+        double n = alpha/2 + 1.0;
+        h = -(Z*Z)/(n*n);
+        //cout << "this is Z:" << Z << endl;
+        //printf(Z)
     }
 
     return h;
@@ -121,7 +126,7 @@ mat HFSolve::HF(mat C, field<mat> V){
     for (int alpha = 0; alpha < 6; ++alpha) {
         for (int gamma = 0; gamma < 6; ++gamma) {
             double interaction = 0;
-            for (int p = 0; p < 6; ++p) {
+            for (int p = 0; p < N; ++p) {
                 for (int beta = 0; beta < 6; ++beta) {
                     for (int delta = 0; delta < 6; ++delta) {
                         interaction = interaction + C(p,beta)*C(p,delta)*V(alpha,beta)(gamma,delta);
@@ -129,7 +134,7 @@ mat HFSolve::HF(mat C, field<mat> V){
                     }
                 }
             }
-            HFmx(alpha,gamma) = h0(alpha,gamma) + interaction;
+            HFmx(alpha,gamma) = h0(alpha,gamma) + 0*interaction;
         }
     }
     return HFmx;
@@ -152,10 +157,10 @@ void HFSolve::Solve(field<mat> V){
     }
 
     int iters = 0;
-    e_v_prev(0) = 1.0; // safety margin
+    for(int i=0; i<6;i++){e_v_prev(i) = 1.0;} // safety margin
 
     cout << "diff.max() : " << abs(e_v.max() - e_v_prev.max()) << endl;
-    while (abs(e_v.max() - e_v_prev.max()) > tolerance){ // convergence test
+    while (abs(e_v.min() - e_v_prev.min()) > tolerance){ // convergence test
         iters = iters + 1;
         cout << "in while iteration: " << iters << endl;
         for (int i = 0; i < 6; ++i) {
@@ -170,12 +175,46 @@ void HFSolve::Solve(field<mat> V){
     cout << "------------------------------" << endl;
     cout << "iterations: " << iters << endl;
     cout << "eigenvalues: " << endl;
+    int minIndex = 0;
     for (int i = 0; i < 6; ++i) {
+        if (e_v[i] < e_v[minIndex]){
+            minIndex = i;
+        }
         cout << e_v[i] << endl;
     }
     cout << "------------------------------" << endl;
+    cout << e_v[minIndex] << " " << minIndex << endl;
+    cout << "------------------------------" << endl;
 
 
+    double E = calc_energy(C,V);
+    cout << "Energy= " << E << endl;
+
+
+}
+
+double HFSolve::calc_energy(mat C, field<mat> V){
+
+    double Energy = 0;
+    for (int i = 0; i < N; ++i) {
+        for (int alpha = 0; alpha < 6; ++alpha) {
+            for (int beta = 0; beta < 6; ++beta) {
+                double interaction = 0;
+                for (int j = 0; j < N; ++j) {
+                    for (int gamma = 0; gamma < 6; ++gamma) {
+                        for (int delta = 0; delta < 6; ++delta) {
+
+                            interaction += C(i,alpha)*C(j,beta)*C(i,gamma)*C(j,delta)*V(alpha,beta)(gamma,delta);
+                        }
+                    }
+                }
+
+                Energy += C(i,alpha)*C(i,beta)*h0(alpha,beta) + 0*interaction;
+            }
+
+        }
+    }
+    return Energy;
 }
 
 
