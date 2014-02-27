@@ -17,8 +17,8 @@ int mainf(){
     filename = "m_elements_c.dat";
     // Make sure the filename is located in the build-folder !!!
     // Hydrogen atom:
-    int Z = 2; // two protons
-    int N = 2; // two electrons
+    int Z = 4; // two protons
+    int N = 4; // two electrons
     field<mat> V;
     HFSolve object (Z,N);
     V = object.init(filename);

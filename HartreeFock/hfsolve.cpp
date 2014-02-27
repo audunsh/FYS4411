@@ -16,6 +16,7 @@ field<mat> HFSolve::init(string filename){
      * Z is the atomic number
      * N is the number of electrons
      */
+    //To be implemented: This part of the solver can be migrated to a separate "basis"-class.
     ifstream myfile;
     myfile.open(filename.c_str());
     field<mat> v(3,3);     // 3x3 field matrix with matrix elements
@@ -35,7 +36,6 @@ field<mat> HFSolve::init(string filename){
             myfile >> s;
             myfile >> value;
             v(p,q)(r,s) = value;
-            //cout << p << " " << q << " " << r << " " << s << " " << value << " " << v(p,q)(r,s) << endl;
         }
     }
     else
@@ -55,7 +55,6 @@ field<mat> HFSolve::init(string filename){
                 for (int s= 0; s < 6; ++s) {
                     D = v(p/2,q/2)(r/2,s/2);  // Direct term
                     Ex = v(p/2,q/2)(s/2,r/2); // Exchange term
-                    //cout << D << " " << Ex << endl;
                     V(p,q)(r,s) = Z*state(p,q,r,s,D,Ex);
                 }
             }
@@ -66,6 +65,7 @@ field<mat> HFSolve::init(string filename){
 }
 
 double HFSolve::state(int p, int q, int r, int s, double D, double Ex){
+    //Evaluating spin configuration, returning direct and/or exchange term or 0
     double S;
     int s1,s2,s3,s4;
     s1 = p%2;
@@ -99,17 +99,12 @@ double HFSolve::state(int p, int q, int r, int s, double D, double Ex){
 }
 
 double HFSolve::h0(int alpha,int gamma){
-    // the one-boy interaction
-
+    // the one-body interaction
     double h = 0;
     if (alpha == gamma){
         double n = alpha/2 + 1.0;
-        //cout << "Alpha/n:  " << alpha << "/" << n << endl;
         h = -(Z*Z)/(2*n*n);
-        //cout << "this is Z:" << Z << endl;
-        //printf(Z)
     }
-
     return h;
 }
 
@@ -129,7 +124,6 @@ mat HFSolve::HF(mat C, field<mat> V){
                 for (int beta = 0; beta < 6; ++beta) {
                     for (int delta = 0; delta < 6; ++delta) {
                         interaction += C(p,beta)*C(p,delta)*V(alpha,beta)(gamma,delta);
-                        //interaction = interaction + 0*alpha + 0*beta + 0*gamma + 0*delta + 0*p;
                     }
                 }
             }
@@ -145,7 +139,6 @@ void HFSolve::Solve(field<mat> V){
      * And solves the HF equations
      */
     double tolerance = 10e-8;
-
     mat C;
     vec e_v, e_v_prev;
     C.zeros(6,6);
@@ -157,19 +150,15 @@ void HFSolve::Solve(field<mat> V){
 
     int iters = 0;
     for(int i=0; i<6;i++){e_v_prev(i) = 1.0;} // safety margin
-
-    //cout << "diff.max() : " << abs(e_v.max() - e_v_prev.max()) << endl;
     while (abs(e_v.min() - e_v_prev.min()) > tolerance){ // convergence test
         iters = iters + 1;
-        //cout << "in while iteration: " << iters << endl;
-        //for (int i = 0; i < 6; ++i) {
-        //    cout << e_v_prev(i) << " " << e_v(i) << endl;
-        //}
         e_v_prev = e_v;
         // return the eigenvalues of the HF-mx to e_v and the eigenvectors to C.
         eig_sym(e_v,C,HF(C,V));
         C = trans(C);
-
+        if(iters>100){
+            cout << "Maximum number of iterations (100) exceeded." << endl;
+            break;}
     }
     cout << "------------------------------" << endl;
     cout << "iterations: " << iters << endl;
@@ -211,26 +200,6 @@ double HFSolve::calc_energy(mat C, field<mat> V){
             }
         }
     }
-
-    //double Energy = 0;
-    //for (int i = 0; i < N; ++i) {
-    //    for (int alpha = 0; alpha < 6; ++alpha) {
-    //        for (int beta = 0; beta < 6; ++beta) {
-    //            double interaction = 0;
-    //            for (int j = 0; j < N; ++j) {
-    //                for (int gamma = 0; gamma < 6; ++gamma) {
-    //                    for (int delta = 0; delta < 6; ++delta) {
-    //
-    //                        interaction += C(i,alpha)*C(j,beta)*C(i,gamma)*C(j,delta)*V(alpha,beta)(gamma,delta);
-    //                    }
-    //                }
-    //            }
-    //
-    //            Energy += C(i,alpha)*C(i,beta)*h0(alpha,beta) + 0*interaction;
-    //        }
-    //
-    //    }
-    //}
     return Energy;
 }
 
