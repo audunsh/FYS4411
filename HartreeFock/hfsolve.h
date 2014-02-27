@@ -7,9 +7,9 @@ using namespace std;
 using namespace arma;
 
 class HFSolve{
-    int Z,N;
+    int Z,N, Nstates;
 public:
-    HFSolve(int Zn, int Nn);
+    HFSolve(int Zn, int Nn, int Ns);
 
     field<mat> init(string filename);
     double state(int p, int q, int r, int s, double D, double Ex);

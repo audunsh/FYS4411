@@ -7,9 +7,10 @@
 
 using namespace arma;
 
-HFSolve::HFSolve(int Zn, int Nn){
+HFSolve::HFSolve(int Zn, int Nn, int Ns){
     Z = Zn;
     N=Nn;
+    Nstates = Ns;
 }
 field<mat> HFSolve::init(string filename){
     /* Read filename, and set up initial matrix
@@ -49,10 +50,10 @@ field<mat> HFSolve::init(string filename){
     }
     double D = 0;
     double Ex = 0;
-    for (int p = 0; p < 6; ++p) {
-        for (int q = 0; q < 6; ++q) {
-            for (int r = 0; r < 6; ++r) {
-                for (int s= 0; s < 6; ++s) {
+    for (int p = 0; p < Nstates; ++p) {
+        for (int q = 0; q < Nstates; ++q) {
+            for (int r = 0; r < Nstates; ++r) {
+                for (int s= 0; s < Nstates; ++s) {
                     D = v(p/2,q/2)(r/2,s/2);  // Direct term
                     Ex = v(p/2,q/2)(s/2,r/2); // Exchange term
                     V(p,q)(r,s) = Z*state(p,q,r,s,D,Ex);
@@ -117,12 +118,12 @@ mat HFSolve::HF(mat C, field<mat> V){
 
     mat HFmx;
     HFmx.zeros(C.n_rows, C.n_cols);
-    for (int alpha = 0; alpha < 6; ++alpha) {
-        for (int gamma = 0; gamma < 6; ++gamma) {
+    for (int alpha = 0; alpha < Nstates; ++alpha) {
+        for (int gamma = 0; gamma < Nstates; ++gamma) {
             double interaction = 0;
             for (int p = 0; p < N; ++p) {
-                for (int beta = 0; beta < 6; ++beta) {
-                    for (int delta = 0; delta < 6; ++delta) {
+                for (int beta = 0; beta < Nstates; ++beta) {
+                    for (int delta = 0; delta < Nstates; ++delta) {
                         interaction += C(p,beta)*C(p,delta)*V(alpha,beta)(gamma,delta);
                     }
                 }
@@ -164,7 +165,7 @@ void HFSolve::Solve(field<mat> V){
     cout << "iterations: " << iters << endl;
     //cout << "eigenvalues: " << endl;
     int minIndex = 0;
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < Nstates; ++i) {
         if (e_v[i] < e_v[minIndex]){
             minIndex = i;
         }
@@ -178,10 +179,10 @@ void HFSolve::Solve(field<mat> V){
 
 double HFSolve::calc_energy(mat C, field<mat> V){
 
-    mat Ci = zeros(6,6);
+    mat Ci = zeros(Nstates,Nstates);
     double s;
-    for(int p= 0; p<6;p++){
-        for(int q=0; q<6; q++){
+    for(int p= 0; p<Nstates;p++){
+        for(int q=0; q<Nstates; q++){
             s = 0;
             for(int k=0; k<N; k++){
                 s+=C.at(k,p) * C.at(k,q);
@@ -190,11 +191,11 @@ double HFSolve::calc_energy(mat C, field<mat> V){
         }
     }
     double Energy = 0;
-    for(int alpha = 0; alpha < 6; alpha++){
+    for(int alpha = 0; alpha < Nstates; alpha++){
         Energy += h0(alpha,alpha)*Ci.at(alpha,alpha);
-        for(int beta = 0; beta < 6; beta++){
-            for(int gamma = 0; gamma<6; gamma++){
-                for(int delta = 0; delta <6; delta++){
+        for(int beta = 0; beta < Nstates; beta++){
+            for(int gamma = 0; gamma<Nstates; gamma++){
+                for(int delta = 0; delta <Nstates; delta++){
                     Energy += 0.5 * Ci.at(alpha, gamma) * Ci.at(beta, delta) * V(alpha, beta)(gamma, delta);
                 }
             }
