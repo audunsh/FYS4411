@@ -23,18 +23,18 @@ int mainf(){
     HFSolve object (Z,N);
     V = object.init(filename);
 
-    cout << "---------------------------" << endl;
-    cout << "Here comes V" << endl;
-    for (int p = 0; p < 6; ++p) {
-        for (int q = 0; q < 6; ++q) {
-            for (int r = 0; r < 6; ++r) {
-                for (int s = 0; s < 6; ++s) {
-                    cout << p << " " << q << " " << r  << " " << s << " " << V(p,q)(r,s) << endl;
-                }
-            }
-        }
-    }
-    cout << "---------------------------" << endl;
+    //cout << "---------------------------" << endl;
+    //cout << "Here comes V" << endl;
+    //for (int p = 0; p < 6; ++p) {
+    //    for (int q = 0; q < 6; ++q) {
+    //        for (int r = 0; r < 6; ++r) {
+    //            for (int s = 0; s < 6; ++s) {
+    //                cout << p << " " << q << " " << r  << " " << s << " " << V(p,q)(r,s) << endl;
+    //            }
+    //        }
+    //    }
+    //}
+    //cout << "---------------------------" << endl;
 
     // now we have created V. Then it is time to call the solver
 

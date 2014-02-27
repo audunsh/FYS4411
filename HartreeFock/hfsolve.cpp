@@ -16,8 +16,6 @@ field<mat> HFSolve::init(string filename){
      * Z is the atomic number
      * N is the number of electrons
      */
-
-    cout << "here we are!" << endl;
     ifstream myfile;
     myfile.open(filename.c_str());
     field<mat> v(3,3);     // 3x3 field matrix with matrix elements
@@ -106,7 +104,8 @@ double HFSolve::h0(int alpha,int gamma){
     double h = 0;
     if (alpha == gamma){
         double n = alpha/2 + 1.0;
-        h = -(Z*Z)/(n*n);
+        //cout << "Alpha/n:  " << alpha << "/" << n << endl;
+        h = -(Z*Z)/(2*n*n);
         //cout << "this is Z:" << Z << endl;
         //printf(Z)
     }
@@ -129,12 +128,12 @@ mat HFSolve::HF(mat C, field<mat> V){
             for (int p = 0; p < N; ++p) {
                 for (int beta = 0; beta < 6; ++beta) {
                     for (int delta = 0; delta < 6; ++delta) {
-                        interaction = interaction + C(p,beta)*C(p,delta)*V(alpha,beta)(gamma,delta);
+                        interaction += C(p,beta)*C(p,delta)*V(alpha,beta)(gamma,delta);
                         //interaction = interaction + 0*alpha + 0*beta + 0*gamma + 0*delta + 0*p;
                     }
                 }
             }
-            HFmx(alpha,gamma) = h0(alpha,gamma) + 0*interaction;
+            HFmx(alpha,gamma) = h0(alpha,gamma) + interaction;
         }
     }
     return HFmx;
@@ -145,7 +144,7 @@ void HFSolve::Solve(field<mat> V){
      * on how the coefficient matrix C should look like
      * And solves the HF equations
      */
-    double tolerance = 10e-14;
+    double tolerance = 10e-8;
 
     mat C;
     vec e_v, e_v_prev;
@@ -159,13 +158,13 @@ void HFSolve::Solve(field<mat> V){
     int iters = 0;
     for(int i=0; i<6;i++){e_v_prev(i) = 1.0;} // safety margin
 
-    cout << "diff.max() : " << abs(e_v.max() - e_v_prev.max()) << endl;
+    //cout << "diff.max() : " << abs(e_v.max() - e_v_prev.max()) << endl;
     while (abs(e_v.min() - e_v_prev.min()) > tolerance){ // convergence test
         iters = iters + 1;
-        cout << "in while iteration: " << iters << endl;
-        for (int i = 0; i < 6; ++i) {
-            cout << e_v_prev(i) << " " << e_v(i) << endl;
-        }
+        //cout << "in while iteration: " << iters << endl;
+        //for (int i = 0; i < 6; ++i) {
+        //    cout << e_v_prev(i) << " " << e_v(i) << endl;
+        //}
         e_v_prev = e_v;
         // return the eigenvalues of the HF-mx to e_v and the eigenvectors to C.
         eig_sym(e_v,C,HF(C,V));
@@ -174,46 +173,64 @@ void HFSolve::Solve(field<mat> V){
     }
     cout << "------------------------------" << endl;
     cout << "iterations: " << iters << endl;
-    cout << "eigenvalues: " << endl;
+    //cout << "eigenvalues: " << endl;
     int minIndex = 0;
     for (int i = 0; i < 6; ++i) {
         if (e_v[i] < e_v[minIndex]){
             minIndex = i;
         }
-        cout << e_v[i] << endl;
+        //cout << e_v[i] << endl;
     }
-    cout << "------------------------------" << endl;
-    cout << e_v[minIndex] << " " << minIndex << endl;
-    cout << "------------------------------" << endl;
-
-
     double E = calc_energy(C,V);
-    cout << "Energy= " << E << endl;
+    cout << "Ground State Energy: " << E << endl;
 
 
 }
 
 double HFSolve::calc_energy(mat C, field<mat> V){
 
-    double Energy = 0;
-    for (int i = 0; i < N; ++i) {
-        for (int alpha = 0; alpha < 6; ++alpha) {
-            for (int beta = 0; beta < 6; ++beta) {
-                double interaction = 0;
-                for (int j = 0; j < N; ++j) {
-                    for (int gamma = 0; gamma < 6; ++gamma) {
-                        for (int delta = 0; delta < 6; ++delta) {
-
-                            interaction += C(i,alpha)*C(j,beta)*C(i,gamma)*C(j,delta)*V(alpha,beta)(gamma,delta);
-                        }
-                    }
-                }
-
-                Energy += C(i,alpha)*C(i,beta)*h0(alpha,beta) + 0*interaction;
+    mat Ci = zeros(6,6);
+    double s;
+    for(int p= 0; p<6;p++){
+        for(int q=0; q<6; q++){
+            s = 0;
+            for(int k=0; k<N; k++){
+                s+=C.at(k,p) * C.at(k,q);
+                Ci.at(p,q) = s;
             }
-
         }
     }
+    double Energy = 0;
+    for(int alpha = 0; alpha < 6; alpha++){
+        Energy += h0(alpha,alpha)*Ci.at(alpha,alpha);
+        for(int beta = 0; beta < 6; beta++){
+            for(int gamma = 0; gamma<6; gamma++){
+                for(int delta = 0; delta <6; delta++){
+                    Energy += 0.5 * Ci.at(alpha, gamma) * Ci.at(beta, delta) * V(alpha, beta)(gamma, delta);
+                }
+            }
+        }
+    }
+
+    //double Energy = 0;
+    //for (int i = 0; i < N; ++i) {
+    //    for (int alpha = 0; alpha < 6; ++alpha) {
+    //        for (int beta = 0; beta < 6; ++beta) {
+    //            double interaction = 0;
+    //            for (int j = 0; j < N; ++j) {
+    //                for (int gamma = 0; gamma < 6; ++gamma) {
+    //                    for (int delta = 0; delta < 6; ++delta) {
+    //
+    //                        interaction += C(i,alpha)*C(j,beta)*C(i,gamma)*C(j,delta)*V(alpha,beta)(gamma,delta);
+    //                    }
+    //                }
+    //            }
+    //
+    //            Energy += C(i,alpha)*C(i,beta)*h0(alpha,beta) + 0*interaction;
+    //        }
+    //
+    //    }
+    //}
     return Energy;
 }
 
