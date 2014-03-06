@@ -23,8 +23,8 @@ int mainf(){
     // (4) If possible/sensible; a possibility to calculate excited states using excited SDs. (particle-hole states)
     //     In effect this means to permute the C-matrix after each iteration, so that the two one-particle states is not the two lowest lying states.
 
-    int Z = 2; // two protons
-    int N = 2; // two electrons
+    int Z = 4; // two protons
+    int N = 4; // two electrons
     int Ns = 6; //6 states
     field<mat> V;
     HFSolve object (Z,N,Ns);

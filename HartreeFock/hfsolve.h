@@ -12,8 +12,13 @@ public:
     HFSolve(int Zn, int Nn, int Ns);
 
     field<mat> init(string filename);
+
+    void use_basis(string choise_of_basis); // GTO,STO,filename
+
     double state(int p, int q, int r, int s, double D, double Ex);
+
     double return_init();
+
     void Solve(field<mat> V);
 
 private:

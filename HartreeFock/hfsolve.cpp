@@ -9,7 +9,7 @@ using namespace arma;
 
 HFSolve::HFSolve(int Zn, int Nn, int Ns){
     Z = Zn;
-    N=Nn;
+    N = Nn;
     Nstates = Ns;
 }
 field<mat> HFSolve::init(string filename){
@@ -97,6 +97,15 @@ double HFSolve::state(int p, int q, int r, int s, double D, double Ex){
         }
     }
     return S;
+}
+
+void HFSolve::get_Q(){
+    /* Get the basis
+     */
+}
+
+void HFSolve::get_S(){
+
 }
 
 double HFSolve::h0(int alpha,int gamma){
