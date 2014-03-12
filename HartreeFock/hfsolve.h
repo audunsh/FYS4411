@@ -21,6 +21,9 @@ public:
 
     void Solve(field<mat> V);
 
+    void get_Q();
+    void get_S();
+
 private:
     double h0(int alpha,int gamma);
     mat HF(mat C, field<mat> V);
