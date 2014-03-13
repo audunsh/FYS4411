@@ -1,4 +1,8 @@
 #include "primitive.h"
+#include <armadillo>
+
+using namespace std;
+using namespace arma;
 
 primitive::primitive(double weight, int xExponent, int yExponent, int zExponent, double exponent, vec nucleusPosition) :
     m_weight(weight),

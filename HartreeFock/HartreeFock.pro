@@ -9,13 +9,17 @@ SOURCES += main.cpp \
 hfsolve.cpp \
 lib.cpp \
     basis.cpp \
-    primitive.cpp
+    primitive.cpp \
+    integrator.cpp \
+    boysfunction.cpp
 
 HEADERS += \
 hfsolve.h \
 lib.h \
     basis.h \
-    primitive.h
+    primitive.h \
+    integrator.h \
+    boysfunction.h
 
 release {
     QMAKE_CXXFLAGS_RELEASE -= -O2
