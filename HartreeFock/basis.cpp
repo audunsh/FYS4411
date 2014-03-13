@@ -5,8 +5,9 @@
 using namespace std;
 using namespace arma;
 
-basis::basis(int N)
+basis::basis(int N, int b)
 {
+    bMode = b;
     Nstates = N;
     field<mat> vn(Nstates, Nstates); //no-spin basis
     for (int i = 0; i < Nstates; ++i) {
@@ -62,7 +63,7 @@ void basis::read(string filename, int Zn){
             myfile >> r;
             myfile >> s;
             myfile >> value;
-            //cout << p << q << r << s;
+            //cout << p << q << r << s << endl;
             try{
                 v(p,q)(r,s) = value;
             }
@@ -84,6 +85,9 @@ void basis::read(string filename, int Zn){
                     try{
                         D = v(p/2,q/2)(r/2,s/2);  // Direct term
                         Ex =v(p/2,q/2)(s/2,r/2); // Exchange term
+                        //cout << D << Ex << " ";
+                        //cout << p << " " << q << " " << r << " " << s << endl;
+
                         V(p,q)(r,s) = Z*state(p,q,r,s,D,Ex);
                     }
                     catch(int e){
@@ -95,10 +99,14 @@ void basis::read(string filename, int Zn){
     }
 }
 
-double h0(int i, int j){
-    double a;
-    a = erf(20);
-    return 0;
+double basis::h0(int i, int j){
+    // the one-body interaction
+    double h = 0;
+    if (i == j){
+        double n = i/2 + 1.0;
+        h = -(Z*Z)/(2*n*n);
+    }
+    return h;
 }
 
 double basis::state(int p, int q, int r, int s, double D, double Ex){
@@ -140,7 +148,7 @@ double basis::get(int p, int q, int r, int s){
     //returns matrix element pqrs
 }
 
-void generate(){
+void basis::generate(){
     //function to generate the basis using STO/GTOs
 }
 

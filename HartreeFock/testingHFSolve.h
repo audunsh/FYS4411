@@ -27,7 +27,7 @@ int mainf(){
     int N = 4; // two electrons
     int Ns = 6; //6 states
     field<mat> V;
-    HFSolve object (Z,N,Ns);
+    HFSolve object (Z,N);
     V = object.init(filename);
     object.Solve(V);
     return 0;

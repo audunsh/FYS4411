@@ -2,6 +2,8 @@
 #define HFSOLVE_H
 #include <armadillo>
 #include <string>
+#include <basis.h>
+
 
 using namespace std;
 using namespace arma;
@@ -9,7 +11,7 @@ using namespace arma;
 class HFSolve{
     int Z,N, Nstates;
 public:
-    HFSolve(int Zn, int Nn, int Ns);
+    HFSolve(int Zn, int Nn);
 
     field<mat> init(string filename);
 
@@ -23,6 +25,7 @@ public:
 
     void get_Q();
     void get_S();
+    void SSolve(basis Bs);
 
 private:
     double h0(int alpha,int gamma);

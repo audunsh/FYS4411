@@ -8,10 +8,10 @@
 
 using namespace arma;
 
-HFSolve::HFSolve(int Zn, int Nn, int Ns){
+HFSolve::HFSolve(int Zn, int Nn){
     Z = Zn;
     N = Nn;
-    Nstates = Ns;
+    //Nstates = Ns;
 }
 field<mat> HFSolve::init(string filename){
     /* Read filename, and set up initial matrix
@@ -106,6 +106,46 @@ void HFSolve::get_Q(){
 }
 
 void HFSolve::get_S(){
+
+}
+
+void HFSolve::SSolve(basis Bs){
+    //Solves the HF-eq's using the provided basis
+    double tolerance = 10e-8;
+    mat C;
+    vec e_v, e_v_prev;
+    Nstates = Bs.Nstates*2;
+    C.zeros(Nstates,Nstates);
+    e_v.zeros(Nstates);
+    e_v_prev.zeros(Nstates);
+    for (int i = 0; i < Nstates; ++i) {
+        C(i,i) = 1.0;
+    }
+
+    int iters = 0;
+    for(int i=0; i<Nstates;i++){e_v_prev(i) = 1.0;} // safety margin
+    while (abs(e_v.min() - e_v_prev.min()) > tolerance){ // convergence test
+        iters = iters + 1;
+        e_v_prev = e_v;
+        // return the eigenvalues of the HF-mx to e_v and the eigenvectors to C.
+        eig_sym(e_v,C,HF(C,Bs.V));
+        C = trans(C);
+        if(iters>100){
+            cout << "Maximum number of iterations (100) exceeded." << endl;
+            break;}
+    }
+    cout << "------------------------------" << endl;
+    cout << "iterations: " << iters << endl;
+    //cout << "eigenvalues: " << endl;
+    int minIndex = 0;
+    for (int i = 0; i < Nstates; ++i) {
+        if (e_v[i] < e_v[minIndex]){
+            minIndex = i;
+        }
+        //cout << e_v[i] << endl;
+    }
+    double E = calc_energy(C,Bs.V);
+    cout << "Ground State Energy: " << E << endl;
 
 }
 

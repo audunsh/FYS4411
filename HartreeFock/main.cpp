@@ -12,26 +12,32 @@ using namespace std;
 using namespace arma;
 
 int main(int argc, char* argv[]) {
-    basis Bs(3);
+    /* Make sure any basis to read from file is located in build folder!
+     *
+     * Yet to be implemented (as per 13/3/2014):
+     * (1) Correct convergence conditions in HFSolve
+     * (2) GTOs
+     * (3) The Thijssen implementation of spin
+     *
+    */
+
+    //set number of protons and electrons
+    int Z = 2;   // Number of protons
+    int N = 2;   // Number of electrons
+    int Ns = 4;  // 6 states
+
+    basis Bs(3, 0);              //creating the basis object
     string filename;
     filename = "m_elements_c.dat";
-    Bs.read("m_elements_c.dat", 2);
-    // Make sure the filename is located in the build-folder !!!
-    // Yet to be implemented (6.march 2014):
-    // (0) Change the convergence conditions in the iterative part
-    // (1) A more versatile class-structure
-    // (2) The Thijssen spin implementation (reducing the size of the matrix)
-    // (3) Gaussian Type Orbitals
-    // (4) If possible/sensible; a possibility to calculate excited states using excited SDs. (particle-hole states)
-    //     In effect this means to permute the C-matrix after each iteration, so that the two one-particle states is not the two lowest lying states.
+    Bs.read("m_elements_c.dat", Z); //reading basis from file
 
-    int Z = 2; // two protons
-    int N = 2; // two electrons
-    int Ns = 6; //6 states
-    field<mat> V;
-    HFSolve object (Z,N,Ns);
-    V = object.init(filename);
-    object.Solve(V);
+
+
+    //field<mat> V;
+    HFSolve object (Z,N);
+    //V = object.init(filename);
+    //object.Solve(V);
+    object.SSolve(Bs);
 
     return 0;
 } // End: function output()
