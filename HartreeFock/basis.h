@@ -17,7 +17,7 @@ public:
     double get(int p, int q, int r, int s);                       //function to retrieve two-body integral (precalculated or otherwise
     double eval(int p, int q, int r, int s);                      //function to evaluate two-body integral
     double state(int p, int q, int r, int s, double D, double E); //function to evaluate spin-dependence
-    int Nstates;             //number of basis states (spin not included)
+    int Nstates, Nstates2;             //number of basis states (spin not included)
     field<mat> v;            //basis, spin not included
     field<mat> V;            //basis with spin included
     int Z;                   //interaction parameter (taken to be number of protons)

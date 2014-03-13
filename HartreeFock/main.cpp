@@ -22,22 +22,19 @@ int main(int argc, char* argv[]) {
     */
 
     //set number of protons and electrons
-    int Z = 2;   // Number of protons
-    int N = 2;   // Number of electrons
+    int Z = 4;   // Number of protons
+    int N = 4;   // Number of electrons
     int Ns = 4;  // 6 states
 
     basis Bs(3, 0);              //creating the basis object
     string filename;
     filename = "m_elements_c.dat";
     Bs.read("m_elements_c.dat", Z); //reading basis from file
+    Bs.set_orthonormal(true);
 
-
-
-    //field<mat> V;
+    //Solving for N,Z with the provided basis
     HFSolve object (Z,N);
-    //V = object.init(filename);
-    //object.Solve(V);
-    object.SSolve(Bs);
+    object.Solve(Bs);
 
     return 0;
 } // End: function output()

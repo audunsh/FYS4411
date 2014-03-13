@@ -12,7 +12,6 @@ lib.cpp \
 
 HEADERS += \
 hfsolve.h \
-testingHFSolve.h \
 lib.h \
     basis.h
 

@@ -9,6 +9,7 @@ basis::basis(int N, int b)
 {
     bMode = b;
     Nstates = N;
+    Nstates2 = 2*Nstates;
     field<mat> vn(Nstates, Nstates); //no-spin basis
     for (int i = 0; i < Nstates; ++i) {
         for (int j = 0; j < Nstates; ++j) {
@@ -16,10 +17,10 @@ basis::basis(int N, int b)
         }
     }
 
-    field<mat> Vn(Nstates*2, Nstates*2); //spin-basis
-    for (int i = 0; i < Nstates*2; ++i) {
-        for (int j = 0; j < Nstates*2; ++j) {
-            Vn(i,j) = zeros<mat>(Nstates*2,Nstates*2); // fill V with 3x3 mx elements
+    field<mat> Vn(Nstates2, Nstates2); //spin-basis
+    for (int i = 0; i < Nstates2; ++i) {
+        for (int j = 0; j < Nstates2; ++j) {
+            Vn(i,j) = zeros<mat>(Nstates2,Nstates2); // fill V with 3x3 mx elements
         }
     }
     v = vn;
@@ -27,15 +28,15 @@ basis::basis(int N, int b)
 
     //creating the overlap matrix
     mat s;
-    s.zeros(Nstates*2,Nstates*2);
+    s.zeros(Nstates2,Nstates2);
     S = s;
 }
 
 void basis::set_orthonormal(bool t){
     //sets the overlap matrix equal to the identity matrix
     if(t){
-        for(int i=0;i < Nstates*2;i++){
-            for(int j=0;j < Nstates*2;j++){
+        for(int i=0;i < Nstates2;i++){
+            for(int j=0;j < Nstates2;j++){
                 if(i==j){
                     S(i,j) = 1.0;
                 }
@@ -46,6 +47,7 @@ void basis::set_orthonormal(bool t){
 
 void basis::read(string filename, int Zn){
     Z = Zn;
+    bMode = 0; //only
     //read basis from file
     //this also means you have to provide the one-body energy and the overlap matrix (use h0 and ...)
     cout << "Loading predefined basis from file: " << filename << endl;
@@ -78,10 +80,10 @@ void basis::read(string filename, int Zn){
     //expanding basis to include spin
     double D = 0;
     double Ex = 0;
-    for (int p = 0; p < Nstates*2; ++p) {
-        for (int q = 0; q < Nstates*2; ++q) {
-            for (int r = 0; r < Nstates*2; ++r) {
-                for (int s= 0; s < Nstates*2; ++s) {
+    for (int p = 0; p < Nstates2; ++p) {
+        for (int q = 0; q < Nstates2; ++q) {
+            for (int r = 0; r < Nstates2; ++r) {
+                for (int s= 0; s < Nstates2; ++s) {
                     try{
                         D = v(p/2,q/2)(r/2,s/2);  // Direct term
                         Ex =v(p/2,q/2)(s/2,r/2); // Exchange term
