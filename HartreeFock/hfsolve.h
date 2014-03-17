@@ -25,6 +25,8 @@ private:
     double h0(int alpha,int gamma);
     mat HF(mat C, field<mat> V);
     double calc_energy(mat C,field<mat> V);
+    void get_Q();
+    void get_S();
 };
 
 #endif // HFSOLVE_H
