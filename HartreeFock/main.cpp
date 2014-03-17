@@ -8,6 +8,7 @@
 #include <basis.h>
 #include <boysfunction.h>
 #include <integrator.h>
+#include <hfsolve.h>
 
 using namespace std;
 using namespace arma;
