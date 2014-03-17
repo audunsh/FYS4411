@@ -6,16 +6,16 @@ CONFIG -= qt
 LIBS += -larmadillo -lblas -llapack
 
 SOURCES += main.cpp \
-hfsolve.cpp \
-lib.cpp \
+    hfsolve.cpp \
+    lib.cpp \
     basis.cpp \
     primitive.cpp \
     integrator.cpp \
     boysfunction.cpp
 
 HEADERS += \
-hfsolve.h \
-lib.h \
+    hfsolve.h \
+    lib.h \
     basis.h \
     primitive.h \
     integrator.h \

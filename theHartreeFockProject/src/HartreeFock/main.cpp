@@ -4,11 +4,12 @@
 #include <time.h>
 #include <armadillo>
 #include <string>            // to_string
-#include <lib.h>             //tqli, free_matrix
+//#include <lib.h>             //tqli, free_matrix
 #include <basis.h>
 #include <boysfunction.h>
 #include <integrator.h>
 #include <hfsolve.h>
+//#include <myclass.h>      // testclass
 
 
 using namespace std;
@@ -36,18 +37,11 @@ int main(int argc, char* argv[]) {
     Bs.read("m_elements_c.dat", Z); //reading basis from file
     Bs.set_orthonormal(true);
 
-    //Solving for N,Z with the provided basis
+//    //Solving for N,Z with the provided basis
     HFSolve object (Z,N);
-    object.Solve(Bs);
+    double E = object.Solve(Bs);
 
-
+    cout << "Energy of the ground state= " << E << endl;
 
     return 0;
 } // End: function output()
-
-
-
-
-
-
-
