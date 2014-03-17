@@ -2,6 +2,8 @@
 #define HFSOLVE_H
 #include <armadillo>
 #include <string>
+#include <basis.h>
+
 
 using namespace std;
 using namespace arma;
@@ -9,24 +11,20 @@ using namespace arma;
 class HFSolve{
     int Z,N, Nstates;
 public:
-    HFSolve(int Zn, int Nn, int Ns);
-
-    field<mat> init(string filename);
-
-    void use_basis(string choise_of_basis); // GTO,STO,filename
-
-    double state(int p, int q, int r, int s, double D, double Ex);
-
-    double return_init();
-
-    void Solve(field<mat> V);
+    HFSolve(int Zn, int Nn);
+    void Solve(basis Bs);
 
 private:
+<<<<<<< HEAD
     double h0(int alpha,int gamma);
     mat HF(mat C, field<mat> V);
     double calc_energy(mat C,field<mat> V);
     void get_Q();
     void get_S();
+=======
+    mat HF(mat C, basis Bs);
+    double calc_energy(mat C,basis Bs);
+>>>>>>> 3b050e3940d186edb487b3e8edede6875e365eb8
 };
 
 #endif // HFSOLVE_H

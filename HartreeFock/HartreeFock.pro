@@ -8,13 +8,18 @@ LIBS += -larmadillo -lblas -llapack
 SOURCES += main.cpp \
 hfsolve.cpp \
 lib.cpp \
-    primitive.cpp
+    basis.cpp \
+    primitive.cpp \
+    integrator.cpp \
+    boysfunction.cpp
 
 HEADERS += \
 hfsolve.h \
-testingHFSolve.h \
 lib.h \
-    primitive.h
+    basis.h \
+    primitive.h \
+    integrator.h \
+    boysfunction.h
 
 release {
     QMAKE_CXXFLAGS_RELEASE -= -O2
