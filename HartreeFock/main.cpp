@@ -3,10 +3,11 @@
 #include <iomanip>
 #include <time.h>
 #include <armadillo>
-#include <string>      // to_string
-#include <lib.h>       //tqli, free_matrix
-#include <testingHFSolve.h>
+#include <string>            // to_string
+#include <lib.h>             //tqli, free_matrix
 #include <basis.h>
+#include <boysfunction.h>
+#include <integrator.h>
 
 using namespace std;
 using namespace arma;
