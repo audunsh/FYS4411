@@ -1,20 +1,22 @@
-#ifndef PRIMITIVE_H
-#define PRIMITIVE_H
-
+#ifndef PRIMITIVE H
+#define PRIMITIVE H
 #include <armadillo>
-
 using namespace arma;
 
-class primitive
-{
+class Primitive {
+
 public:
-    explicit primitive(double weight, int xExponent, int yExponent, int zExponent, double exponent, vec nucleusPosition);
+    explicit Primitive(double weight, int xExponent,
+                       int yExponent, int zExponent, double exponent,
+                       vec nucleusPosition);
+
     double exponent() const;
-    int xExponent() const;
-    int yExponent() const;
     int zExponent() const;
+    int yExponent() const;
+    int xExponent() const;
     double weight() const;
     const vec& nucleusPosition() const;
+
 private:
     double m_weight;
     int m_xExponent;
@@ -24,4 +26,4 @@ private:
     vec m_nucleusPosition;
 };
 
-#endif // PRIMITIVE_H
+#endif // PRIMITIVE H

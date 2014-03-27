@@ -50,6 +50,65 @@ TEST(HFSolve){
 }
 
 
+TEST(integator_overlap_integrals_1){
+    // PrimitiveA
+    a = 0.2;
+    weight = 1;
+    i = k = m = 0;
+    A = {1.2, 2.3, 3.4};
+
+    // PrimitiveB
+    b = 0.3;
+    weight = 1;
+    j = l = n = 0;
+    B = {-1.3,1.4,-2.1};
+
+    Primitive primitiveA(weight,i,k,m,a,A);
+    Primitive primitiveB(weight,j,l,n,b,B);
+
+    CHECK CLOSE(1.191723635809e−01,integrator.overlapIntegral(primitiveA,primitiveB),1e-5);
+}
+
+TEST(integrator_overlap_integral_2){
+    // PrimitiveA:
+    a = 0.2;
+    weight = 1;
+    i = m = 0;
+    k = 1;
+    A = {1.2, 2.3, 3.4};
+
+    // PrimitiveB:
+    b = 0.3;
+    weight = 1;
+    j = 0;
+    l = n = 1;
+    B = {-1.3,1.4,-2.4};
+
+    Primitive primitiveA(weight,i,k,m,a,A);
+    Primitive primitiveB(weight,j,l,n,b,B);
+    CHECK CLOSE(2.227321941537e−01, integrator.overlapIntegral(primitiveA, primitiveB), 1e−5);
+}
+
+TEST(itegrator_overlap_integral_3){
+    // PrimitiveA:
+    a = 0.2;
+    weight = 1;
+    i = m = 0;
+    k = 2;
+    A = {1.2, 2.3, 3.4};
+
+    // PrimitiveB:
+    b = 0.3;
+    weight = 1;
+    j = l = 1;
+    n = 0;
+    B = {-1.3,1.4,-2.4};
+
+    Primitive primitiveA(weight,i,k,m,a,A);
+    Primitive primitiveB(weight,j,l,n,b,B);
+    CHECK_CLOSE(−7.329386373895e−02, integrator.overlapIntegral(primitiveA,primitiveB), 1e−5);
+}
+
 
 
 int main() {

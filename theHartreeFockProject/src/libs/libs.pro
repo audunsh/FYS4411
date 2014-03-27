@@ -7,7 +7,8 @@ SOURCES= myclass.cpp \
          integrator.cpp \
          lib.cpp \
          hfsolve.cpp \
-         boysfunction.cpp
+         boysfunction.cpp \
+    primitive.cpp
 
 HEADERS= myclass.h \
          basis.h \

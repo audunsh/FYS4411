@@ -1,37 +1,39 @@
 #include "primitive.h"
-#include <armadillo>
+Primitive::Primitive(double weight,
+                     int xExponent, int yExponent, int zExponent,
+                     double exponent, vec nucleusPosition) :
 
-using namespace std;
-using namespace arma;
-
-primitive::primitive(double weight, int xExponent, int yExponent, int zExponent, double exponent, vec nucleusPosition) :
-    m_weight(weight),
-    m_xExponent(xExponent),
-    m_yExponent(yExponent),
-    m_zExponent(zExponent),
-    m_exponent(exponent),
-    m_nucleusPosition(nucleusPosition)
-
+m_weight(weight),
+m_xExponent(xExponent),
+m_yExponent(yExponent),
+m_zExponent(zExponent),
+m_exponent(exponent),
+m_nucleusPosition(nucleusPosition)
 {
+
 }
 
-double primitive::exponent() const{
-    return m_exponent;
+double Primitive::exponent() const
+{
+return m_exponent;
 }
-
-int primitive::xExponent() const{
-    return m_xExponent;
+int Primitive::zExponent() const
+{
+return m_zExponent;
 }
-int primitive::yExponent() const{
-    return m_yExponent;
+int Primitive::yExponent() const
+{
+return m_yExponent;
 }
-int primitive::zExponent() const{
-    return m_zExponent;
+int Primitive::xExponent() const
+{
+return m_xExponent;
 }
-
-double primitive::weight() const{
-    return m_weight;
+double Primitive::weight() const
+{
+return m_weight;
 }
-const vec& primitive::nucleusPosition() const{
-    return m_nucleusPosition;
+const vec& Primitive::nucleusPosition() const
+{
+return m_nucleusPosition;
 }

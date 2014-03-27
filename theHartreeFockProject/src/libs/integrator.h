@@ -7,7 +7,7 @@ class integrator
 {
 public:
     integrator();
-    double overlap(primitive a, primitive b);
+    double overlapIntegral(Primitive a, Primitive b);
     void setupHermiteCoefficients();
 
 
