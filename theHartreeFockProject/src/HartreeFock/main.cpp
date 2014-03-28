@@ -43,5 +43,20 @@ int main(int argc, char* argv[]) {
 
     cout << "Energy of the ground state= " << E << endl;
 
+
+    double weight = 1.0;
+    int exponent = 2.0;
+    int xExponent = 2.0;
+    int yExponent = 2.0;
+    int zExponent = 2.0;
+    vec nucleusPosition = {0,0,0};
+    integrator integral;
+    Primitive a(weight,xExponent,yExponent,zExponent,exponent,nucleusPosition);
+    Primitive b(weight,xExponent,yExponent,zExponent,exponent,nucleusPosition);
+
+    double Sab = integral.overlapIntegral(a,b);
+    cout << Sab << endl;
+
+
     return 0;
 } // End: function output()

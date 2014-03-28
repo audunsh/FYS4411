@@ -71,7 +71,9 @@ TEST(integator_overlap_integrals_1){
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
 
-    CHECK_CLOSE(1.191723635809e-01,integrator.overlapIntegral(primitiveA,primitiveB),1e-5);
+    integrator integral;
+
+    CHECK_CLOSE(1.191723635809e-01,integral.overlapIntegral(primitiveA,primitiveB),1e-5);
 }
 
 TEST(integrator_overlap_integral_2){
@@ -96,7 +98,8 @@ TEST(integrator_overlap_integral_2){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    CHECK_CLOSE(2.227321941537e-01, integrator.overlapIntegral(primitiveA, primitiveB), 1e-5);
+    integrator integral;
+    CHECK_CLOSE(2.227321941537e-01, integral.overlapIntegral(primitiveA, primitiveB), 1e-5);
 }
 
 TEST(itegrator_overlap_integral_3){
@@ -121,8 +124,8 @@ TEST(itegrator_overlap_integral_3){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-
-    CHECK_CLOSE(-7.329386373895e-02,integrator.overlapIntegral(primitiveA, primitiveB), 1e-5);
+    integrator integral;
+    CHECK_CLOSE(-7.329386373895e-02,integral.overlapIntegral(primitiveA, primitiveB), 1e-5);
 }
 
 
