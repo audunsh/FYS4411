@@ -1,4 +1,4 @@
-#include "boysfunction.h"
+#include <boysfunction.h>
 
 boysFunction::boysFunction()
 {

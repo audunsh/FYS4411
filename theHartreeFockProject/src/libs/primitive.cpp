@@ -1,4 +1,5 @@
-#include "primitive.h"
+#include <primitive.h>
+
 Primitive::Primitive(double weight,
                      int xExponent, int yExponent, int zExponent,
                      double exponent, vec nucleusPosition) :
@@ -9,6 +10,7 @@ m_yExponent(yExponent),
 m_zExponent(zExponent),
 m_exponent(exponent),
 m_nucleusPosition(nucleusPosition)
+
 {
 
 }
