@@ -81,47 +81,52 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
     // for Eij
     double E_m,E_p;
-    for (int t = 0; t < i+j; ++t) {            // 0,1,2,3 // 4 values for i = j = 2.
-        if (i>0) {
-            for (int ii = 0; ii < i; ++ii) {   // 0,1 // two values to find the third; i = 2 :-)
-                if ((t-1) < 0) { E_m = 0;}
-                else { E_m = Eij(ii,0,t-1);}
 
-                if ((t+1) > ii) { E_p = 0;}
-                else { E_p = Eij(ii,0,t+1);}
+    for (int ii = 0; ii < i; ++ii) {            // 0,1 // two values to find the third; i = 2 :-)
+        for (int t = 0; t < i+j; ++t) {         // 0,1,2,3 // 4 values for i = j = 2.
+            if ((t-1) < 0) { E_m = 0;}
+            else { E_m = Eij(ii,0,t-1);}
 
-                Eij(ii+1,0,t) = 1/(2*p)*E_m + X_PA(0)*Eij(ii,0,t) + (t+1)*E_p;
+            if ((t+1) > ii) { E_p = 0;}
+            else { E_p = Eij(ii,0,t+1);}
+
+            if (t>ii) {
+                Eij(ii,0,t) = 0.0;
             }
+            Eij(ii+1,0,t) = 1/(2*p)*E_m + X_PA(0)*Eij(ii,0,t) + (t+1)*E_p;
         }
     }
 
-    for (int t = 0; t < k+l; ++t) {
-        if (k>0){
-            for (int kk = 0; kk < k; ++kk) {
-                if ((t-1) < 0) { E_m = 0;}
-                else { E_m = Ekl(kk,0,t-1);}
 
-                if (t+1 > kk) { E_p = 0;}
-                else { E_p = Ekl(kk,0,t+1);}
 
-                Ekl(kk+1,0,t) = 1/(2*p)*E_m + X_PA(1)*Ekl(kk,0,t) + (t+1)*E_p;
-            }
+    for (int kk = 0; kk < k; ++kk) {
+        for (int t = 0; t < k+l; ++t) {
+            if ((t-1) < 0) { E_m = 0;}
+            else { E_m = Ekl(kk,0,t-1);}
+
+            if (t+1 > kk) { E_p = 0;}
+            else { E_p = Ekl(kk,0,t+1);}
+
+            if (t>kk) { Ekl(kk,0,t) = 0.0;}
+
+            Ekl(kk+1,0,t) = 1/(2*p)*E_m + X_PA(1)*Ekl(kk,0,t) + (t+1)*E_p;
         }
     }
 
-    for (int t = 0; t < m+n; ++t) {
-        if (m>0) {
-            for (int mm = 0; mm < m; ++mm) {
-                if ((t-1) < 0) { E_m = 0;}
-                else {E_m = Emn(mm,0,t-1);}
+    for (int mm = 0; mm < m; ++mm) {
+        for (int t = 0; t < m+n; ++t) {
+            if ((t-1) < 0) { E_m = 0;}
+            else {E_m = Emn(mm,0,t-1);}
 
-                if (t+1 > mm) {  E_p = 0;}
-                else { E_p = Emn(mm,0,t+1);}
+            if (t+1 > mm) {  E_p = 0;}
+            else { E_p = Emn(mm,0,t+1);}
 
-                Emn(mm+1,0,t) = 1/(2*p)*E_m + X_PA(2)*Emn(mm,0,t) + (t+1)*E_p;
-            }
+            if (t>mm) { Emn(mm,0,t) = 0.0;}
+
+            Emn(mm+1,0,t) = 1/(2*p)*E_m + X_PA(2)*Emn(mm,0,t) + (t+1)*E_p;
         }
     }
+
 
 
     // can now iterate for j,l,n because we now know Ers(:,0,:)
@@ -135,6 +140,8 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
                 if (t+1 > ii+jj) { E_p = 0;}
                 else { E_p = Eij(ii,jj,t+1);}
+
+                if (t>jj) {Eij(ii,jj,t) = 0;}
 
                 Eij(ii,jj+1,t) = 1/(2*p)*E_m + X_PB(0)*Ekl(ii,jj,t) + (t+1)*E_p;
             }
@@ -151,6 +158,8 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
                 if (t+1 > kk+ll) { E_p = 0;}
                 else { E_p = Ekl(kk,ll,t+1);}
 
+                if (t>ll) {Eij(kk,ll,t) = 0;}
+
                 Eij(kk,ll+1,t) = 1/(2*p)*E_m + X_PB(1)*Ekl(kk,ll,t) + (t+1)*E_p;
             }
         }
@@ -166,6 +175,8 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
                 if (t+1 > mm+nn) {E_p = 0;}
                 else { E_p = Eij(mm,nn,t+1);}
+
+                if (t>nn) {Eij(mm,nn,t) = 0;}
 
                 Eij(mm,nn+1,t) = 1/(2*p)*E_m + X_PB(2)*Ekl(mm,nn,t) + (t+1)*E_p;
             }
