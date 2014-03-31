@@ -81,9 +81,9 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
     // for Eij
     double E_m,E_p;
-    for (int t = 0; t < i+j; ++t) { // 0,1,2,3 // 4 values
+    for (int t = 0; t < i+j; ++t) {            // 0,1,2,3 // 4 values for i = j = 2.
         if (i>0) {
-            for (int ii = 0; ii < i; ++ii) {   // 0,1 // two values
+            for (int ii = 0; ii < i; ++ii) {   // 0,1 // two values to find the third; i = 2 :-)
                 if ((t-1) < 0) { E_m = 0;}
                 else { E_m = Eij(ii,0,t-1);}
 
@@ -176,27 +176,29 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
     cout << "---------------------------------------------" << endl;
     cout << "i= " << i << " j= " << j << " k= " << k << " l= " << l << " m= " << m << " n= " << n << endl;
 
-    for (int kapp = 0; kapp < i+j; ++kapp) {
-        for (int kupp = 0; kupp < i; ++kupp) {
-            for (int pupp = 0; pupp < j; ++pupp) {
-                cout << Eij(kupp,pupp,kapp) << " " ;
+    for (int jj = 0; jj <= j; ++jj) {
+        cout << "----------------------------------------------" << endl;
+        cout << "-------------------  j=" << jj << " ---------------------" << endl;
+        cout << "----------------------------------------------" << endl;
+        for (int t = 0; t < i+j; ++t) {
+            cout << "t=" << t  << " ";
+            for (int ii = 0; ii <= i; ++ii) {
+                cout << Eij(ii,jj,t) << " " ;
             }
             cout << endl;
         }
-        cout << "----------------------------------------------------" << endl;
-        cout << "              NEW t VALUE STARTS HERE               " << endl;
-        cout << "----------------------------------------------------" << endl;
     }
-
 
 
     // Have now found the cubic matrices Eij,Ekl,Emn.
     // it's time to find Sab = EijEklEmn(pi/p)^(3/2)
-
+    cout << "---------------------------------------------------" << endl;
     cout << "Eij(i,j,0)= "<< Eij(i,j,0) << endl;
     cout << "Ekl(k,l,0)= "<< Ekl(k,l,0) << endl;
     cout << "Emn(m,n,0)= "<< Emn(m,n,0) << endl;
     cout << "X_AB=  " << X_AB(0) << " " << X_AB(1) << " " << X_AB(2) << endl;
+    cout << "X_PA=  " << X_PA(0) << " " << X_PA(1) << " " << X_PA(2) << endl;
+    cout << "X_PB=  " << X_PB(0) << " " << X_PB(1) << " " << X_PB(2) << endl;
     cout << "A=     " << A(0) << " " << A(1) << " " << A(2) << endl;
     cout << "B=     " << B(0) << " " << B(1) << " " << B(2) << endl;
     double Sab = Eij(i,j,0)*Ekl(k,l,0)*Emn(m,n,0)*pow((pi/p),3.0/2);
