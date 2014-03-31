@@ -90,14 +90,11 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
             if ((t+1) > ii) { E_p = 0;}
             else { E_p = Eij(ii,0,t+1);}
 
-            if (t>ii) {
-                Eij(ii,0,t) = 0.0;
-            }
+            if (t>ii) { Eij(ii,0,t) = 0.0;}
+
             Eij(ii+1,0,t) = 1/(2*p)*E_m + X_PA(0)*Eij(ii,0,t) + (t+1)*E_p;
         }
     }
-
-
 
     for (int kk = 0; kk < k; ++kk) {
         for (int t = 0; t < k+l; ++t) {
@@ -131,9 +128,9 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
     // can now iterate for j,l,n because we now know Ers(:,0,:)
 
-    for (int ii = 0; ii < i; ++ii) {
-        for (int t = 0; t < i+j; ++t) {
-            for (int jj = 1; jj < j; ++jj) {  // We already know the values for i=j=0 for all t, so we start at j=1.
+    for (int ii = 1; ii <= i; ++ii) {
+        for (int jj = 0; jj < j; ++jj) {
+            for (int t = 0; t < i+j; ++t) {
 
                 if ((t-1) < 0) { E_m = 0;}
                 else {E_m = Eij(ii,jj,t-1);}
@@ -141,16 +138,16 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
                 if (t+1 > ii+jj) { E_p = 0;}
                 else { E_p = Eij(ii,jj,t+1);}
 
-                if (t>jj) {Eij(ii,jj,t) = 0;}
+                if (t > ii+jj) { Eij(ii,jj,t) = 0.0;}
 
                 Eij(ii,jj+1,t) = 1/(2*p)*E_m + X_PB(0)*Ekl(ii,jj,t) + (t+1)*E_p;
             }
         }
     }
 
-    for (int kk = 0; kk < k; ++kk) {
-        for (int t = 0; t < i+j; ++t) {
-            for (int ll = 1; ll < l; ++ll) {
+    for (int kk = 1; kk <= k; ++kk) {
+        for (int ll = 0; ll < l; ++ll) {
+            for (int t = 0; t < k+l; ++t) {
 
                 if ((t-1) < 0) { E_m = 0;}
                 else {E_m = Ekl(kk,ll,t-1);}
@@ -158,27 +155,27 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
                 if (t+1 > kk+ll) { E_p = 0;}
                 else { E_p = Ekl(kk,ll,t+1);}
 
-                if (t>ll) {Eij(kk,ll,t) = 0;}
+                if (t > kk+ll) { Ekl(kk,ll,t) = 0.0;}
 
-                Eij(kk,ll+1,t) = 1/(2*p)*E_m + X_PB(1)*Ekl(kk,ll,t) + (t+1)*E_p;
+                Ekl(kk,ll+1,t) = 1/(2*p)*E_m + X_PB(1)*Ekl(kk,ll,t) + (t+1)*E_p;
             }
         }
     }
 
 
-    for (int mm = 0; mm < m; ++mm) {
-        for (int t = 0; t < i+j; ++t) {
-            for (int nn = 1; nn < n; ++nn) {
+    for (int mm = 1; mm <= m; ++mm) {
+        for (int nn = 0; nn < n; ++nn) {
+            for (int t = 0; t < m+n; ++t) {
 
                 if ((t-1) < 0) { E_m = 0;}
-                else { E_m = Eij(mm,nn,t-1);}
+                else { E_m = Emn(mm,nn,t-1);}
 
                 if (t+1 > mm+nn) {E_p = 0;}
-                else { E_p = Eij(mm,nn,t+1);}
+                else { E_p = Emn(mm,nn,t+1);}
 
-                if (t>nn) {Eij(mm,nn,t) = 0;}
+                if (t > mm+nn) { Emn(mm,nn,t) = 0.0;}
 
-                Eij(mm,nn+1,t) = 1/(2*p)*E_m + X_PB(2)*Ekl(mm,nn,t) + (t+1)*E_p;
+                Emn(mm,nn+1,t) = 1/(2*p)*E_m + X_PB(2)*Emn(mm,nn,t) + (t+1)*E_p;
             }
         }
     }
@@ -186,6 +183,7 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
     cout << "---------------------------------------------" << endl;
     cout << "i= " << i << " j= " << j << " k= " << k << " l= " << l << " m= " << m << " n= " << n << endl;
+
 
     for (int jj = 0; jj <= j; ++jj) {
         cout << "----------------------------------------------" << endl;
@@ -200,6 +198,20 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
         }
     }
 
+    /*
+    for (int ii = 0; ii<= i; ++ii) {
+        cout << "----------------------------------------------" << endl;
+        cout << "-------------------  i=" << ii << " ---------------------" << endl;
+        cout << "----------------------------------------------" << endl;
+        for (int t = 0; t < i+j; ++t) {
+            cout << "t=" << t  << " ";
+            for (int jj = 0; jj <= j; ++jj) {
+                cout << Eij(ii,jj,t) << " " ;
+            }
+            cout << endl;
+        }
+    }
+    */
 
     // Have now found the cubic matrices Eij,Ekl,Emn.
     // it's time to find Sab = EijEklEmn(pi/p)^(3/2)
