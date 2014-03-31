@@ -73,6 +73,8 @@ TEST(integator_overlap_integrals_1){
 
     integrator integral;
     double Sab = integral.overlapIntegral(primitiveA,primitiveB);
+
+    cout << "Sab = " << Sab << " and should be 1.191723635809e-01" << endl;
     cout << "Sab = " << Sab << " and should be 1.191723635809e-01" << endl;
     CHECK_CLOSE(1.191723635809e-01,integral.overlapIntegral(primitiveA,primitiveB),1e-5);
 }

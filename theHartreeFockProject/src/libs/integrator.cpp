@@ -24,14 +24,8 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
     // Eij = exp(-(ab/(a+b))X^2), X = X_{AB}
 
-    //mA = a.weight();
-    //mB = b.weight();
-    //a.xExponent();
-    //a.yExponent();
 
-    //Eij = K_AB()
-
-    vec P (3);
+    vec P (3);                  // the middle point
     vec A (3);
     vec B (3);
     vec X_AB (3);
@@ -66,9 +60,10 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
     // setup Eij, Ekl, Emn for j = l = n = 0;
 
     //    Ers(e,f,t)
-    cube Eij (i+1,j+1,i+j);
+    cube Eij (i+1,j+1,i+j);      // what if the values are zero?
     cube Ekl (k+1,l+1,k+l);
     cube Emn (m+1,n+1,m+n);
+
 
     // initial values:
     //  i j t
@@ -82,8 +77,13 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
     // for Eij
     double E_m,E_p;
 
+    /*******************************************************************************************
+     *                          Eij. for the x-component:                                     */
+
+    if (i>0) {
     for (int ii = 0; ii < i; ++ii) {            // 0,1 // two values to find the third; i = 2 :-)
         for (int t = 0; t < i+j; ++t) {         // 0,1,2,3 // 4 values for i = j = 2.
+
             if ((t-1) < 0) { E_m = 0;}
             else { E_m = Eij(ii,0,t-1);}
 
@@ -95,39 +95,8 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
             Eij(ii+1,0,t) = 1/(2*p)*E_m + X_PA(0)*Eij(ii,0,t) + (t+1)*E_p;
         }
     }
-
-    for (int kk = 0; kk < k; ++kk) {
-        for (int t = 0; t < k+l; ++t) {
-            if ((t-1) < 0) { E_m = 0;}
-            else { E_m = Ekl(kk,0,t-1);}
-
-            if (t+1 > kk) { E_p = 0;}
-            else { E_p = Ekl(kk,0,t+1);}
-
-            if (t>kk) { Ekl(kk,0,t) = 0.0;}
-
-            Ekl(kk+1,0,t) = 1/(2*p)*E_m + X_PA(1)*Ekl(kk,0,t) + (t+1)*E_p;
-        }
     }
-
-    for (int mm = 0; mm < m; ++mm) {
-        for (int t = 0; t < m+n; ++t) {
-            if ((t-1) < 0) { E_m = 0;}
-            else {E_m = Emn(mm,0,t-1);}
-
-            if (t+1 > mm) {  E_p = 0;}
-            else { E_p = Emn(mm,0,t+1);}
-
-            if (t>mm) { Emn(mm,0,t) = 0.0;}
-
-            Emn(mm+1,0,t) = 1/(2*p)*E_m + X_PA(2)*Emn(mm,0,t) + (t+1)*E_p;
-        }
-    }
-
-
-
-    // can now iterate for j,l,n because we now know Ers(:,0,:)
-
+    if (j>0) {
     for (int ii = 1; ii <= i; ++ii) {
         for (int jj = 0; jj < j; ++jj) {
             for (int t = 0; t < i+j; ++t) {
@@ -144,7 +113,24 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
             }
         }
     }
+    }
 
+
+    /*******************************************************************************************
+     *                             Ekl. for the y-component:                                  */
+    for (int kk = 0; kk < k; ++kk) {
+        for (int t = 0; t < k+l; ++t) {
+            if ((t-1) < 0) { E_m = 0;}
+            else { E_m = Ekl(kk,0,t-1);}
+
+            if (t+1 > kk) { E_p = 0;}
+            else { E_p = Ekl(kk,0,t+1);}
+
+            if (t>kk) { Ekl(kk,0,t) = 0.0;}
+
+            Ekl(kk+1,0,t) = 1/(2*p)*E_m + X_PA(1)*Ekl(kk,0,t) + (t+1)*E_p;
+        }
+    }
     for (int kk = 1; kk <= k; ++kk) {
         for (int ll = 0; ll < l; ++ll) {
             for (int t = 0; t < k+l; ++t) {
@@ -162,7 +148,21 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
         }
     }
 
+    /*******************************************************************************************
+     *                         Emn. for the z-component:                                       */
+    for (int mm = 0; mm < m; ++mm) {
+        for (int t = 0; t < m+n; ++t) {
+            if ((t-1) < 0) { E_m = 0;}
+            else {E_m = Emn(mm,0,t-1);}
 
+            if (t+1 > mm) {  E_p = 0;}
+            else { E_p = Emn(mm,0,t+1);}
+
+            if (t>mm) { Emn(mm,0,t) = 0.0;}
+
+            Emn(mm+1,0,t) = 1/(2*p)*E_m + X_PA(2)*Emn(mm,0,t) + (t+1)*E_p;
+        }
+    }
     for (int mm = 1; mm <= m; ++mm) {
         for (int nn = 0; nn < n; ++nn) {
             for (int t = 0; t < m+n; ++t) {
@@ -179,6 +179,8 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
             }
         }
     }
+
+
 
 
     cout << "---------------------------------------------" << endl;

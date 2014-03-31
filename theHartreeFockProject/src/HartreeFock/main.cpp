@@ -58,6 +58,30 @@ int main(int argc, char* argv[]) {
     double Sab = integral.overlapIntegral(a,b);
     cout << Sab << endl;
 
+    double a1,b1;
+    int i,j,k,l,m,n;
+    vec A,B;
+
+    // PrimitiveA:
+    a1 = 0.2;
+    weight = 1;
+    i = m = 0;
+    k = 2;
+    A = {1.2, 2.3, 3.4};
+
+    // PrimitiveB:
+    b1 = 0.3;
+    weight = 1;
+    j = l = 1;
+    n = 0;
+    B = {-1.3,1.4,-2.4};
+
+    Primitive primitiveA(weight,i,k,m,a1,A);
+    Primitive primitiveB(weight,j,l,n,b1,B);
+    integrator integral2;
+    double Sab2 = integral2.overlapIntegral(primitiveA,primitiveB);
+    cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
+
 
     return 0;
 } // End: function output()
