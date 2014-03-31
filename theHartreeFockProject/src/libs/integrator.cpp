@@ -81,9 +81,9 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
     // for Eij
     double E_m,E_p;
-    for (int t = 0; t < i+j; ++t) {
+    for (int t = 0; t < i+j; ++t) { // 0,1,2,3 // 4 values
         if (i>0) {
-            for (int ii = 0; ii < i; ++ii) {
+            for (int ii = 0; ii < i; ++ii) {   // 0,1 // two values
                 if ((t-1) < 0) { E_m = 0;}
                 else { E_m = Eij(ii,0,t-1);}
 
@@ -196,6 +196,9 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
     cout << "Eij(i,j,0)= "<< Eij(i,j,0) << endl;
     cout << "Ekl(k,l,0)= "<< Ekl(k,l,0) << endl;
     cout << "Emn(m,n,0)= "<< Emn(m,n,0) << endl;
+    cout << "X_AB=  " << X_AB(0) << " " << X_AB(1) << " " << X_AB(2) << endl;
+    cout << "A=     " << A(0) << " " << A(1) << " " << A(2) << endl;
+    cout << "B=     " << B(0) << " " << B(1) << " " << B(2) << endl;
     double Sab = Eij(i,j,0)*Ekl(k,l,0)*Emn(m,n,0)*pow((pi/p),3.0/2);
     return Sab;
 }

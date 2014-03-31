@@ -49,10 +49,11 @@ int main(int argc, char* argv[]) {
     int xExponent = 2.0;
     int yExponent = 2.0;
     int zExponent = 2.0;
-    vec nucleusPosition = {0,0,0};
+    vec AnucleusPosition = {0,0,0};
+    vec BnucleusPosition = {1,1,1};
     integrator integral;
-    Primitive a(weight,xExponent,yExponent,zExponent,exponent,nucleusPosition);
-    Primitive b(weight,xExponent,yExponent,zExponent,exponent,nucleusPosition);
+    Primitive a(weight,xExponent,yExponent,zExponent,exponent,AnucleusPosition);
+    Primitive b(weight,xExponent,yExponent,zExponent,exponent,BnucleusPosition);
 
     double Sab = integral.overlapIntegral(a,b);
     cout << Sab << endl;
