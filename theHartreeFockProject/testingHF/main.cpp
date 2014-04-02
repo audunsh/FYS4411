@@ -6,13 +6,11 @@
 #include <integrator.h>
 #include <primitive.h>
 #include <hfsolve.h>
+#include <iomanip>
 
-TEST(MyMath) {
-  MyClass my;
-  CHECK(my.addition(3,4) == 7);
-}
 
 TEST(HFSolve){
+
     // Test HFSolve using the known value of the groundstate energy of Beryllium
     // as a controll.
 
@@ -35,6 +33,9 @@ TEST(HFSolve){
     double margin = 0.1;
     bool Bool = false;
 
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "------------------------ TEST HFSolve ----------------------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
     if (E_GroundState_Beryllium <= E){
         if (E - E_GroundState_Beryllium <= margin){
             Bool = true;
@@ -46,6 +47,7 @@ TEST(HFSolve){
         cout << "diff energy of groundstate Beryllium: " << E - E_GroundState_Beryllium << endl;
         cout << "numerically E= " << E << " Ground State Beryllium E= " << E_GroundState_Beryllium << endl;
     }
+    cout << "---------------------------END TEST HFSolve---------------------------------" << endl;
     CHECK(Bool == true);
 }
 
@@ -66,20 +68,23 @@ TEST(integator_overlap_integrals_1){
     b = 0.3;
     weight = 1;
     j = l = n = 0;
-    B = {-1.3,1.4,-2.1};
+    B = {-1.3,1.4,-2.4};
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
 
     integrator integral;
     double Sab = integral.overlapIntegral(primitiveA,primitiveB);
-
-    cout << "Sab = " << Sab << " and should be 1.191723635809e-01" << endl;
-    cout << "Sab = " << Sab << " and should be 1.191723635809e-01" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "----------------------- TEST integrator 1 ------------------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << "Sab = " << Sab << " and should be 0.1191723635809" << endl;
+    cout << "---------------------- END TEST Integrator 1 ---------------------" << endl;
     CHECK_CLOSE(1.191723635809e-01,integral.overlapIntegral(primitiveA,primitiveB),1e-5);
 }
 
 TEST(integrator_overlap_integral_2){
+
 
     double a,b,weight;
     int i,j,k,l,m,n;
@@ -104,11 +109,16 @@ TEST(integrator_overlap_integral_2){
     integrator integral;
 
     double Sab = integral.overlapIntegral(primitiveA,primitiveB);
-    cout << " Sab = " << Sab << " and should be 2.227321941537e-01" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "------------------------- TEST Integrator 2 ----------------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " Sab = " << Sab << " and should be 0.2227321941537" << endl;
+    cout << "---------------------- END TEST Integrator 2 ---------------------" << endl;
     CHECK_CLOSE(2.227321941537e-01, Sab, 1e-5);
 }
 
 TEST(itegrator_overlap_integral_3){
+
 
     double a,b,weight;
     int i,j,k,l,m,n;
@@ -132,7 +142,11 @@ TEST(itegrator_overlap_integral_3){
     Primitive primitiveB(weight,j,l,n,b,B);
     integrator integral;
     double Sab = integral.overlapIntegral(primitiveA,primitiveB);
-    cout << " Sab = " << Sab << " and should be -7.329386373895e-02" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "------------------------ TEST Integrator 3 -----------------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " Sab = " << Sab << " and should be -0.07329386373895" << endl;
+    cout << "---------------------- END TEST Integrator 3 -------------------" << endl;
     CHECK_CLOSE(-7.329386373895e-02,Sab, 1e-5);
 }
 

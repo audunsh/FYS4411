@@ -67,13 +67,13 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
 
     // for Eij
     if (i==0 && j==i) {
-        Eij0 = exp(-mu*X_AB(0));
+        Eij0 = exp(-mu*X_AB(0)*X_AB(0));
     }
     else {
         cube Eij (i+1,j+1,i+j);
         // initial values:
         //  i j t
-        Eij(0,0,0) = exp(-mu*X_AB(0));
+        Eij(0,0,0) = exp(-mu*X_AB(0)*X_AB(0));
 
         if (i>0) {
             for (int ii = 0; ii < i; ++ii) {            // 0,1 // two values to find the third; i = 2 :-)
@@ -134,13 +134,13 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
      *                             Ekl. for the y-component:                                  */
 
     if (k==0 && l==k) {
-        Ekl0 = exp(-mu*X_AB(1));
+        Ekl0 = exp(-mu*X_AB(1)*X_AB(1));
     }
     else {
         Ekl0 = 1.0;
         cube Ekl (k+1,l+1,k+l);
         //  k l t
-        Ekl(0,0,0) = exp(-mu*X_AB(1));
+        Ekl(0,0,0) = exp(-mu*X_AB(1)*X_AB(1));
 
 
         if (k > 0) {
@@ -198,12 +198,12 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
      *                         Emn. for the z-component:                                       */
 
     if (m==0 && n == m) {
-        Emn0 = exp(-mu*X_AB(2));
+        Emn0 = exp(-mu*X_AB(2)*X_AB(2));
     }
     else {
         cube Emn (m+1,n+1,m+n);
         //  m n t
-        Emn(0,0,0) = exp(-mu*X_AB(2));
+        Emn(0,0,0) = exp(-mu*X_AB(2)*X_AB(2));
 
         if (m > 0) {
             for (int mm = 0; mm < m; ++mm) {
