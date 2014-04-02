@@ -1,13 +1,12 @@
 #include <returnhermiteproduct.h>
 
 
-
 /*
  * Integrator 2 is a start on optimizing Integrator, or the setup of the Hermite coefficients to be more correctly! */
 
 
 
-ReturnHermiteProduct::ReturnHermiteProduct(const Primitive &Ga, const Primitive &Gb){
+ReturnHermiteProduct::ReturnHermiteProduct(field <cube> & E, const Primitive &Ga, const Primitive &Gb){
 
     vec P (3);                  // the middle point
     vec A (3);
@@ -45,17 +44,54 @@ ReturnHermiteProduct::ReturnHermiteProduct(const Primitive &Ga, const Primitive 
      *  calling setup_E(E i,j,k,l,m,n) just initialize the correct size of E, and fills it with
      *  values 666, to make it easier (hopefully ) to debug.                                       */
 
-    field <cube> E;
     setup_E(E,i,j,k,l,m,n);
-
     for (int cor = 0; cor < E.n_elem; ++cor) {
         E(cor)(0,0,0) = exp(-mu*K_AB(cor)*K_AB(cor)); // initial value
     }
+
     // now we have set the initial value, it is time to iterate for the others,
     // beginning with one one direction, and then fill up the other.
 
     // E(0) = E(i,j,t); E(i+1,j,t) = (1/2p)*E(i-1,j,t) + K_PB(0)E(i,j,t) + (t+1)*E(i+1,j,t)
 
+    double E_m,E_p;
+    for (int cor = 0; cor < E.n_elem; ++cor) { // loop for Eij, Ekl, Emn
+
+        for (int iB = 1; iB < E(cor).n_rows; ++iB) {
+            for (int t = 0; t < E(cor).n_slices; ++t) {
+
+                if ((t-1) < 0) { E_m = 0;}
+                else { E_m = E(cor)(iB,0,t-1);}
+
+                if ((t+1) > iB) { E_p = 0;}
+                else { E_p = E(cor)(iB,0,t+1);}
+
+                if (t>iB) { E(cor)(iB,0,t) = 0.0;}
+
+                E(cor)(iB+1,0,t) = 1/(2*p)*E_m + K_PA(cor)*E(cor)(iB,0,t) + (t+1)*E_p;
+
+            }
+        }
+
+        // filling up the other dimentions, that is, for j,l,n
+        for (int jB = 1; jB < E(cor).n_cols; ++jB) {
+            for (int iB = 0; iB < E(cor).n_rows; ++iB) {
+                for (int t = 0; t < E(cor).n_slices; ++t) {
+
+                    if ((t-1) < 0) { E_m = 0;}
+                    else {E_m = E(cor)(iB,jB,t-1);}
+
+                    if (t+1 > iB+jB) { E_p = 0;}
+                    else { E_p = E(cor)(iB,jB,t+1);}
+
+                    if (t > iB+jB) { E(cor)(iB,jB,t) = 0.0;}
+
+                    E(cor)(iB,jB+1,t) = 1/(2*p)*E_m + K_PB(cor)*E(cor)(iB,jB,t) + (t+1)*E_p;
+
+                }
+            }
+        }
+    }
 
 }
 

@@ -8,8 +8,8 @@ SOURCES= myclass.cpp \
          lib.cpp \
          hfsolve.cpp \
          boysfunction.cpp \
-    primitive.cpp \
-    returnhermiteproduct.cpp
+         primitive.cpp \
+         returnhermiteproduct.cpp \
 
 HEADERS= myclass.h \
          basis.h \
@@ -18,6 +18,6 @@ HEADERS= myclass.h \
          lib.h \
          hfsolve.h \
          boysfunction.h \
-    returnhermiteproduct.h
+         returnhermiteproduct.h \
 
 LIBS += -larmadillo -lblas -llapack
