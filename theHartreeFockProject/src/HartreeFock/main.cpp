@@ -58,6 +58,7 @@ int main(int argc, char* argv[]) {
     double Sab = integral.overlapIntegral(a,b);
     cout << Sab << endl;
 
+    //double weight = 1.0;
     double a1,b1;
     int i,j,k,l,m,n;
     vec A,B;
