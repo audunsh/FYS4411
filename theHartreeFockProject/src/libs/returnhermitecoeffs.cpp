@@ -1,4 +1,4 @@
-#include <returnhermiteproduct.h>
+#include <returnhermitecoeffs.h>
 
 
 /*
@@ -6,7 +6,7 @@
 
 
 
-ReturnHermiteProduct::ReturnHermiteProduct(field <cube> & E, const Primitive &Ga, const Primitive &Gb){
+ReturnHermiteCoeffs::ReturnHermiteCoeffs(field <cube> & E, const Primitive &Ga, const Primitive &Gb){
 
     vec P (3);                  // the middle point
     vec A (3);
@@ -95,7 +95,7 @@ ReturnHermiteProduct::ReturnHermiteProduct(field <cube> & E, const Primitive &Ga
 
 }
 
-void ReturnHermiteProduct::setup_E(field <cube> &E,
+void ReturnHermiteCoeffs::setup_E(field <cube> &E,
                           const int &i_max, const int &j_max, const int &k_max, const int &l_max, const int &m_max, const int &n_max){
 
     // Set up a field of three cubes, each with the right dimentionality.
