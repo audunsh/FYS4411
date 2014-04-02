@@ -9,11 +9,12 @@
 #include <boysfunction.h>
 #include <integrator.h>
 #include <hfsolve.h>
-//#include <myclass.h>      // testclass
+#include <returnhermitecoeffs.h>
 
+double pi = 4*atan(1);
 
 using namespace std;
-//using namespace arma;
+using namespace arma;
 
 int main(int argc, char* argv[]) {
     /* Make sure any basis to read from file is located in build folder!
@@ -43,7 +44,7 @@ int main(int argc, char* argv[]) {
 
     cout << "Energy of the ground state= " << E << endl;
 
-
+/*
     double weight = 1.0;
     int exponent = 2.0;
     int xExponent = 2.0;
@@ -57,8 +58,8 @@ int main(int argc, char* argv[]) {
 
     double Sab = integral.overlapIntegral(a,b);
     cout << Sab << endl;
-
-    //double weight = 1.0;
+*/
+    double weight = 1.0;
     double a1,b1;
     int i,j,k,l,m,n;
     vec A,B;
@@ -83,6 +84,14 @@ int main(int argc, char* argv[]) {
     double Sab2 = integral2.overlapIntegral(primitiveA,primitiveB);
     cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
 
+
+    field <cube> Eab;
+
+    ReturnHermiteCoeffs Coeffs;
+    Coeffs.ReturnCoeffs(E,primitiveA,primitiveB);
+
+    Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
+    cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
 
     return 0;
 } // End: function output()

@@ -4,9 +4,11 @@
 /*
  * Integrator 2 is a start on optimizing Integrator, or the setup of the Hermite coefficients to be more correctly! */
 
+ReturnHermiteCoeffs::ReturnHermiteCoeffs(){
 
+}
 
-ReturnHermiteCoeffs::ReturnHermiteCoeffs(field <cube> & E, const Primitive &Ga, const Primitive &Gb){
+void ReturnHermiteCoeffs::ReturnCoeffs(field <cube> & E, Primitive &Ga, Primitive &Gb){
 
     vec P (3);                  // the middle point
     vec A (3);
