@@ -85,10 +85,10 @@ int main(int argc, char* argv[]) {
     cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
 
 
-    field <cube> Eab;
+    field <cube> Eab (3);
 
     ReturnHermiteCoeffs Coeffs;
-    Coeffs.ReturnCoeffs(E,primitiveA,primitiveB);
+    Coeffs.ReturnCoeffs(primitiveA,primitiveB);
 
     Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
     cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;

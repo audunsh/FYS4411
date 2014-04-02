@@ -8,7 +8,7 @@ ReturnHermiteCoeffs::ReturnHermiteCoeffs(){
 
 }
 
-void ReturnHermiteCoeffs::ReturnCoeffs(field <cube> & E, Primitive &Ga, Primitive &Gb){
+field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
 
     vec P (3);                  // the middle point
     vec A (3);
@@ -46,6 +46,7 @@ void ReturnHermiteCoeffs::ReturnCoeffs(field <cube> & E, Primitive &Ga, Primitiv
      *  calling setup_E(E i,j,k,l,m,n) just initialize the correct size of E, and fills it with
      *  values 666, to make it easier (hopefully ) to debug.                                       */
 
+    field <cube> E;
     setup_E(E,i,j,k,l,m,n);
     for (int cor = 0; cor < E.n_elem; ++cor) {
         E(cor)(0,0,0) = exp(-mu*K_AB(cor)*K_AB(cor)); // initial value
@@ -95,8 +96,12 @@ void ReturnHermiteCoeffs::ReturnCoeffs(field <cube> & E, Primitive &Ga, Primitiv
         }
     }
 
+    return E;
 }
 
+
+
+// Set up the right dimentionality of E, and fill it with numbers 666 - the number of the beast - because E is a fucking beast!!!!
 void ReturnHermiteCoeffs::setup_E(field <cube> &E,
                           const int &i_max, const int &j_max, const int &k_max, const int &l_max, const int &m_max, const int &n_max){
 
@@ -106,7 +111,11 @@ void ReturnHermiteCoeffs::setup_E(field <cube> &E,
     t_max = i_max+j_max;
     u_max = k_max+l_max;
     v_max = m_max+n_max;
-
+/*
+    E(0).resize(i_max+1,j_max+1,t_max+1);
+    E(1).resize(k_max+1,l_max+1,u_max+1);
+    E(2).resize(m_max+1,n_max+1,v_max+1);
+*/
     for (int t = 0; t < t_max+1; ++t) {
         for (int i = 0; i < i_max+1; ++i) {
             for (int j = 0; j < j_max+1; ++j) {
