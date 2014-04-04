@@ -43,7 +43,6 @@ int main(int argc, char* argv[]) {
     double E = object.Solve(Bs);
 
     cout << "Energy of the ground state= " << E << endl;
-
 /*
     double weight = 1.0;
     int exponent = 2.0;
@@ -80,17 +79,20 @@ int main(int argc, char* argv[]) {
 
     Primitive primitiveA(weight,i,k,m,a1,A);
     Primitive primitiveB(weight,j,l,n,b1,B);
-    integrator integral2;
-    double Sab2 = integral2.overlapIntegral(primitiveA,primitiveB);
-    cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
+    // testing integrator:
 
+    //integrator integral2;
+    //double Sab2 = integral2.overlapIntegral(primitiveA,primitiveB);
+    //cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
 
-    field <cube> Eab (3);
+    // testing ReturnHermiteCoeffs:
+
 
     ReturnHermiteCoeffs Coeffs;
-    Coeffs.ReturnCoeffs(primitiveA,primitiveB);
 
-    Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
+    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
+
+    double Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
     cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
 
     return 0;

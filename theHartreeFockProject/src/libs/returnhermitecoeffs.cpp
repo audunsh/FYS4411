@@ -46,8 +46,7 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
      *  calling setup_E(E i,j,k,l,m,n) just initialize the correct size of E, and fills it with
      *  values 666, to make it easier (hopefully ) to debug.                                       */
 
-    field <cube> E;
-    setup_E(E,i,j,k,l,m,n);
+    field <cube> E = setup_E(i,j,k,l,m,n);
     for (int cor = 0; cor < E.n_elem; ++cor) {
         E(cor)(0,0,0) = exp(-mu*K_AB(cor)*K_AB(cor)); // initial value
     }
@@ -56,22 +55,23 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
     // beginning with one one direction, and then fill up the other.
 
     // E(0) = E(i,j,t); E(i+1,j,t) = (1/2p)*E(i-1,j,t) + K_PB(0)E(i,j,t) + (t+1)*E(i+1,j,t)
-
+    int iBp,jBp;
     double E_m,E_p;
     for (int cor = 0; cor < E.n_elem; ++cor) { // loop for Eij, Ekl, Emn
 
         for (int iB = 1; iB < E(cor).n_rows; ++iB) {
             for (int t = 0; t < E(cor).n_slices; ++t) {
 
+                iBp = iB - 1;   // previous value
                 if ((t-1) < 0) { E_m = 0;}
-                else { E_m = E(cor)(iB,0,t-1);}
+                else { E_m = E(cor)(iBp,0,t-1);}
 
-                if ((t+1) > iB) { E_p = 0;}
-                else { E_p = E(cor)(iB,0,t+1);}
+                if ((t+1) > iBp) { E_p = 0;}
+                else { E_p = E(cor)(iBp,0,t+1);}
 
-                if (t>iB) { E(cor)(iB,0,t) = 0.0;}
+                if (t>iBp) { E(cor)(iBp,0,t) = 0.0;}
 
-                E(cor)(iB+1,0,t) = 1/(2*p)*E_m + K_PA(cor)*E(cor)(iB,0,t) + (t+1)*E_p;
+                E(cor)(iB,0,t) = 1/(2*p)*E_m + K_PA(cor)*E(cor)(iBp,0,t) + (t+1)*E_p;
 
             }
         }
@@ -81,15 +81,17 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
             for (int iB = 0; iB < E(cor).n_rows; ++iB) {
                 for (int t = 0; t < E(cor).n_slices; ++t) {
 
+                    jBp = jB - 1; // previous value
+
                     if ((t-1) < 0) { E_m = 0;}
-                    else {E_m = E(cor)(iB,jB,t-1);}
+                    else {E_m = E(cor)(iB,jBp,t-1);}
 
-                    if (t+1 > iB+jB) { E_p = 0;}
-                    else { E_p = E(cor)(iB,jB,t+1);}
+                    if (t+1 > iB+jBp) { E_p = 0;}
+                    else { E_p = E(cor)(iB,jBp,t+1);}
 
-                    if (t > iB+jB) { E(cor)(iB,jB,t) = 0.0;}
+                    if (t > iB+jBp) { E(cor)(iB,jBp,t) = 0.0;}
 
-                    E(cor)(iB,jB+1,t) = 1/(2*p)*E_m + K_PB(cor)*E(cor)(iB,jB,t) + (t+1)*E_p;
+                    E(cor)(iB,jB,t) = 1/(2*p)*E_m + K_PB(cor)*E(cor)(iB,jBp,t) + (t+1)*E_p;
 
                 }
             }
@@ -102,20 +104,22 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
 
 
 // Set up the right dimentionality of E, and fill it with numbers 666 - the number of the beast - because E is a fucking beast!!!!
-void ReturnHermiteCoeffs::setup_E(field <cube> &E,
-                          const int &i_max, const int &j_max, const int &k_max, const int &l_max, const int &m_max, const int &n_max){
+field <cube> ReturnHermiteCoeffs::setup_E(const int &i_max, const int &j_max, const int &k_max, const int &l_max, const int &m_max, const int &n_max){
 
     // Set up a field of three cubes, each with the right dimentionality.
+
+    field<cube> E(3);
 
     int t_max,u_max,v_max;
     t_max = i_max+j_max;
     u_max = k_max+l_max;
     v_max = m_max+n_max;
-/*
-    E(0).resize(i_max+1,j_max+1,t_max+1);
-    E(1).resize(k_max+1,l_max+1,u_max+1);
-    E(2).resize(m_max+1,n_max+1,v_max+1);
-*/
+
+    int E_size = E.size();
+    E(0) = cube(i_max+1,j_max+1,t_max+1);
+    E(1) = zeros <cube> (k_max+1,l_max+1,u_max+1);
+    E(2) = zeros <cube> (m_max+1,n_max+1,v_max+1);
+
     for (int t = 0; t < t_max+1; ++t) {
         for (int i = 0; i < i_max+1; ++i) {
             for (int j = 0; j < j_max+1; ++j) {
@@ -138,6 +142,7 @@ void ReturnHermiteCoeffs::setup_E(field <cube> &E,
         }
     }
 
+    return E;
 }
 
 

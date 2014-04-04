@@ -7,7 +7,9 @@
 #include <primitive.h>
 #include <hfsolve.h>
 #include <iomanip>
+#include <returnhermitecoeffs.h>
 
+double pi = 4*atan(1);
 
 TEST(HFSolve){
 
@@ -52,7 +54,7 @@ TEST(HFSolve){
 }
 
 
-TEST(integator_overlap_integrals_1){
+TEST(Return_Hermite_Coeffs_1){
 
     double a,b,weight;
     int i,j,k,l,m,n;
@@ -72,18 +74,19 @@ TEST(integator_overlap_integrals_1){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-
-    integrator integral;
-    double Sab = integral.overlapIntegral(primitiveA,primitiveB);
+    ReturnHermiteCoeffs Coeffs;
+    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
+    double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
     cout << "----------------------------------------------------------------" << endl;
     cout << "----------------------- TEST integrator 1 ------------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
-    cout << setprecision(13) << "Sab = " << Sab << " and should be 0.1191723635809" << endl;
+    cout << setprecision(13) << " Sab = " << Sab << " and should be:" << endl;
+    cout << " Sab = 0.1191723635809" << endl;
     cout << "---------------------- END TEST Integrator 1 ---------------------" << endl;
-    CHECK_CLOSE(1.191723635809e-01,integral.overlapIntegral(primitiveA,primitiveB),1e-5);
+    CHECK_CLOSE(1.191723635809e-01,Sab,1e-5);
 }
 
-TEST(integrator_overlap_integral_2){
+TEST(Return_Hermite_Coeffs_2){
 
 
     double a,b,weight;
@@ -106,18 +109,19 @@ TEST(integrator_overlap_integral_2){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    integrator integral;
-
-    double Sab = integral.overlapIntegral(primitiveA,primitiveB);
+    ReturnHermiteCoeffs Coeffs;
+    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
+    double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
     cout << "----------------------------------------------------------------" << endl;
     cout << "------------------------- TEST Integrator 2 ----------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
-    cout << setprecision(13) << " Sab = " << Sab << " and should be 0.2227321941537" << endl;
+    cout << setprecision(13) << " Sab = " << Sab << " and should be:" << endl;
+    cout << " Sab = 0.2227321941537" << endl;
     cout << "---------------------- END TEST Integrator 2 ---------------------" << endl;
     CHECK_CLOSE(2.227321941537e-01, Sab, 1e-5);
 }
 
-TEST(itegrator_overlap_integral_3){
+TEST(Return_Hermite_Coeffs_3){
 
 
     double a,b,weight;
@@ -140,12 +144,14 @@ TEST(itegrator_overlap_integral_3){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    integrator integral;
-    double Sab = integral.overlapIntegral(primitiveA,primitiveB);
+    ReturnHermiteCoeffs Coeffs;
+    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
+    double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
     cout << "----------------------------------------------------------------" << endl;
     cout << "------------------------ TEST Integrator 3 -----------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
-    cout << setprecision(13) << " Sab = " << Sab << " and should be -0.07329386373895" << endl;
+    cout << setprecision(13) << " Sab = " << Sab << " and should be:" << endl;
+    cout << " Sab = -0.07329386373895" << endl;
     cout << "---------------------- END TEST Integrator 3 -------------------" << endl;
     CHECK_CLOSE(-7.329386373895e-02,Sab, 1e-5);
 }
