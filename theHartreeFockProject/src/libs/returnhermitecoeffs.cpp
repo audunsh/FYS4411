@@ -144,10 +144,11 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
                     Si_p = Sij(E,cor,i,j+2);
                 }
 
-                T(cor)(i,j) = 4*b*b*Si_p - 2*b*(2*i + 1)*Sij(E,cor,i,j) + j*(j-1)*Si_;
+                T(cor)(i,j) = 4*b*b*Si_p - 2*b*(2*j + 1)*Sij(E,cor,i,j) + j*(j-1)*Si_;
             }
         }
     }
+
 
     double Tij = T(0)(i_max, j_max);
     double Tkl = T(1)(k_max, l_max);
@@ -157,7 +158,7 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
     double Skl = E(1)(j_max,l_max,0);
     double Smn = E(2)(m_max,n_max,0);
 
-    Tab = -0.5*(Tij*Skl*Smn + Sij*Tkl*Smn + Skl*Tmn);
+    Tab = -0.5*(Tij*Skl*Smn + Sij*Tkl*Smn + Sij*Skl*Tmn);  // Kinetic energy integral for particle a and b.
 }
 
 

@@ -36,7 +36,7 @@ TEST(HFSolve){
     bool Bool = false;
 
     cout << "----------------------------------------------------------------" << endl;
-    cout << "------------------------ TEST HFSolve ----------------------------" << endl;
+    cout << "------------------------ TEST HFSolve --------------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
     if (E_GroundState_Beryllium <= E){
         if (E - E_GroundState_Beryllium <= margin){
@@ -49,7 +49,8 @@ TEST(HFSolve){
         cout << "diff energy of groundstate Beryllium: " << E - E_GroundState_Beryllium << endl;
         cout << "numerically E= " << E << " Ground State Beryllium E= " << E_GroundState_Beryllium << endl;
     }
-    cout << "---------------------------END TEST HFSolve---------------------------------" << endl;
+    cout << "________________________________________________________________" << endl;
+
     CHECK(Bool == true);
 }
 
@@ -78,11 +79,12 @@ TEST(Return_Hermite_Coeffs_1){
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
     double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
     cout << "----------------------------------------------------------------" << endl;
-    cout << "----------------------- TEST integrator 1 ------------------------" << endl;
+    cout << "----------------------- TEST integrator 1 ----------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << setprecision(13) << " Sab = " << Sab << " and should be:" << endl;
     cout << " Sab = 0.1191723635809" << endl;
-    cout << "---------------------- END TEST Integrator 1 ---------------------" << endl;
+    cout << "________________________________________________________________" << endl;
+
     CHECK_CLOSE(1.191723635809e-01,Sab,1e-5);
 }
 
@@ -113,11 +115,12 @@ TEST(Return_Hermite_Coeffs_2){
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
     double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
     cout << "----------------------------------------------------------------" << endl;
-    cout << "------------------------- TEST Integrator 2 ----------------------" << endl;
+    cout << "------------------------ TEST Integrator 2 ---------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << setprecision(13) << " Sab = " << Sab << " and should be:" << endl;
     cout << " Sab = 0.2227321941537" << endl;
-    cout << "---------------------- END TEST Integrator 2 ---------------------" << endl;
+    cout << "________________________________________________________________" << endl;
+
     CHECK_CLOSE(2.227321941537e-01, Sab, 1e-5);
 }
 
@@ -148,11 +151,12 @@ TEST(Return_Hermite_Coeffs_3){
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
     double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
     cout << "----------------------------------------------------------------" << endl;
-    cout << "------------------------ TEST Integrator 3 -----------------------" << endl;
+    cout << "----------------------- TEST Integrator 3 ----------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << setprecision(13) << " Sab = " << Sab << " and should be:" << endl;
     cout << " Sab = -0.07329386373895" << endl;
-    cout << "---------------------- END TEST Integrator 3 -------------------" << endl;
+    cout << "________________________________________________________________" << endl;
+
     CHECK_CLOSE(-7.329386373895e-02,Sab, 1e-5);
 }
 
@@ -179,12 +183,13 @@ TEST(Kinetic_integral_1){
     ReturnHermiteCoeffs Coeffs;
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
     double Tab = Coeffs.ReturnKineticIntegral();
+    cout << "                   TESTING THE KINTETIC INTEGRALS               " << endl;
     cout << "----------------------------------------------------------------" << endl;
-    cout << "---------------------- TEST Kinetic Integral 1 ---------------------" << endl;
+    cout << "--------------------- TEST Kinetic Integral 1 ------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << setprecision(13) << " Tab = " << Tab << " and should be:" << endl;
     cout << " Tab = -0.09678702680582" << endl;
-    cout << "------------------- END TEST Kinetic Integral 1 ----------------" << endl;
+    cout << "________________________________________________________________" << endl;
 
     CHECK_CLOSE( -9.678702680582e-02, Tab, 1e-5);
 }
@@ -213,11 +218,12 @@ TEST(Kinetic_integral_2){
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
     double Tab = Coeffs.ReturnKineticIntegral();
     cout << "----------------------------------------------------------------" << endl;
-    cout << "---------------------- TEST Kinetic Integral 2 ---------------------" << endl;
+    cout << "------------------- TEST Kinetic Integral 2 --------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << setprecision(13) << " Tab = " << Tab << " and should be:" << endl;
     cout << " Tab = -0.08688217105502" << endl;
-    cout << "------------------- END TEST Kinetic Integral 2 ----------------" << endl;
+    cout << "________________________________________________________________" << endl;
+
 
     CHECK_CLOSE( -8.688217105502e-02, Tab, 1e-5);
 
@@ -248,11 +254,11 @@ TEST(Kinetic_integral_3){
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
     double Tab = Coeffs.ReturnKineticIntegral();
     cout << "----------------------------------------------------------------" << endl;
-    cout << "---------------------- TEST Kinetic Integral 2 ---------------------" << endl;
+    cout << "-------------------- TEST Kinetic Integral 3 -------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << setprecision(13) << " Tab = " << Tab << " and should be:" << endl;
     cout << " Tab = -0.01598401092187" << endl;
-    cout << "------------------- END TEST Kinetic Integral 2 ----------------" << endl;
+    cout << "________________________________________________________________" << endl;
 
     CHECK_CLOSE( -1.598401092187e-02, Tab, 1e-5);
 }
