@@ -50,9 +50,9 @@ void basis::read(string filename, int Zn){
     cout << "Loading predefined basis from file: " << filename << endl;
     ifstream myfile;
     myfile.open(filename.c_str());
-
-
-
+    if(!myfile.good()){
+        cout << "file is not open" << endl;
+    }
     if (myfile.is_open()){
         int p,q,r,s;
         double value;

@@ -34,8 +34,8 @@ int main(int argc, char* argv[]) {
 
     basis Bs(3, 0);              //creating the basis object
     string filename;
-    filename = "m_elements_c.dat";
-    Bs.read("m_elements_c.dat", Z); //reading basis from file
+    filename = "/home/goranbs/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/testingHF/m_elements_c.dat";
+    Bs.read(filename, Z); //reading basis from file
     Bs.set_orthonormal(true);
 
 //    //Solving for N,Z with the provided basis

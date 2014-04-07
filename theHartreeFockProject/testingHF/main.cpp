@@ -23,7 +23,7 @@ TEST(HFSolve){
 
     basis Bs(3, 0);              //creating the basis object
     string filename;
-    filename = "/home/goranbs/goran/CompPhys/FYS4411 - CompPhys2/build-theHartreeFockProject-Desktop-Debug/testingHF/m_elements_c.dat";
+    filename = "/home/goranbs/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/testingHF/m_elements_c.dat";
     Bs.read(filename, Z); //reading basis from file
     Bs.set_orthonormal(true);
 
