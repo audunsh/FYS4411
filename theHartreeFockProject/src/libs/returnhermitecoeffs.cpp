@@ -6,6 +6,8 @@
 
 ReturnHermiteCoeffs::ReturnHermiteCoeffs(){
 
+    // construct:
+    T = field <mat> (3);       //  Holds the kinitic energies
 }
 
 field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
@@ -16,7 +18,7 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
     vec K_AB (3);
     vec K_PA (3);
     vec K_PB (3);
-    double a,b,p,mu;
+    double a,b,mu;
     int i,j,k,l,m,n;
 
     a = Ga.exponent();          // exponential constant.
@@ -31,7 +33,8 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
     l = Gb.yExponent();
     n = Gb.zExponent();
 
-    p = a+b;
+    set_p(a,b); // set global variable p.
+
     for (int coord = 0; coord < 3; ++coord) {
         P[coord] = (a*A[coord] + b*B[coord])/p;
         K_AB[coord] = A[coord] - B[coord];
@@ -98,7 +101,61 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
         }
     }
 
+    SetupKinteicIntegrals(E,b);
     return E;
+}
+
+field <mat> ReturnHermiteCoeffs::ReturnKineticIntegrals(){
+    return T;
+}
+
+void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const double b){
+    /*
+     * Calculate the Kinetic integrals Tij,Tkl,Tmn and store them in a field of cubes to be collected from ReturnKinteicIntegrals */
+
+    double Si_,Si_p;
+    int i_max,j_max;
+
+    for (int cor = 0; cor < 3; ++cor) {
+        i_max = E(cor).n_rows;
+        j_max = E(cor).n_cols;
+        T(cor) = zeros <mat> (i_max,j_max);
+
+        for (int i = 0; i < i_max; ++i) {
+            for (int j = 0; j < j_max; ++j) {
+
+                Si_ = 0;
+                Si_p = 0;
+                if ( (j-2) > 0) {
+                    Si_ = Sij(E,cor,i,j-2);
+                }
+                if ((j+2) < j_max) {
+                    Si_p = Sij(E,cor,i,j+2);
+                }
+
+                T(cor)(i,j) = 4*b*b*Si_p - 2*b*(2*i + 1)*Sij(E,cor,i,j) + j*(j-1)*Si_;
+            }
+        }
+    }
+}
+
+
+double ReturnHermiteCoeffs::Sij(const field<cube> &E, const int xyz, const int i, const int j){
+    /*
+     * Calculate the overlap integral for index i,j between particle a and b.
+     *         Sij = E(i,j,0)*exp((pi/p)^(3/2))                                */
+
+
+    double a = E(0)(0,0,0);
+    double b = E(0)(0,1,0);
+    double c = E(0)(0,0,1);
+    double d = E(1)(0,0,0);
+    double e = E(1)(0,1,0);
+    double f = E(1)(1,0,0);
+    double g = E(1)(1,1,0);
+    double h = E(2)(0,0,0);
+
+    return E(xyz)(i,j,0)*pow(pi/p,1.0/2);
 }
 
 
@@ -115,7 +172,7 @@ field <cube> ReturnHermiteCoeffs::setup_E(const int &i_max, const int &j_max, co
     u_max = k_max+l_max;
     v_max = m_max+n_max;
 
-    int E_size = E.size();
+    //int E_size = E.size();
     E(0) = cube(i_max+1,j_max+1,t_max+1);
     E(1) = zeros <cube> (k_max+1,l_max+1,u_max+1);
     E(2) = zeros <cube> (m_max+1,n_max+1,v_max+1);
@@ -143,6 +200,12 @@ field <cube> ReturnHermiteCoeffs::setup_E(const int &i_max, const int &j_max, co
     }
 
     return E;
+}
+
+
+
+void ReturnHermiteCoeffs::set_p(const double a,const double b){
+    p = a+b;
 }
 
 

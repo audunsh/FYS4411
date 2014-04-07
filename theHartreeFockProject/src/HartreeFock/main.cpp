@@ -95,5 +95,25 @@ int main(int argc, char* argv[]) {
     double Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
     cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
 
+
+
+    // Find the Kinetic energy elements:
+    field <mat> T = Coeffs.ReturnKineticIntegrals();
+
+    // print out the Kinetic enegy matrix:
+
+    for (int cor = 0; cor < 3; ++cor) {
+        cout << "--------------------------------------------" << endl;
+        cout << "----------------- " << cor << " -------------------" << endl;
+        cout << "--------------------------------------------" << endl;
+        for (int iA = 0; iA < T(cor).n_rows; ++iA) {
+            for (int iB = 0; iB < T(cor).n_cols; ++iB) {
+                cout << T(cor)(iA,iB) << " " ;
+            }
+            cout << endl;
+        }
+    }
+
+
     return 0;
 } // End: function output()
