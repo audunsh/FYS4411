@@ -105,8 +105,12 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
     return E;
 }
 
-field <mat> ReturnHermiteCoeffs::ReturnKineticIntegrals(){
+field <mat> ReturnHermiteCoeffs::ReturnKineticMatrix(){
     return T;
+}
+
+double ReturnHermiteCoeffs::ReturnKineticIntegral(){
+    return Tab;
 }
 
 void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const double b){
@@ -114,15 +118,22 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
      * Calculate the Kinetic integrals Tij,Tkl,Tmn and store them in a field of cubes to be collected from ReturnKinteicIntegrals */
 
     double Si_,Si_p;
-    int i_max,j_max;
+    int i_max,j_max,k_max,l_max,m_max,n_max,iMAX,jMAX;
+
+    i_max = E(0).n_rows - 1;
+    j_max = E(0).n_cols - 1;
+    k_max = E(1).n_rows - 1;
+    l_max = E(1).n_cols - 1;
+    m_max = E(2).n_rows - 1;
+    n_max = E(2).n_cols - 1;
 
     for (int cor = 0; cor < 3; ++cor) {
-        i_max = E(cor).n_rows;
-        j_max = E(cor).n_cols;
-        T(cor) = zeros <mat> (i_max,j_max);
+        iMAX = E(cor).n_rows;
+        jMAX = E(cor).n_cols;
+        T(cor) = zeros <mat> (iMAX,jMAX);
 
-        for (int i = 0; i < i_max; ++i) {
-            for (int j = 0; j < j_max; ++j) {
+        for (int i = 0; i < iMAX; ++i) {
+            for (int j = 0; j < jMAX; ++j) {
 
                 Si_ = 0;
                 Si_p = 0;
@@ -137,6 +148,16 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
             }
         }
     }
+
+    double Tij = T(0)(i_max, j_max);
+    double Tkl = T(1)(k_max, l_max);
+    double Tmn = T(2)(m_max, n_max);
+
+    double Sij = E(0)(i_max,j_max,0);
+    double Skl = E(1)(j_max,l_max,0);
+    double Smn = E(2)(m_max,n_max,0);
+
+    Tab = -0.5*(Tij*Skl*Smn + Sij*Tkl*Smn + Skl*Tmn);
 }
 
 
@@ -144,16 +165,6 @@ double ReturnHermiteCoeffs::Sij(const field<cube> &E, const int xyz, const int i
     /*
      * Calculate the overlap integral for index i,j between particle a and b.
      *         Sij = E(i,j,0)*exp((pi/p)^(3/2))                                */
-
-
-    double a = E(0)(0,0,0);
-    double b = E(0)(0,1,0);
-    double c = E(0)(0,0,1);
-    double d = E(1)(0,0,0);
-    double e = E(1)(0,1,0);
-    double f = E(1)(1,0,0);
-    double g = E(1)(1,1,0);
-    double h = E(2)(0,0,0);
 
     return E(xyz)(i,j,0)*pow(pi/p,1.0/2);
 }

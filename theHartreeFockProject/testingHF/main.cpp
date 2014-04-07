@@ -156,6 +156,107 @@ TEST(Return_Hermite_Coeffs_3){
     CHECK_CLOSE(-7.329386373895e-02,Sab, 1e-5);
 }
 
+TEST(Kinetic_integral_1){
+    double a,b,weight;
+    int i,j,k,l,m,n;
+    vec A,B;
+
+    // PrimitiveA
+    a = 0.2;
+    weight = 1;
+    i = k = m = 0;
+    A = { 1.2, 2.3, 3.4 } ;
+
+    // PrimitiveB
+    b = 0.3;
+    weight = 1;
+    j = l = n = 0;
+    B = {-1.3, 1.4, -2.4 };
+
+    Primitive primitiveA(weight,i,k,m,a,A);
+    Primitive primitiveB(weight,j,l,n,b,B);
+
+    ReturnHermiteCoeffs Coeffs;
+    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
+    double Tab = Coeffs.ReturnKineticIntegral();
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "---------------------- TEST Kinetic Integral 1 ---------------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " Tab = " << Tab << " and should be:" << endl;
+    cout << " Tab = -0.09678702680582" << endl;
+    cout << "------------------- END TEST Kinetic Integral 1 ----------------" << endl;
+
+    CHECK_CLOSE( -9.678702680582e-02, Tab, 1e-5);
+}
+
+TEST(Kinetic_integral_2){
+    double a,b,weight;
+    int i,j,k,l,m,n;
+    vec A,B;
+
+    // PrimitiveA:
+    a = 0.2;
+    weight = 1;
+    i = m = 0;
+    k = 1;
+    A = { 1.2, 2.3, 3.4 };
+
+    // PrimitiveB:
+    b = 0.3;
+    weight = 1;
+    j = 0;
+    l = n = 1;
+    B = {-1.3, 1.4, -2.4 };
+    Primitive primitiveA(weight,i,k,m,a,A);
+    Primitive primitiveB(weight,j,l,n,b,B);
+    ReturnHermiteCoeffs Coeffs;
+    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
+    double Tab = Coeffs.ReturnKineticIntegral();
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "---------------------- TEST Kinetic Integral 2 ---------------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " Tab = " << Tab << " and should be:" << endl;
+    cout << " Tab = -0.08688217105502" << endl;
+    cout << "------------------- END TEST Kinetic Integral 2 ----------------" << endl;
+
+    CHECK_CLOSE( -8.688217105502e-02, Tab, 1e-5);
+
+}
+
+TEST(Kinetic_integral_3){
+    double a,b,weight;
+    int i,j,k,l,m,n;
+    vec A,B;
+
+    // PrimitiveA:
+    a = 0.2;
+    weight = 1;
+    i = m = 0;
+    k = 2;
+    A = { 1.2, 2.3, 3.4 };
+
+    // PrimitiveB:
+    b = 0.3;
+    weight = 1;
+    j = l = 1;
+    n = 0;
+    B = {-1.3, 1.4, -2.4 };
+    Primitive primitiveA(weight,i,k,m,a,A);
+    Primitive primitiveB(weight,j,l,n,b,B);
+
+    ReturnHermiteCoeffs Coeffs;
+    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
+    double Tab = Coeffs.ReturnKineticIntegral();
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "---------------------- TEST Kinetic Integral 2 ---------------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " Tab = " << Tab << " and should be:" << endl;
+    cout << " Tab = -0.01598401092187" << endl;
+    cout << "------------------- END TEST Kinetic Integral 2 ----------------" << endl;
+
+    CHECK_CLOSE( -1.598401092187e-02, Tab, 1e-5);
+}
+
 
 
 

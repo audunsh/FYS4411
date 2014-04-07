@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
 
 
     // Find the Kinetic energy elements:
-    field <mat> T = Coeffs.ReturnKineticIntegrals();
+    field <mat> T = Coeffs.ReturnKineticMatrix();
 
     // print out the Kinetic enegy matrix:
 
@@ -114,6 +114,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    double Tab = Coeffs.ReturnKineticIntegral();
+
+    cout << "------------------------------" << endl;
+    cout << "Kinetic energy= " << Tab << endl;
 
     return 0;
 } // End: function output()

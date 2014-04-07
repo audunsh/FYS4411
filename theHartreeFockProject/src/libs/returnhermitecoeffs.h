@@ -11,7 +11,9 @@ class ReturnHermiteCoeffs
 public:
     ReturnHermiteCoeffs();
     field <cube> ReturnCoeffs(Primitive &Ga, Primitive &Gb);
-    field <mat> ReturnKineticIntegrals();
+    field <mat> ReturnKineticMatrix();
+    double ReturnKineticIntegral();
+
 private:
     field <cube> setup_E(const int &i_max, const  int &j_max, const int &k_max, const int &l_max, const int &m_max, const int &n_max);
     void SetupKinteicIntegrals(const field<cube> &E, const double b);
@@ -19,9 +21,10 @@ private:
     void set_p(const double a,const double b);
 
 
-    double p;
+    double p;               //  a+b
+    double Tab;             // Kinteic energy integral
     double pi = 4*atan(1);  // def pi
-    field <mat> T;
+    field <mat> T;          // Kinetic energy matrix
 
 };
 
