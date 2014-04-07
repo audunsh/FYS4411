@@ -1,10 +1,25 @@
-#ifndef BOYSFUNCTION_H
-#define BOYSFUNCTION_H
+#ifndef BOYSFUNCTION H
+#define BOYSFUNCTION H
+#include <armadillo>
 
-class boysFunction
+using namespace arma;
+
+class BoysFunction
 {
 public:
-    boysFunction();
-};
+    BoysFunction(int angMomMax);
+    void setx(double x);
+    double returnValue(int n);
 
-#endif // BOYSFUNCTION_H
+private:
+    double tabulated(int n, double x);
+    double asymptotic(int n, double x);
+    double factorial2(int n);
+
+    mat m_Ftabulated;
+    vec m_F;
+    int m_nMax;
+} ;
+
+#endif // BOYSFUNCTION H
+
