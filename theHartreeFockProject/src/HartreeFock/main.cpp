@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
     field <mat> T = Coeffs.ReturnKineticMatrix();
 
     // print out the Kinetic enegy matrix:
-
+/*
     for (int cor = 0; cor < 3; ++cor) {
         cout << "--------------------------------------------" << endl;
         cout << "------------------- T" << cor << " ---------------------" << endl;
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
             cout << endl;
         }
     }
-
+*/
 
     double Tab = Coeffs.ReturnKineticIntegral();
 

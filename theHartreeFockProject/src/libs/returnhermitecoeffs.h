@@ -17,7 +17,7 @@ public:
 private:
     field <cube> setup_E(const int &i_max, const  int &j_max, const int &k_max, const int &l_max, const int &m_max, const int &n_max);
     void SetupKinteicIntegrals(const field<cube> &E, const double b);
-    double Sij(const field <cube> &E, const int ikj, const int i, const int j);
+    double Sij(const field <cube> &E, const int ikj, const int ai, const int aj);
     void set_p(const double a,const double b);
 
 

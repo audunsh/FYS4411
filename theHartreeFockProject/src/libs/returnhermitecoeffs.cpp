@@ -127,7 +127,7 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
     m_max = E(2).n_rows - 1;
     n_max = E(2).n_cols - 1;
 
-    //cout << "i=" << i_max << " j=" << j_max << " k=" << k_max << " l=" << l_max << " m=" << m_max << " n=" << n_max << endl;
+    cout << "i=" << i_max << " j=" << j_max << " k=" << k_max << " l=" << l_max << " m=" << m_max << " n=" << n_max << endl;
 
     for (int cor = 0; cor < 3; ++cor) {
         iMAX = E(cor).n_rows;
@@ -135,7 +135,9 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
         T(cor) = zeros <mat> (iMAX,jMAX);
 
         for (int i = 0; i < iMAX; ++i) {
+            //cout << "i_loop " << i << " iMAX= " << iMAX << endl;
             for (int j = 0; j < jMAX; ++j) {
+                //cout << "j_loop " << j << " jMAX= " << jMAX << endl;
 
                 Si_ = 0;
                 Si_p = 0;
