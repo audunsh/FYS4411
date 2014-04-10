@@ -92,7 +92,8 @@ int main(int argc, char* argv[]) {
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
 
     double Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
-    cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
+    cout << setprecision(13) << " Sab = " << Sab2 << " and should be:" << endl;
+    cout << " Sab = -0.07329386373895" << endl;
 
 
 
@@ -103,7 +104,7 @@ int main(int argc, char* argv[]) {
 
     for (int cor = 0; cor < 3; ++cor) {
         cout << "--------------------------------------------" << endl;
-        cout << "------------------- T" << cor << " --------------------" << endl;
+        cout << "------------------- T" << cor << " ---------------------" << endl;
         cout << "--------------------------------------------" << endl;
         for (int iA = 0; iA < T(cor).n_rows; ++iA) {
             for (int iB = 0; iB < T(cor).n_cols; ++iB) {
@@ -113,10 +114,11 @@ int main(int argc, char* argv[]) {
         }
     }
 
+
     double Tab = Coeffs.ReturnKineticIntegral();
 
     cout << "------------------------------" << endl;
-    cout << "Kinetic energy= " << Tab << endl;
-
+    cout << "Tab= " << Tab << " And should be:" << endl;
+    cout << "Tab= -0.01598401092187" << endl;
     return 0;
 } // End: function output()

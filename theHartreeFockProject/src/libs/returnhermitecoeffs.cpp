@@ -127,6 +127,8 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
     m_max = E(2).n_rows - 1;
     n_max = E(2).n_cols - 1;
 
+    //cout << "i=" << i_max << " j=" << j_max << " k=" << k_max << " l=" << l_max << " m=" << m_max << " n=" << n_max << endl;
+
     for (int cor = 0; cor < 3; ++cor) {
         iMAX = E(cor).n_rows;
         jMAX = E(cor).n_cols;
@@ -138,10 +140,10 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
                 Si_ = 0;
                 Si_p = 0;
                 if ( (j-2) > 0) {
-                    Si_ = Sij(E,cor,i,j-2);
+                    Si_ = Sij(E,cor,i,j-2);  // minus 2
                 }
                 if ((j+2) < j_max) {
-                    Si_p = Sij(E,cor,i,j+2);
+                    Si_p = Sij(E,cor,i,j+2); // pluss 2
                 }
 
                 T(cor)(i,j) = 4*b*b*Si_p - 2*b*(2*j + 1)*Sij(E,cor,i,j) + j*(j-1)*Si_;
@@ -158,21 +160,22 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
     double Skl = E(1)(j_max,l_max,0);
     double Smn = E(2)(m_max,n_max,0);
 
+    cout << "Tij= " << Tij << " Tkl= " << Tkl << " Tmn= " << Tmn << " Sij= " << Sij << " Skl= " << Skl << " Smn= " << Smn << endl;
     Tab = -0.5*(Tij*Skl*Smn + Sij*Tkl*Smn + Sij*Skl*Tmn);  // Kinetic energy integral for particle a and b.
 }
 
 
-double ReturnHermiteCoeffs::Sij(const field<cube> &E, const int xyz, const int i, const int j){
+double ReturnHermiteCoeffs::Sij(const field<cube> &E, const int xyz, const int ai, const int aj){
     /*
      * Calculate the overlap integral for index i,j between particle a and b.
      *         Sij = E(i,j,0)*exp((pi/p)^(3/2))                                */
 
-    return E(xyz)(i,j,0)*pow(pi/p,1.0/2);
+    return E(xyz)(ai,aj,0)*pow(pi/p,1.0/2);
 }
 
 
 
-// Set up the right dimentionality of E, and fill it with numbers 666 - the number of the beast - because E is a fucking beast!!!!
+// For testing that every element in matrices is set, set up the right dimentionality of E, and fill it with numbers 666 - the number of the beast - because E is a fucking beast!!!!
 field <cube> ReturnHermiteCoeffs::setup_E(const int &i_max, const int &j_max, const int &k_max, const int &l_max, const int &m_max, const int &n_max){
 
     // Set up a field of three cubes, each with the right dimentionality.
@@ -192,21 +195,21 @@ field <cube> ReturnHermiteCoeffs::setup_E(const int &i_max, const int &j_max, co
     for (int t = 0; t < t_max+1; ++t) {
         for (int i = 0; i < i_max+1; ++i) {
             for (int j = 0; j < j_max+1; ++j) {
-                E(0)(i,j,t) = 666;
+                E(0)(i,j,t) = 0;
             }
         }
     }
     for (int u = 0; u < u_max+1; ++u) {
         for (int k = 0; k < k_max+1; ++k) {
             for (int l = 0; l < l_max+1; ++l) {
-                E(1)(k,l,u) = 666;
+                E(1)(k,l,u) = 0;
             }
         }
     }
     for (int v = 0; v < v_max+1; ++v) {
         for (int m = 0; m < m_max+1; ++m) {
             for (int n = 0; n < n_max+1; ++n) {
-                E(2)(m,n,v) = 666;
+                E(2)(m,n,v) = 0;
             }
         }
     }
