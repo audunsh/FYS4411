@@ -4,7 +4,6 @@
 #include <time.h>
 #include <armadillo>
 #include <string>            // to_string
-//#include <lib.h>             //tqli, free_matrix
 #include <basis.h>
 #include <boysfunction.h>
 #include <integrator.h>
@@ -104,7 +103,7 @@ int main(int argc, char* argv[]) {
 
     for (int cor = 0; cor < 3; ++cor) {
         cout << "--------------------------------------------" << endl;
-        cout << "----------------- " << cor << " -------------------" << endl;
+        cout << "------------------- T" << cor << " --------------------" << endl;
         cout << "--------------------------------------------" << endl;
         for (int iA = 0; iA < T(cor).n_rows; ++iA) {
             for (int iB = 0; iB < T(cor).n_cols; ++iB) {

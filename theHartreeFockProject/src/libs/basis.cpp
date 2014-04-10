@@ -20,7 +20,7 @@ basis::basis(int N, int b)
             Vn(i,j) = zeros<mat>(Nstates2,Nstates2); // fill V with 3x3 mx elements
         }
     }
-    v = vn;
+    v = vn;  // global variables for class basis.cpp
     V = Vn;
 
     //creating the overlap matrix
@@ -110,8 +110,8 @@ double basis::h0(int i, int j){
 
 double basis::state(int p, int q, int r, int s, double D, double Ex){
     //Evaluating spin configuration, returning direct and/or exchange term or 0
-    double S;
-    int s1,s2,s3,s4;
+    double S = 0;
+    int s1 = 0; int s2 = 0;int s3 = 0;int s4 = 0;
     s1 = p%2;
     s2 = q%2;
     s3 = r%2;
