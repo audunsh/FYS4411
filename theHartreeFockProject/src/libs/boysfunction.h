@@ -1,5 +1,6 @@
-#ifndef BOYSFUNCTION H
-#define BOYSFUNCTION H
+#ifndef BOYSFUNCTION_H
+#define BOYSFUNCTION_H
+
 #include <armadillo>
 
 using namespace arma;
@@ -19,7 +20,7 @@ private:
     mat m_Ftabulated;
     vec m_F;
     int m_nMax;
-} ;
+};
 
-#endif // BOYSFUNCTION H
+#endif // BOYSFUNCTION_H
 

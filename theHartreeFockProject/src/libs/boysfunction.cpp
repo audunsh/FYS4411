@@ -1,8 +1,9 @@
+
 #include "boysfunction.h"
 
 BoysFunction::BoysFunction(int angMomMax){
-    m_nMax = 4∗angMomMax;
-    m_F = zeros < vec > (4 ∗ angMomMax+1);
+    m_nMax = 4*angMomMax;
+    m_F = zeros <vec> (4*angMomMax+1);
     m_Ftabulated.load("boys tabulated.dat");
 }
 
@@ -12,7 +13,7 @@ double BoysFunction::returnValue(int n){
 
 void BoysFunction::setx(double x){
     if (x <= 50) {
-        m_(m_nMax) = tabulated(m_nMax, x);
+        m_F(m_nMax) = tabulated(m_nMax, x);
     }
     else {
         m_F(m_nMax) = asymptotic(m_nMax, x);
@@ -21,14 +22,14 @@ void BoysFunction::setx(double x){
     double ex = exp(-x);
 
     for(int n = m_nMax; n > 0; n--) {
-        m_F(n-1) = (2∗x*m_F(n) + ex)/(2∗n - 1);
+        m_F(n-1) = (2*x*m_F(n) + ex)/(2*n - 1);
     }
 }
 
 double BoysFunction::tabulated(int n, double x){
     int nxVals = m_Ftabulated.n_rows;
     double dx = 50.0/(nxVals - 1);        // x − spacing in tabulated values
-    int xIndex = int ((x + 0.5∗dx)/dx);
+    int xIndex = int ((x + 0.5*dx)/dx);
     double xt = xIndex*dx;
 
     // tabulated x − value
@@ -41,9 +42,8 @@ double BoysFunction::tabulated(int n, double x){
         if(k != 0) {
             factorial *= k;
         }
+        value += m_Ftabulated(xIndex, n+k)*pow(-Dx,k)/factorial;
     }
-    value += m_Ftabulated(xIndex, n+k)∗pow(-Dx,k)/factorial;
-
     return value;
 }
 
