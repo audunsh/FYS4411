@@ -101,7 +101,7 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
         }
     }
 
-    SetupKinteicIntegrals(E,b);
+    //SetupKinteicIntegrals(E,b);   // calling inner function to set up the assosiated kinetic energies.
     return E;
 }
 

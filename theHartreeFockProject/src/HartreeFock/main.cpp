@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     int N = 4;   // Number of electrons
     int Ns = 4;  // 6 states
 
-    basis Bs(3, 0);              //creating the basis object
+    basis Bs(N, 0);              //creating the basis object
     string filename;
     filename = "/home/goranbs/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/testingHF/m_elements_c.dat";
     Bs.read(filename, Z); //reading basis from file
@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
 
 
     // Find the Kinetic energy elements:
-    field <mat> T = Coeffs.ReturnKineticMatrix();
+    //field <mat> T = Coeffs.ReturnKineticMatrix();
 
     // print out the Kinetic enegy matrix:
 /*
@@ -115,10 +115,10 @@ int main(int argc, char* argv[]) {
     }
 */
 
-    double Tab = Coeffs.ReturnKineticIntegral();
+    //double Tab = Coeffs.ReturnKineticIntegral();
 
     cout << "------------------------------" << endl;
-    cout << "Tab= " << Tab << " And should be:" << endl;
+    //cout << "Tab= " << Tab << " And should be:" << endl;
     cout << "Tab= -0.01598401092187" << endl;
     return 0;
 } // End: function output()
