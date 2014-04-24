@@ -4,7 +4,9 @@
 /*
  * Integrator 2 is a start on optimizing Integrator, or the setup of the Hermite coefficients to be more correctly! */
 
-ReturnHermiteCoeffs::ReturnHermiteCoeffs(){
+ReturnHermiteCoeffs::ReturnHermiteCoeffs() :
+    pi(4*atan(1))
+{
 
     // construct:
     T = field <mat> (3);       //  Holds the kinitic energies

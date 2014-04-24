@@ -4,7 +4,7 @@
 BoysFunction::BoysFunction(int angMomMax){
     m_nMax = 4*angMomMax;
     m_F = zeros <vec> (4*angMomMax+1);
-    m_Ftabulated.load("boys tabulated.dat");
+    m_Ftabulated.load("boys_tabulated.dat");
 }
 
 double BoysFunction::returnValue(int n){

@@ -10,8 +10,8 @@ public:
     double overlapIntegral(Primitive a, Primitive b);
     void setupHermiteCoefficients();
 
-private:
-    double pi = 4*atan(1);
+//private:
+//    double pi = 4*atan(1);
 
 };
 

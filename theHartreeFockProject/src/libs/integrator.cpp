@@ -5,6 +5,8 @@
 using namespace std;
 using namespace arma;
 
+double pi = 4*atan(1);
+
 /***********************************************************************************
  *  Calculate integrals between primitive objects collected from class Primitive.
  *
