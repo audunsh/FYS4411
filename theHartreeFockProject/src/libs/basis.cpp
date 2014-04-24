@@ -1,7 +1,6 @@
 #include <basis.h>
 
 
-
 basis::basis(int N, int b)
 {
     bMode = b;

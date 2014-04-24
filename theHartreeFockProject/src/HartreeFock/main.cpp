@@ -115,10 +115,10 @@ int main(int argc, char* argv[]) {
     }
 */
 
-    //double Tab = Coeffs.ReturnKineticIntegral();
+    double Tab = Coeffs.ReturnKineticIntegral();
 
     cout << "------------------------------" << endl;
-    //cout << "Tab= " << Tab << " And should be:" << endl;
+    cout << "Tab= " << Tab << " And should be:" << endl;
     cout << "Tab= -0.01598401092187" << endl;
     return 0;
 } // End: function output()

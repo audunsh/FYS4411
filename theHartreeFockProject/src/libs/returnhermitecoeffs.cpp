@@ -101,7 +101,7 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
         }
     }
 
-    //SetupKinteicIntegrals(E,b);   // calling inner function to set up the assosiated kinetic energies.
+    SetupKinteicIntegrals(E,b);   // calling inner function to set up the assosiated kinetic energies.
     return E;
 }
 
@@ -127,7 +127,7 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
     m_max = E(2).n_rows - 1;
     n_max = E(2).n_cols - 1;
 
-    cout << "i=" << i_max << " j=" << j_max << " k=" << k_max << " l=" << l_max << " m=" << m_max << " n=" << n_max << endl;
+    //cout << "i=" << i_max << " j=" << j_max << " k=" << k_max << " l=" << l_max << " m=" << m_max << " n=" << n_max << endl;
 
     for (int cor = 0; cor < 3; ++cor) {
         iMAX = E(cor).n_rows;
@@ -141,13 +141,13 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
 
                 Si_ = 0;
                 Si_p = 0;
-                if ( (j-2) > 0) {
+                if ( (j-2) >= 0) {
                     Si_ = Sij(E,cor,i,j-2);  // minus 2
                 }
-                if ((j+2) < j_max) {
+                if ((j+2) <= j_max) {
                     Si_p = Sij(E,cor,i,j+2); // pluss 2
                 }
-
+                cout << "cor,i,j= [" << cor <<"," << i << "," << j << "] Si- " << Si_ << " Si+ " << Si_p << endl;
                 T(cor)(i,j) = 4*b*b*Si_p - 2*b*(2*j + 1)*Sij(E,cor,i,j) + j*(j-1)*Si_;
             }
         }
@@ -162,7 +162,9 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
     double Skl = E(1)(j_max,l_max,0);
     double Smn = E(2)(m_max,n_max,0);
 
+    cout << "------------------------------------------------------------" << endl;
     cout << "Tij= " << Tij << " Tkl= " << Tkl << " Tmn= " << Tmn << " Sij= " << Sij << " Skl= " << Skl << " Smn= " << Smn << endl;
+    cout << "------------------------------------------------------------" << endl;
     Tab = -0.5*(Tij*Skl*Smn + Sij*Tkl*Smn + Sij*Skl*Tmn);  // Kinetic energy integral for particle a and b.
 }
 
@@ -170,7 +172,7 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
 double ReturnHermiteCoeffs::Sij(const field<cube> &E, const int xyz, const int ai, const int aj){
     /*
      * Calculate the overlap integral for index i,j between particle a and b.
-     *         Sij = E(i,j,0)*exp((pi/p)^(3/2))                                */
+     *         Sij = E(i,j,0)*exp((pi/p)^(1/2))                                */
 
     return E(xyz)(ai,aj,0)*pow(pi/p,1.0/2);
 }
