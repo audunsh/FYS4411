@@ -169,13 +169,13 @@ TEST(Kinetic_integral_1){
     // PrimitiveA
     a = 0.2;
     weight = 1;
-    i = k = m = 0;
+    i = k = m = 0; // 0
     A = { 1.2, 2.3, 3.4 } ;
 
     // PrimitiveB
     b = 0.3;
     weight = 1;
-    j = l = n = 0;
+    j = l = n = 0; // 0
     B = {-1.3, 1.4, -2.4 };
 
     Primitive primitiveA(weight,i,k,m,a,A);
@@ -206,15 +206,15 @@ TEST(Kinetic_integral_2){
     // PrimitiveA:
     a = 0.2;
     weight = 1;
-    i = m = 0;
-    k = 1;
+    i = m = 0; // 0
+    k = 1;  // 1
     A = { 1.2, 2.3, 3.4 };
 
     // PrimitiveB:
     b = 0.3;
     weight = 1;
-    j = 0;
-    l = n = 1;
+    j = 0; // 0
+    l = n = 1; // 1
     B = {-1.3, 1.4, -2.4 };
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
@@ -243,15 +243,15 @@ TEST(Kinetic_integral_3){
     // PrimitiveA:
     a = 0.2;
     weight = 1;
-    i = m = 0;
-    k = 2;
+    i = m = 0; // 0
+    k = 2; // 2
     A = { 1.2, 2.3, 3.4 };
 
     // PrimitiveB:
     b = 0.3;
     weight = 1;
-    j = l = 1;
-    n = 0;
+    j = l = 1; // 1
+    n = 0; // 0
     B = {-1.3, 1.4, -2.4 };
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
