@@ -14,7 +14,7 @@ public:
 
 private:
     field <mat> Rtuv;
-    void setupRtuv(const double R0, const int n, const int t, const int u, const int v);
+    void setupRtuv(const vec R, const double &R0, const int &N, const int T, const int U, const int V);
     int n;
 };
 
