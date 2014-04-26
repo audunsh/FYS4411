@@ -263,60 +263,8 @@ TEST(Kinetic_integral_3){
     CHECK_CLOSE( -1.598401092187e-02, Tab, 1e-5);
 }
 
-<<<<<<< HEAD
 */
-=======
-TEST(boys_function){
-    double a,b,weight;
-    int i,j,k,l,m,n;
-    vec A,B;
 
-    // PrimitiveA:
-    a = 0.2;
-    weight = 1;
-    i = m = 0;
-    k = 0;
-    A = { 1.2, 2.3, 3.4 };
-
-    // PrimitiveB:
-    b = 0.3;
-    weight = 1;
-    j = l = 0;
-    n = 0;
-    B = {-1.3, 1.4, -2.4 };
-    Primitive primitiveA(weight,i,k,m,a,A);
-    Primitive primitiveB(weight,j,l,n,b,B);
-
-    vec corePosition (3);
-    vec P (3);
-    vec Xpc (3);
-
-    double p = a+b;
-    double Xpc2;
-    P = (a*A + b*B)/p;
-    corePosition = {2.3, 0.9, 3.2};
-    Xpc = P - corePosition;
-
-    Xpc2 = Xpc[0]*Xpc[0] + Xpc[1]*Xpc[1] + Xpc[2]*Xpc[2];
-
-    int N = i+j+k+l+m+n; // = 0 !
-
-    BoysFunction boys(N);
-    double Xpc2p = Xpc2*p;
-    boys.setx(Xpc2p);
-    double F_0 = boys.returnValue(0);  // int n = 0;
-    double Fpow = F_0*(pow(-2*p,(double) N));
-    cout << "----------------------------------------------------------------" << endl;
-    cout << "----------------------------- BoysFunction ---------------------" << endl;
-    cout << "----------------------------------------------------------------" << endl;
-    cout << setprecision(13) << " F_0 = " << F_0 << " and should be:" << endl;
-    cout << " F_0 = 0.293420583633" << endl;
-    cout << " Fpow = " << Fpow << endl;
-    cout << "________________________________________________________________" << endl;
-    CHECK_CLOSE(0.293420583633, F_0, 10e-2);
-
-}
->>>>>>> ba732e7b13827689a65e8ed7735e8c3b4eac1940
 
 
 int main() {
