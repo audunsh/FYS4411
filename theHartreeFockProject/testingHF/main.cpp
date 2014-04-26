@@ -159,7 +159,7 @@ TEST(Return_Hermite_Coeffs_3){
 
     CHECK_CLOSE(-7.329386373895e-02,Sab, 1e-5);
 }
-
+/*
 TEST(Kinetic_integral_1){
     double a,b,weight;
     int i,j,k,l,m,n;
@@ -263,7 +263,7 @@ TEST(Kinetic_integral_3){
     CHECK_CLOSE( -1.598401092187e-02, Tab, 1e-5);
 }
 
-
+*/
 
 
 int main() {

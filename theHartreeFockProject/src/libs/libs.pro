@@ -9,7 +9,8 @@ SOURCES= myclass.cpp \
          hfsolve.cpp \
          boysfunction.cpp \
          primitive.cpp \
-         returnhermitecoeffs.cpp
+         returnhermitecoeffs.cpp \
+    kineticenergy.cpp
 
 HEADERS= myclass.h \
          basis.h \
@@ -18,6 +19,7 @@ HEADERS= myclass.h \
          lib.h \
          hfsolve.h \
          boysfunction.h \
-         returnhermitecoeffs.h
+         returnhermitecoeffs.h \
+    kineticenergy.h
 
 LIBS += -larmadillo -lblas -llapack

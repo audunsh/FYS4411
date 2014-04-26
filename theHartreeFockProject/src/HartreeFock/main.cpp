@@ -9,6 +9,7 @@
 #include <integrator.h>
 #include <hfsolve.h>
 #include <returnhermitecoeffs.h>
+#include <kineticenergy.h>
 
 double pi = 4*atan(1);
 
@@ -115,7 +116,11 @@ int main(int argc, char* argv[]) {
     }
 */
 
-    double Tab = Coeffs.ReturnKineticIntegral();
+    //double Tab = Coeffs.ReturnKineticIntegral();
+
+    KineticEnergy T(Eab,&primitiveA,&primitiveB);
+
+    double Tab = T.ReturnKineticIntegral();
 
     cout << "------------------------------" << endl;
     cout << "Tab= " << Tab << " And should be:" << endl;

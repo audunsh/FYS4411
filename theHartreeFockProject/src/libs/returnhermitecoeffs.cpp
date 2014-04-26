@@ -7,7 +7,7 @@
 ReturnHermiteCoeffs::ReturnHermiteCoeffs(){
 
     // construct:
-    T = field <mat> (3);       //  Holds the kinitic energies
+    //T = field <mat> (3);       //  Holds the kinitic energies
 }
 
 field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
@@ -101,10 +101,11 @@ field <cube> ReturnHermiteCoeffs::ReturnCoeffs(Primitive &Ga, Primitive &Gb){
         }
     }
 
-    SetupKinteicIntegrals(E,b);   // calling inner function to set up the assosiated kinetic energies.
+    //SetupKinteicIntegrals(E,b);   // calling inner function to set up the assosiated kinetic energies.
     return E;
 }
 
+/*
 field <mat> ReturnHermiteCoeffs::ReturnKineticMatrix(){
     return T;
 }
@@ -114,8 +115,9 @@ double ReturnHermiteCoeffs::ReturnKineticIntegral(){
 }
 
 void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const double b){
-    /*
-     * Calculate the Kinetic integrals Tij,Tkl,Tmn and store them in a field of cubes to be collected from ReturnKinteicIntegrals */
+
+     // Calculate the Kinetic integrals Tij,Tkl,Tmn
+     // and store them in a field of cubes to be collected from ReturnKinteicIntegrals
 
     double Si_,Si_p;
     int i_max,j_max,k_max,l_max,m_max,n_max,iMAX,jMAX;
@@ -127,7 +129,8 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
     m_max = E(2).n_rows - 1;
     n_max = E(2).n_cols - 1;
 
-    //cout << "i=" << i_max << " j=" << j_max << " k=" << k_max << " l=" << l_max << " m=" << m_max << " n=" << n_max << endl;
+    cout << "------------------------------------------------------------" << endl;
+    cout << "i=" << i_max << " j=" << j_max << " k=" << k_max << " l=" << l_max << " m=" << m_max << " n=" << n_max << endl;
 
     for (int cor = 0; cor < 3; ++cor) {
         iMAX = E(cor).n_rows;
@@ -147,8 +150,9 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
                 if ((j+2) <= j_max) {
                     Si_p = Sij(E,cor,i,j+2); // pluss 2
                 }
-                cout << "cor,i,j= [" << cor <<"," << i << "," << j << "] Si- " << Si_ << " Si+ " << Si_p << endl;
+                //cout << "cor,i,j= [" << cor <<"," << i << "," << j << "] Si- =" << Si_ << " Si+ =" << Si_p << " Sij= " << Sij(E,cor,i,j) << endl;endl;
                 T(cor)(i,j) = 4*b*b*Si_p - 2*b*(2*j + 1)*Sij(E,cor,i,j) + j*(j-1)*Si_;
+
             }
         }
     }
@@ -170,14 +174,14 @@ void ReturnHermiteCoeffs::SetupKinteicIntegrals(const field<cube> &E, const doub
 
 
 double ReturnHermiteCoeffs::Sij(const field<cube> &E, const int xyz, const int ai, const int aj){
-    /*
+     *
      * Calculate the overlap integral for index i,j between particle a and b.
-     *         Sij = E(i,j,0)*exp((pi/p)^(1/2))                                */
+     *         Sij = E(i,j,0)*exp((pi/p)^(1/2))                                *
 
     return E(xyz)(ai,aj,0)*pow(pi/p,1.0/2);
 }
 
-
+*/
 
 // For testing that every element in matrices is set, set up the right dimentionality of E, and fill it with numbers 666 - the number of the beast - because E is a fucking beast!!!!
 field <cube> ReturnHermiteCoeffs::setup_E(const int &i_max, const int &j_max, const int &k_max, const int &l_max, const int &m_max, const int &n_max){
@@ -195,7 +199,7 @@ field <cube> ReturnHermiteCoeffs::setup_E(const int &i_max, const int &j_max, co
     E(0) = cube(i_max+1,j_max+1,t_max+1);
     E(1) = zeros <cube> (k_max+1,l_max+1,u_max+1);
     E(2) = zeros <cube> (m_max+1,n_max+1,v_max+1);
-
+/*
     for (int t = 0; t < t_max+1; ++t) {
         for (int i = 0; i < i_max+1; ++i) {
             for (int j = 0; j < j_max+1; ++j) {
@@ -217,7 +221,7 @@ field <cube> ReturnHermiteCoeffs::setup_E(const int &i_max, const int &j_max, co
             }
         }
     }
-
+*/
     return E;
 }
 
