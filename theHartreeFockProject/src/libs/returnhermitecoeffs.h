@@ -22,9 +22,15 @@ private:
 
 
     double p;               //  a+b
+<<<<<<< HEAD
     //double Tab;             // Kinteic energy integral
     double pi = 4*atan(1);  // def pi
     //field <mat> T;          // Kinetic energy matrix
+=======
+    double Tab;             // Kinteic energy integral
+    double pi;  // def pi
+    field <mat> T;          // Kinetic energy matrix
+>>>>>>> ba732e7b13827689a65e8ed7735e8c3b4eac1940
 
 };
 

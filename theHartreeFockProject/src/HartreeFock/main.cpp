@@ -4,8 +4,8 @@
 #include <time.h>
 #include <armadillo>
 #include <string>            // to_string
-#include <basis.h>
 #include <boysfunction.h>
+#include <basis.h>
 #include <integrator.h>
 #include <hfsolve.h>
 #include <returnhermitecoeffs.h>
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 
     basis Bs(N, 0);              //creating the basis object
     string filename;
-    filename = "/home/goranbs/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/testingHF/m_elements_c.dat";
+    filename = "m_elements_c.dat";
     Bs.read(filename, Z); //reading basis from file
     Bs.set_orthonormal(true);
 
@@ -125,5 +125,13 @@ int main(int argc, char* argv[]) {
     cout << "------------------------------" << endl;
     cout << "Tab= " << Tab << " And should be:" << endl;
     cout << "Tab= -0.01598401092187" << endl;
+
+    int angmax = i+j+k+l+m+n;
+    double Xpc2p = 9.129;
+    BoysFunction boys(angmax);
+    boys.setx(Xpc2p);
+    double F_0 = boys.returnValue(0);
+    cout << "---------------------------" << endl;
+    cout << F_0 << endl;
     return 0;
 } // End: function output()
