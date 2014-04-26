@@ -31,8 +31,10 @@ double KineticEnergy::ReturnKineticIntegral(){
     Tkl = T_kin(S,k,l,1);
     Tmn = T_kin(S,m,n,2);
 
-    cout << "-------------------------------" << endl;
-    cout << "Tij=" << Tij << " Tkl=" << Tkl << " Tmn=" << Tmn << " Sij=" << Sij << " Skl=" << Skl << " Smn=" << Smn << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "i=" << i << " j=" << j <<" k=" << k <<" l=" << l << " m=" << m << " n=" << n << endl;
+    cout << "Tij=" << Tij << " Tkl=" << Tkl << " Tmn=" << Tmn << endl;
+    cout << "Sij=" << Sij << " Skl=" << Skl << " Smn=" << Smn << endl;
 
     return -0.5*(Tij*Skl*Smn + Sij*Tkl*Smn + Sij*Skl*Tmn);
 }

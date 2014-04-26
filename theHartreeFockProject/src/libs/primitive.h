@@ -1,5 +1,5 @@
-#ifndef PRIMITIVE H
-#define PRIMITIVE H
+#ifndef PRIMITIVE_H
+#define PRIMITIVE_H
 #include <armadillo>
 using namespace arma;
 
@@ -67,4 +67,4 @@ return m_nucleusPosition;
 }
 */
 
-#endif // PRIMITIVE H
+#endif // PRIMITIVE_H

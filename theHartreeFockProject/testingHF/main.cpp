@@ -186,6 +186,7 @@ TEST(Kinetic_integral_1){
     //double Tab = Coeffs.ReturnKineticIntegral();
     KineticEnergy T(Eab,&primitiveA,&primitiveB);
     double Tab = T.ReturnKineticIntegral();
+    cout << "----------------------------------------------------------------" << endl;
     cout << "                   TESTING THE KINTETIC INTEGRALS               " << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << "--------------------- TEST Kinetic Integral 1 ------------------" << endl;
