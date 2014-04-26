@@ -33,13 +33,14 @@ double KineticEnergy::ReturnKineticIntegral(){
 
     cout << "-------------------------------" << endl;
     cout << "Tij=" << Tij << " Tkl=" << Tkl << " Tmn=" << Tmn << " Sij=" << Sij << " Skl=" << Skl << " Smn=" << Smn << endl;
+
     return -0.5*(Tij*Skl*Smn + Sij*Tkl*Smn + Sij*Skl*Tmn);
 }
 
 double KineticEnergy::T_kin(const double S, const int i, const int j, const int cor){
     double Si_ = 0;
     double Si_p = 0;
-    if ( (j-2) >= 0) { Si_ = m_E(cor)(i,j-2,0);}
+    if ((j-2) >= 0) { Si_  = m_E(cor)(i,j-2,0);}
     if ((j+2) <= j) { Si_p = m_E(cor)(i,j+2,0);}
 
     double Tij = 4*b*b*Si_p - 2*b*(2*j+1)*m_E(cor)(i,j,0) + j*(j-1)*Si_;

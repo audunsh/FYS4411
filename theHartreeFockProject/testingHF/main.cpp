@@ -8,6 +8,7 @@
 #include <hfsolve.h>
 #include <iomanip>
 #include <returnhermitecoeffs.h>
+#include <kineticenergy.h>
 
 double pi = 4*atan(1);
 
@@ -159,7 +160,7 @@ TEST(Return_Hermite_Coeffs_3){
 
     CHECK_CLOSE(-7.329386373895e-02,Sab, 1e-5);
 }
-/*
+
 TEST(Kinetic_integral_1){
     double a,b,weight;
     int i,j,k,l,m,n;
@@ -182,7 +183,9 @@ TEST(Kinetic_integral_1){
 
     ReturnHermiteCoeffs Coeffs;
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-    double Tab = Coeffs.ReturnKineticIntegral();
+    //double Tab = Coeffs.ReturnKineticIntegral();
+    KineticEnergy T(Eab,&primitiveA,&primitiveB);
+    double Tab = T.ReturnKineticIntegral();
     cout << "                   TESTING THE KINTETIC INTEGRALS               " << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << "--------------------- TEST Kinetic Integral 1 ------------------" << endl;
@@ -216,7 +219,9 @@ TEST(Kinetic_integral_2){
     Primitive primitiveB(weight,j,l,n,b,B);
     ReturnHermiteCoeffs Coeffs;
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-    double Tab = Coeffs.ReturnKineticIntegral();
+    //double Tab = Coeffs.ReturnKineticIntegral();
+    KineticEnergy T(Eab,&primitiveA,&primitiveB);
+    double Tab = T.ReturnKineticIntegral();
     cout << "----------------------------------------------------------------" << endl;
     cout << "------------------- TEST Kinetic Integral 2 --------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
@@ -252,7 +257,9 @@ TEST(Kinetic_integral_3){
 
     ReturnHermiteCoeffs Coeffs;
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-    double Tab = Coeffs.ReturnKineticIntegral();
+    //double Tab = Coeffs.ReturnKineticIntegral();
+    KineticEnergy T(Eab,&primitiveA,&primitiveB);
+    double Tab = T.ReturnKineticIntegral();
     cout << "----------------------------------------------------------------" << endl;
     cout << "-------------------- TEST Kinetic Integral 3 -------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
@@ -263,7 +270,6 @@ TEST(Kinetic_integral_3){
     CHECK_CLOSE( -1.598401092187e-02, Tab, 1e-5);
 }
 
-*/
 
 
 
