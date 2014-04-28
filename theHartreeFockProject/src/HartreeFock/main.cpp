@@ -102,13 +102,21 @@ int main(int argc, char* argv[]) {
 
     // testing the Boys function
     int angmax = i+j+k+l+m+n;
-    double Xpc2p = 9.129;
+    double Xpc2p = 9.129; // p*Rpc**2
     BoysFunction boys(angmax);
     boys.setx(Xpc2p);
     double F_0 = boys.returnValue(0);
     cout << "-----------------------------------------------------------" << endl;
     cout << "F_0= " << F_0 << endl;
     cout << "-----------------------------------------------------------" << endl;
+
+    vec F;
+    F = zeros(angmax+1);
+    for (int n = 0; n < angmax+1; ++n) {
+        F(n) = boys.returnValue(n);
+        cout << F(n) << " " ;
+    }
+    cout << endl;
 
     // testing the Nuclei-Electron integral
     int t,u,v;
@@ -118,13 +126,10 @@ int main(int argc, char* argv[]) {
     t = i+j;
     u = k+l;
     v = m+n;
-    setupHermiteIntegral HermiteIntegral(p,Rpc,t,u,v);
+    setupHermiteIntegral HermiteIntegral(p,Rpc,F,t,u,v);
 
-    field <mat> Rtuv = HermiteIntegral.ReturnHermiteIntegral();
+    field <cube> Rtuv = HermiteIntegral.ReturnHermiteIntegral();
 
-    cout << "R0,nt = " << Rtuv(0)(n,t) << endl;
-    cout << "R1,nu = " << Rtuv(1)(n,u) << endl;
-    cout << "R2,nv = " << Rtuv(2)(n,v) << endl;
 
     return 0;
 } // End: function output()
