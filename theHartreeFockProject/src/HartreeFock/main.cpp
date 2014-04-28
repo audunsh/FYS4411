@@ -111,8 +111,8 @@ int main(int argc, char* argv[]) {
     cout << "-----------------------------------------------------------" << endl;
 
     vec F;
-    F = zeros(angmax+1);
-    for (int n = 0; n < angmax+1; ++n) {
+    F = zeros(angmax+2);
+    for (int n = 0; n < angmax+2; ++n) {
         F(n) = boys.returnValue(n);
         cout << F(n) << " " ;
     }
