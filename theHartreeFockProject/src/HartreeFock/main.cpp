@@ -100,36 +100,16 @@ int main(int argc, char* argv[]) {
     cout << "Tab= " << Tab << " And should be:" << endl;
     cout << "Tab= -0.01598401092187" << endl;
 
-    // testing the Boys function
-    int angmax = i+j+k+l+m+n;
-    double Xpc2p = 9.129; // p*Rpc**2
-    BoysFunction boys(angmax);
-    boys.setx(Xpc2p);
-    double F_0 = boys.returnValue(0);
-    cout << "-----------------------------------------------------------" << endl;
-    cout << "F_0= " << F_0 << endl;
-    cout << "-----------------------------------------------------------" << endl;
-
-    vec F;
-    F = zeros(angmax+2);
-    for (int n = 0; n < angmax+2; ++n) {
-        F(n) = boys.returnValue(n);
-        cout << F(n) << " " ;
-    }
-    cout << endl;
 
     // testing the Nuclei-Electron integral
     int t,u,v;
     double p = a1+b1;
     vec corePosition = {0.0, 0.0, 0.0};
-    vec Rpc = A - corePosition;
-    t = i+j;
-    u = k+l;
-    v = m+n;
-    setupHermiteIntegral HermiteIntegral(p,Rpc,F,t,u,v);
+
+    setupHermiteIntegral HermiteIntegral(primitiveA,primitiveB,corePosition);
 
     field <cube> Rtuv = HermiteIntegral.ReturnHermiteIntegral();
 
-
+    cout << Rtuv(n)(t+1,u+1,v+1) << endl;
     return 0;
 } // End: function output()
