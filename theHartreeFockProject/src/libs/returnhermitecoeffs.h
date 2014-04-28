@@ -21,9 +21,9 @@ private:
     void set_p(const double a,const double b);
 
 
-    double p;               //  a+b
+    double p;                 //  a+b
     //double Tab;             // Kinteic energy integral
-    double pi = 4*atan(1);  // def pi
+    double pi = 4*atan(1);    // def pi
     //field <mat> T;          // Kinetic energy matrix
 
 

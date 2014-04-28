@@ -10,6 +10,7 @@
 #include <hfsolve.h>
 #include <returnhermitecoeffs.h>
 #include <kineticenergy.h>
+#include <setuphermiteintegral.h>
 
 double pi = 4*atan(1);
 
@@ -79,14 +80,8 @@ int main(int argc, char* argv[]) {
 
     Primitive primitiveA(weight,i,k,m,a1,A);
     Primitive primitiveB(weight,j,l,n,b1,B);
-    // testing integrator:
-
-    //integrator integral2;
-    //double Sab2 = integral2.overlapIntegral(primitiveA,primitiveB);
-    //cout << " Sab = " << Sab2 << " and should be -7.329386373895e-02" << endl;
 
     // testing ReturnHermiteCoeffs:
-
 
     ReturnHermiteCoeffs Coeffs;
 
@@ -96,42 +91,40 @@ int main(int argc, char* argv[]) {
     cout << setprecision(13) << " Sab = " << Sab2 << " and should be:" << endl;
     cout << " Sab = -0.07329386373895" << endl;
 
-
-
-    // Find the Kinetic energy elements:
-    //field <mat> T = Coeffs.ReturnKineticMatrix();
-
-    // print out the Kinetic enegy matrix:
-/*
-    for (int cor = 0; cor < 3; ++cor) {
-        cout << "--------------------------------------------" << endl;
-        cout << "------------------- T" << cor << " ---------------------" << endl;
-        cout << "--------------------------------------------" << endl;
-        for (int iA = 0; iA < T(cor).n_rows; ++iA) {
-            for (int iB = 0; iB < T(cor).n_cols; ++iB) {
-                cout << T(cor)(iA,iB) << " " ;
-            }
-            cout << endl;
-        }
-    }
-*/
-
-    //double Tab = Coeffs.ReturnKineticIntegral();
-
+    // testing kinetic energy
     KineticEnergy T(Eab,&primitiveA,&primitiveB);
 
     double Tab = T.ReturnKineticIntegral();
 
-    cout << "------------------------------" << endl;
+    cout << "-----------------------------------------------------------" << endl;
     cout << "Tab= " << Tab << " And should be:" << endl;
     cout << "Tab= -0.01598401092187" << endl;
 
+    // testing the Boys function
     int angmax = i+j+k+l+m+n;
     double Xpc2p = 9.129;
     BoysFunction boys(angmax);
     boys.setx(Xpc2p);
     double F_0 = boys.returnValue(0);
-    cout << "---------------------------" << endl;
-    cout << F_0 << endl;
+    cout << "-----------------------------------------------------------" << endl;
+    cout << "F_0= " << F_0 << endl;
+    cout << "-----------------------------------------------------------" << endl;
+
+    // testing the Nuclei-Electron integral
+    int t,u,v;
+    double p = a1+b1;
+    vec corePosition = {0.0, 0.0, 0.0};
+    vec Rpc = A - corePosition;
+    t = i+j;
+    u = k+l;
+    v = m+n;
+    setupHermiteIntegral HermiteIntegral(p,Rpc,t,u,v);
+
+    field <mat> Rtuv = HermiteIntegral.ReturnHermiteIntegral();
+
+    cout << "R0,nt = " << Rtuv(0)(n,t) << endl;
+    cout << "R1,nu = " << Rtuv(1)(n,u) << endl;
+    cout << "R2,nv = " << Rtuv(2)(n,v) << endl;
+
     return 0;
 } // End: function output()
