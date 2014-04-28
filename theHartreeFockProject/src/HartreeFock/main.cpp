@@ -28,6 +28,7 @@ int main(int argc, char* argv[]) {
     */
 
 
+/*
     //set number of protons and electrons
     int Z = 4;   // Number of protons
     int N = 4;   // Number of electrons
@@ -67,27 +68,32 @@ int main(int argc, char* argv[]) {
     // PrimitiveA:
     a1 = 0.2;
     weight = 1;
-    i = m = 0;
-    k = 2;
+    i = 2;
+    m = 2;
+    k = 1;
     A = {1.2, 2.3, 3.4};
 
     // PrimitiveB:
     b1 = 0.3;
     weight = 1;
-    j = l = 1;
-    n = 0;
+    j = 0;
+    l = 1;
+    n = 2;
     B = {-1.3,1.4,-2.4};
 
     Primitive primitiveA(weight,i,k,m,a1,A);
     Primitive primitiveB(weight,j,l,n,b1,B);
 
     // testing ReturnHermiteCoeffs:
+    integrator AB (primitiveA, primitiveB);
 
-    ReturnHermiteCoeffs Coeffs;
+
+    /*
+    //ReturnHermiteCoeffs Coeffs;
 
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
 
-    double Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
+    //double Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
     cout << setprecision(13) << " Sab = " << Sab2 << " and should be:" << endl;
     cout << " Sab = -0.07329386373895" << endl;
 
@@ -105,11 +111,11 @@ int main(int argc, char* argv[]) {
     int t,u,v;
     double p = a1+b1;
     vec corePosition = {0.0, 0.0, 0.0};
-
     setupHermiteIntegral HermiteIntegral(primitiveA,primitiveB,corePosition);
-
     field <cube> Rtuv = HermiteIntegral.ReturnHermiteIntegral();
-
     cout << Rtuv(n)(t+1,u+1,v+1) << endl;
+
+    */
+
     return 0;
 } // End: function output()

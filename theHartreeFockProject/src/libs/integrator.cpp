@@ -1,5 +1,6 @@
 #include <integrator.h>
 #include <primitive.h>
+#include <boysfunction.h>
 #include <armadillo>
 
 using namespace std;
@@ -11,11 +12,70 @@ double pi = 4*atan(1);
  *  Calculate integrals between primitive objects collected from class Primitive.
  *
  **********************************************************************************/
-integrator::integrator(){
+integrator::integrator(Primitive &pA, Primitive &pB){
+    a = pA.exponent();          // exponential constant.
+    A = pA.nucleusPosition();   // nucleus pA position
+    pAijk(0) = pA.xExponent();
+    pAijk(1) = pA.yExponent();
+    pAijk(2) = pA.zExponent();
+
+    b = pB.exponent();          // exponential constant.
+    B = pB.nucleusPosition();   // nucleus pB position
+    pBijk(0) = pB.xExponent();
+    pBijk(1) = pB.yExponent();
+    pBijk(2) = pB.zExponent();
+
+    //Setting up shared variables
+    p = a+b;
+    P = (a*A+b*B)/p;
+    Xab = A-B;
+    Xpa = P-A;
+    Xpb = P-B;
+    Xab2 = Xab(0)*Xab(0)+Xab(1)*Xab(1)+Xab(2)*Xab(2);
+
+    setupEij();
 
 }
 
-double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
+
+void integrator::setupEij(){
+    //field <cube> Eij(3);
+    Eij.set_size(3);
+    int I,J,T;
+    for(int coord=0;coord<3;coord++){
+        I = pAijk(coord);
+        J = pBijk(coord);
+        T = pAijk(coord)+pBijk(coord);
+        Eij(coord).set_size(I+2,J+2,T+4);
+        Eij(coord) (1,1,1) = exp(-(a*b/p)*Xab2);
+        for(int i=1;i<I+1;i++){
+            for(int t=1;t<T+3; t++){
+                Eij(coord) (i+1,1,t) = Eij(coord) (i,1,t-1)/(2*p) + Xpa(coord)*Eij(coord) (i,1,t) + t* Eij (coord) (i,1,t+1);
+            }
+        }
+        for(int j=1;j<J+1;j++){
+            for(int i=1;i<I+1;i++){
+                for(int t=1;t<T+2; t++){
+                    Eij(coord) (i,j+1,t) = Eij(coord) (i,j,t-1)/(2*p) + Xpb(coord)*Eij(coord) (i,j,t) + t* Eij (coord) (i,j,t+1);
+                }
+            }
+        }
+        Eij(coord).print();
+    }
+
+
+}
+
+void integrator::setupRtuv(vec &nucleiPos){}
+void integrator::setupRtau(vec &nucleiPos, Primitive &pC, Primitive &pD){}
+
+double integrator::overlap(){}
+double integrator::kinetic(){}
+double integrator::pNuclei(){}
+double integrator::pp(){}
+
+
+double integrator::overlapIntegral(Primitive &pA, Primitive &pB){
 
     // 1) setup Ga = Gikm(a,rA) and Gb = Gjln(b,rB).
 
@@ -36,17 +96,17 @@ double integrator::overlapIntegral(Primitive Ga, Primitive Gb){
     double a,b,p,mu;
     int i,j,k,l,m,n;
 
-    a = Ga.exponent();          // exponential constant.
-    A = Ga.nucleusPosition();   // nucleus Ga position
-    i = Ga.xExponent();
-    k = Ga.yExponent();
-    m = Ga.zExponent();
+    a = pA.exponent();          // exponential constant.
+    A = pA.nucleusPosition();   // nucleus Ga position
+    i = pA.xExponent();
+    k = pA.yExponent();
+    m = pA.zExponent();
 
-    b = Gb.exponent();          // exponential constant.
-    B = Gb.nucleusPosition();   // nucleus Gb position
-    j = Gb.xExponent();
-    l = Gb.yExponent();
-    n = Gb.zExponent();
+    b = pB.exponent();          // exponential constant.
+    B = pB.nucleusPosition();   // nucleus Gb position
+    j = pB.xExponent();
+    l = pB.yExponent();
+    n = pB.zExponent();
 
     p = a+b;
     for (int coord = 0; coord < 3; ++coord) {
