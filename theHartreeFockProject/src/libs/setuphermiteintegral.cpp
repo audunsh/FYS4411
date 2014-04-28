@@ -48,10 +48,11 @@ void setupHermiteIntegral::setupRtuv(const vec R, const vec F, const int &N, con
     Y = R(1);
     Z = R(2);
 
-    for (int n = 0; n < N; ++n) {
-        //cout << F(n) << " " ;
+    for (int n = 0; n < N-2; ++n) {  // dette er hvor problemet forplanter seg. Vi faar ikke tak i alle boys-verdiene som vi skulle onske...
+        cout << F(n) << " " ;
         Rtuv(n)(1,1,1) = F(n);
     }
+    cout << endl;
     cout << "n=" << (T+U+V) << " t=" << T << " u=" << U << " v=" << V << endl;
     cout << "--------------------R0-Rnt-------------------------------------------" << endl;
     for (int n = N-2; n > 0 ; --n) {
@@ -98,5 +99,6 @@ void setupHermiteIntegral::setupRtuv(const vec R, const vec F, const int &N, con
     }
     cout << endl;
 
+    cout << "hello" << endl;
 }
 
