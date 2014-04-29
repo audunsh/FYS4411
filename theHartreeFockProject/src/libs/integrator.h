@@ -14,8 +14,8 @@ public:
     double overlapIntegral(Primitive &pA, Primitive &pB);
     void setupHermiteCoefficients();
     void setupEij();
-    void setupRtuv(vec &nucleiPos);
-    void setupRtau(vec &nucleiPos, Primitive &pC, Primitive &pD);
+    void setupRtuv(vec3 &nucleiPos);
+    void setupRtau(vec3 &nucleiPos, Primitive &pC, Primitive &pD);
 
     //the integrals
     double overlap();
