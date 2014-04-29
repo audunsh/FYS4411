@@ -29,8 +29,8 @@ private:
     field <cube> Rtuv;
     field <cube> Rtau;
     //vec P, pAijk, pBijk, A,B,Xab,Xpa,Xpb;
-    vec3 P, pAijk, pBijk, A,B,Xab,Xpa,Xpb;
-    double a,b,p,mu, Xab2;
+    vec3 P, pAijk, pBijk, A,B,Xab,Xpa,Xpb,C, Rpc;
+    double a,b,p,mu, Xab2,wA,wB, R, Rpc2;
 
 
 

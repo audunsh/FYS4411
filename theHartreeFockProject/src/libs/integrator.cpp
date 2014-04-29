@@ -18,12 +18,14 @@ integrator::integrator(Primitive &pA, Primitive &pB){
     pAijk(0) = pA.xExponent();
     pAijk(1) = pA.yExponent();
     pAijk(2) = pA.zExponent();
+    wA = pA.weight();
 
     b = pB.exponent();          // exponential constant.
     B = pB.nucleusPosition();   // nucleus pB position
     pBijk(0) = pB.xExponent();
     pBijk(1) = pB.yExponent();
     pBijk(2) = pB.zExponent();
+    wB = pB.weight();
 
     //Setting up shared variables
     p = a+b;
@@ -34,7 +36,7 @@ integrator::integrator(Primitive &pA, Primitive &pB){
     Xab2 = Xab(0)*Xab(0)+Xab(1)*Xab(1)+Xab(2)*Xab(2);
 
     setupEij();
-    setupRtuv();
+    //setupRtuv();
 
 }
 
@@ -48,7 +50,7 @@ void integrator::setupEij(){
         J = pBijk(coord);
         T = pAijk(coord)+pBijk(coord);
         Eij(coord).set_size(I+3,J+3,T+4);
-        Eij(coord) (1,1,1) = exp(-(a*b/p)*Xab2);
+        Eij(coord) (1,1,1) = exp(-(a*b/p)*(Xab(coord)*Xab(coord)));
         for(int i=1;i<I+2;i++){
             for(int t=1;t<T+3; t++){
                 Eij(coord) (i+1,1,t) = Eij(coord) (i,1,t-1)/(2*p) + Xpa(coord)*Eij(coord) (i,1,t) + t* Eij (coord) (i,1,t+1);
@@ -61,8 +63,6 @@ void integrator::setupEij(){
                 }
             }
         }
-        Eij(coord).print();
-        cout << Eij(coord) (I+1,J+1,1) << endl;
     }
 
 }
@@ -74,13 +74,33 @@ void integrator::setupRtuv(vec &nucleiPos){
     V = pAijk(2)+pBijk(2);
     N = T+U+V+2;
     Rtuv.set_size(N);
+
+    double R;
+    vec3 Rpc;
+    Rpc = P - nucleiPos;
+    Rpc2 = Rpc(0)*Rpc(0)+Rpc(1)*Rpc(1)+Rpc(2)*Rpc(2);
+    BoysFunction boys(N);
+    boys.setx(p*Rpc2);
+
+
     for(int n=0;n<N;n++){
         Rtuv(n).set_size(T+1,U+1,V+1);
+        Rtuv(n) (1,1,1) = pow((-2.0*p),(double) n)*boys.returnValue(n);
     }
+
 }
 void integrator::setupRtau(vec &nucleiPos, Primitive &pC, Primitive &pD){}
 
-double integrator::overlap(){}
+double integrator::overlap(){
+    double result = wA*wB*pow(sqrt(pi/p),3);
+    int I,J;
+    for(int coord=0; coord<3;coord++){
+        I = pAijk(coord);
+        J = pBijk(coord);
+        result *= Eij(coord) (I+1,J+1,1);
+    }
+    return result;
+}
 double integrator::kinetic(){}
 double integrator::pNuclei(){}
 double integrator::pp(){}

@@ -68,17 +68,17 @@ int main(int argc, char* argv[]) {
     // PrimitiveA:
     a1 = 0.2;
     weight = 1;
-    i = 2;
-    m = 2;
-    k = 1;
+    i = 0;
+    k = 2;
+    m = 0;
     A = {1.2, 2.3, 3.4};
 
     // PrimitiveB:
     b1 = 0.3;
     weight = 1;
-    j = 0;
+    j = 1;
     l = 1;
-    n = 2;
+    n = 0;
     B = {-1.3,1.4,-2.4};
 
     Primitive primitiveA(weight,i,k,m,a1,A);
@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
 
     // testing ReturnHermiteCoeffs:
     integrator AB (primitiveA, primitiveB);
+    //AB.overlap();
 
 
     /*
