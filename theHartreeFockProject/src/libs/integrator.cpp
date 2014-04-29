@@ -110,7 +110,51 @@ void integrator::setupRtuv(vec3 &nucleiPos){
 }
 
 
-void integrator::setupRtau(vec3 &nucleiPos, Primitive &pC, Primitive &pD){}
+void integrator::setupRtau(vec3 &nucleiPos, Primitive &pC, Primitive &pD){
+    int Tau,Ny,Phi,N;
+    Tau = pAijk(0)+pBijk(0);
+    Ny  = pAijk(1)+pBijk(1);
+    Phi = pAijk(2)+pBijk(2);
+    N = Tau+Ny+Phi;
+    Rtuv.set_size(N+2);
+
+
+
+
+
+    Rpc = P - nucleiPos;
+    Rpc2 = Rpc(0)*Rpc(0)+Rpc(1)*Rpc(1)+Rpc(2)*Rpc(2);
+
+    BoysFunction boys(N); //this function behaves oddly!!
+    boys.setx(p*Rpc2);
+    for(int n=0;n<N+2;n++){
+        Rtuv(n).set_size(T+3,U+3,V+3);
+        Rtuv(n).zeros();
+        Rtuv(n) (1,1,1) = pow((-2.0*p),(double) n)*boys.returnValue(n);
+    }
+    for(int t=1;t<T+2;t++){
+        for(int n=0;n<N+1;n++){
+            Rtuv(n) (t+1,1,1) = t*Rtuv(n+1) (t-1,1,1) + Rpc(0) * Rtuv(n+1) (t,1,1);
+        }
+    }
+    for(int u=1;u<U+2;u++){
+        for(int t=1;t<T+2;t++){
+            for(int n=0;n<N+1;n++){
+                Rtuv(n) (t,u+1,1) = u*Rtuv(n+1) (t,u-1,1) + Rpc(1) * Rtuv(n+1) (t,u,1);
+            }
+        }
+    }
+    for(int v=1;v<V+2;v++){
+        for(int u=1;u<U+2;u++){
+            for(int t=1;t<T+2;t++){
+                for(int n=0;n<N+1;n++){
+                    Rtuv(n) (t,u,v+1) = v*Rtuv(n+1) (t,u,v-1) + Rpc(2) * Rtuv(n+1) (t,u,v);
+                }
+            }
+        }
+    }
+}
+
 
 double integrator::overlap(){
     double result = wA*wB*pow(sqrt(pi/p),3);
