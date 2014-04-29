@@ -69,15 +69,15 @@ int main(int argc, char* argv[]) {
     a1 = 0.2;
     weight = 1;
     i = 0;
-    k = 0;
+    k = 2;
     m = 0;
     A = {1.2, 2.3, 3.4};
 
     // PrimitiveB:
     b1 = 0.3;
     weight = 1;
-    j = 0;
-    l = 0;
+    j = 1;
+    l = 1;
     n = 0;
     B = {-1.3,1.4,-2.4};
 
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
     C(1) = 0.9;
     C(2) = 3.2;
     AB.setupRtuv(C);
-    cout << AB.pNuclei() << endl;
+    cout << AB.kinetic() << endl;
 
 
     /*

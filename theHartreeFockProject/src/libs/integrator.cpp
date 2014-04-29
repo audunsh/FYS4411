@@ -49,17 +49,17 @@ void integrator::setupEij(){
         I = pAijk(coord);
         J = pBijk(coord);
         T = pAijk(coord)+pBijk(coord);
-        Eij(coord).set_size(I+3,J+3,T+4);
+        Eij(coord).set_size(I+5,J+5,T+6); //not sure about these values (could be lower)
         Eij(coord).zeros();
         Eij(coord) (1,1,1) = exp(-(a*b/p)*(Xab(coord)*Xab(coord)));
-        for(int i=1;i<I+2;i++){
-            for(int t=1;t<T+3; t++){
+        for(int i=1;i<I+4;i++){
+            for(int t=1;t<T+5; t++){
                 Eij(coord) (i+1,1,t) = Eij(coord) (i,1,t-1)/(2*p) + Xpa(coord)*Eij(coord) (i,1,t) + t* Eij (coord) (i,1,t+1);
             }
         }
-        for(int j=1;j<J+2;j++){
-            for(int i=1;i<I+2;i++){
-                for(int t=1;t<T+3; t++){
+        for(int j=1;j<J+4;j++){
+            for(int i=1;i<I+4;i++){
+                for(int t=1;t<T+5; t++){
                     Eij(coord) (i,j+1,t) = Eij(coord) (i,j,t-1)/(2*p) + Xpb(coord)*Eij(coord) (i,j,t) + t* Eij (coord) (i,j,t+1);
                 }
             }
@@ -79,7 +79,7 @@ void integrator::setupRtuv(vec3 &nucleiPos){
     Rpc = P - nucleiPos;
     Rpc2 = Rpc(0)*Rpc(0)+Rpc(1)*Rpc(1)+Rpc(2)*Rpc(2);
 
-    BoysFunction boys(N+2);
+    BoysFunction boys(N); //this function behaves oddly!!
     boys.setx(p*Rpc2);
     for(int n=0;n<N+2;n++){
         Rtuv(n).set_size(T+3,U+3,V+3);
@@ -122,7 +122,17 @@ double integrator::overlap(){
     }
     return result;
 }
-double integrator::kinetic(){}
+double integrator::kinetic(){
+    S = sqrt(pi/p);
+    for(int coord=0;coord<3;coord++){
+        Sijk(coord) = S*Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)+1, 1);
+        Tijk(coord) = 4*b*b*S *Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)+3, 1) - 2*b*(2*pBijk(coord)+1)*S*Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)+1, 1);
+        if(-1<pBijk(coord)-2){
+            Tijk(coord) += pBijk(coord)*(pBijk(coord)-1)*S*Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)-1, 1);
+        }
+    }
+    return -.5*(Tijk(0)*Sijk(1)*Sijk(2) + Tijk(1)*Sijk(2)*Sijk(0)+Tijk(2)*Sijk(0)*Sijk(1));
+}
 
 
 double integrator::pNuclei(){
@@ -136,12 +146,10 @@ double integrator::pNuclei(){
     for(int t=0;t<T+1;t++){
         for(int u=0;u<U+1;u++){
             for(int v=0;v<V+1;v++){
-                cout <<  Rtuv(0) (t+1,u+1,v+1)<< endl;
                 result += Rtuv(0) (t+1,u+1,v+1)* Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)*Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1)*Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
             }
         }
     }
-    //Rtuv.print();
     return result*(2*pi/p);
 }
 double integrator::pp(){}
