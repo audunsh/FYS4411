@@ -34,6 +34,7 @@ integrator::integrator(Primitive &pA, Primitive &pB){
     Xab2 = Xab(0)*Xab(0)+Xab(1)*Xab(1)+Xab(2)*Xab(2);
 
     setupEij();
+    setupRtuv();
 
 }
 
@@ -46,27 +47,37 @@ void integrator::setupEij(){
         I = pAijk(coord);
         J = pBijk(coord);
         T = pAijk(coord)+pBijk(coord);
-        Eij(coord).set_size(I+2,J+2,T+4);
+        Eij(coord).set_size(I+3,J+3,T+4);
         Eij(coord) (1,1,1) = exp(-(a*b/p)*Xab2);
-        for(int i=1;i<I+1;i++){
+        for(int i=1;i<I+2;i++){
             for(int t=1;t<T+3; t++){
                 Eij(coord) (i+1,1,t) = Eij(coord) (i,1,t-1)/(2*p) + Xpa(coord)*Eij(coord) (i,1,t) + t* Eij (coord) (i,1,t+1);
             }
         }
-        for(int j=1;j<J+1;j++){
-            for(int i=1;i<I+1;i++){
-                for(int t=1;t<T+2; t++){
+        for(int j=1;j<J+2;j++){
+            for(int i=1;i<I+2;i++){
+                for(int t=1;t<T+3; t++){
                     Eij(coord) (i,j+1,t) = Eij(coord) (i,j,t-1)/(2*p) + Xpb(coord)*Eij(coord) (i,j,t) + t* Eij (coord) (i,j,t+1);
                 }
             }
         }
         Eij(coord).print();
+        cout << Eij(coord) (I+1,J+1,1) << endl;
     }
-
 
 }
 
-void integrator::setupRtuv(vec &nucleiPos){}
+void integrator::setupRtuv(vec &nucleiPos){
+    int T,U,V,N;
+    T = pAijk(0)+pBijk(0);
+    U = pAijk(1)+pBijk(1);
+    V = pAijk(2)+pBijk(2);
+    N = T+U+V+2;
+    Rtuv.set_size(N);
+    for(int n=0;n<N;n++){
+        Rtuv(n).set_size(T+1,U+1,V+1);
+    }
+}
 void integrator::setupRtau(vec &nucleiPos, Primitive &pC, Primitive &pD){}
 
 double integrator::overlap(){}
