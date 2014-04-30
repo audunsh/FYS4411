@@ -111,6 +111,7 @@ void integrator::setupRtuv(vec3 &nucleiPos){
 
 
 void integrator::setupRtau(vec3 &nucleiPos, Primitive &pC, Primitive &pD){
+    /*
     int Tau,Ny,Phi,N;
     Tau = pAijk(0)+pBijk(0);
     Ny  = pAijk(1)+pBijk(1);
@@ -149,6 +150,7 @@ void integrator::setupRtau(vec3 &nucleiPos, Primitive &pC, Primitive &pD){
             }
         }
     }
+    */
 }
 
 
@@ -192,7 +194,11 @@ double integrator::pNuclei(){
     }
     return result*(2*pi/p);
 }
-double integrator::pp(){}
+double integrator::pp(){
+    //could this function possibly be called with Eij and Rtuv from another set of primitives?
+    //This would avoid having to set up Rtau twice during runtime
+    return 0;
+}
 
 
 double integrator::overlapIntegral(Primitive &pA, Primitive &pB){
