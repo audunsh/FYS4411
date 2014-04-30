@@ -118,10 +118,6 @@ void integrator::setupRtau(vec3 &nucleiPos, Primitive &pC, Primitive &pD){
     N = Tau+Ny+Phi;
     Rtuv.set_size(N+2);
 
-
-
-
-
     Rpc = P - nucleiPos;
     Rpc2 = Rpc(0)*Rpc(0)+Rpc(1)*Rpc(1)+Rpc(2)*Rpc(2);
 
