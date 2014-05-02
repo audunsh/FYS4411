@@ -166,16 +166,20 @@ void integrator::setupRtau(){
 
     BoysFunction boys(N); //this function behaves oddly!!
     boys.setx(alpha*Rpq2);
+
     for(int n=0;n<N+2;n++){
         Rtau(n).set_size(T+Tau+3,U+Ny+3,V+Phi+3);
         Rtau(n).zeros();
         Rtau(n) (1,1,1) = pow((-2.0*p),(double) n)*boys.returnValue(n);
     }
+
+
     for(int t=1;t<T+Tau+2;t++){
         for(int n=0;n<N+1;n++){
             Rtau(n) (t+1,1,1) = t*Rtau(n+1) (t-1,1,1) + Rpq(0) * Rtau(n+1) (t,1,1);
         }
     }
+
     for(int u=1;u<U+Ny+2;u++){
         for(int t=1;t<T+Tau+2;t++){
             for(int n=0;n<N+1;n++){
@@ -236,14 +240,14 @@ double integrator::pNuclei(){
 }
 double integrator::pp(Primitive &pC, Primitive &pD){
     c = pC.exponent();          // exponential constant.
-    C = pC.nucleusPosition();   // nucleus pA position
+    C = pC.nucleusPosition();   // nucleus pC position
     pCijk(0) = pC.xExponent();
     pCijk(1) = pC.yExponent();
     pCijk(2) = pC.zExponent();
     wC = pC.weight();
 
     d = pD.exponent();          // exponential constant.
-    D = pD.nucleusPosition();   // nucleus pB position
+    D = pD.nucleusPosition();   // nucleus pD position
     pDijk(0) = pD.xExponent();
     pDijk(1) = pD.yExponent();
     pDijk(2) = pD.zExponent();
@@ -251,7 +255,6 @@ double integrator::pp(Primitive &pC, Primitive &pD){
 
     setupEcd();
     setupRtau();
-
     int T,U,V,N, Tau,Ny,Phi;
     T = pAijk(0)+pBijk(0);
     U = pAijk(1)+pBijk(1);
@@ -259,20 +262,25 @@ double integrator::pp(Primitive &pC, Primitive &pD){
     Tau = pCijk(0)+pDijk(0);
     Ny  = pCijk(1)+pDijk(1);
     Phi = pCijk(2)+pDijk(2);
-
-
-
-    N = T+U+V;
+    double E1,E2,R1;
     double result = 0;
     for(int t=0;t<T+1;t++){
         for(int u=0;u<U+1;u++){
             for(int v=0;v<V+1;v++){
-                result += Rtuv(0) (t+1,u+1,v+1)* Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)*Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1)*Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
+                for(int tau=0;tau<Tau+1;tau++){
+                    for(int ny=0;ny<Ny+1;ny++){
+                        for(int phi=0;phi<Phi+1;phi++){
+                            E1 = Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)*Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1)*Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
+                            E2 = Ecd(0) ((int) pCijk(0)+1, (int) pDijk(0)+1, tau+1)*Ecd(1) ((int) pCijk(1)+1, (int) pDijk(1)+1, ny+1)*Ecd(2) ((int) pCijk(2)+1, (int) pDijk(2)+1, phi+1);
+                            R1 = pow(-1,tau+ny+phi+1)*Rtau(0) (t+tau+1,u+ny+1,v+phi+1);
+                            result += E1*E2*R1;
+                        }
+                    }
+                }
             }
         }
     }
-    return result*(2*pi/p);
-    return 0;
+    return result*(2*pow(pi,2.5))/(p*q*sqrt(p+q));
 }
 
 
