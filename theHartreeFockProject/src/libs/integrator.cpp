@@ -96,17 +96,27 @@ void integrator::setupEcd(){
 }
 
 void integrator::setupRtuv(vec3 &nucleiPos){
-    int T,U,V,N;
+    int T,U,V,N, Nn;
     T = pAijk(0)+pBijk(0);
     U = pAijk(1)+pBijk(1);
     V = pAijk(2)+pBijk(2);
+
+    vec Aa = zeros<vec>(3);
+    //Aa.set_size(6);
+    //Aa.zeros();
+    Aa(0) = T;
+    Aa(1) = U;
+    Aa(2) = V;
+
+    Nn = Aa.max();
+
     N = T+U+V;
     Rtuv.set_size(N+2);
 
     Rpc = P - nucleiPos;
     Rpc2 = Rpc(0)*Rpc(0)+Rpc(1)*Rpc(1)+Rpc(2)*Rpc(2);
 
-    BoysFunction boys(N); //this function behaves oddly!!
+    BoysFunction boys(Nn); //this function behaves oddly!!
     boys.setx(p*Rpc2);
     for(int n=0;n<N+2;n++){
         Rtuv(n).set_size(T+3,U+3,V+3);
@@ -144,7 +154,7 @@ void integrator::setupRtau(){
     alpha = p*q/(p+q);
     Rpq = P-Q;
 
-    int T,U,V,N, Tau,Ny,Phi;
+    int T,U,V,N, Nn,Tau,Ny,Phi;
     T = pAijk(0)+pBijk(0);
     U = pAijk(1)+pBijk(1);
     V = pAijk(2)+pBijk(2);
@@ -152,13 +162,26 @@ void integrator::setupRtau(){
     Ny  = pCijk(1)+pDijk(1);
     Phi = pCijk(2)+pDijk(2);
 
+    vec Aa = zeros<vec>(6);
+    //Aa.set_size(6);
+    //Aa.zeros();
+    Aa(0) = T;
+    Aa(1) = U;
+    Aa(2) = V;
+    Aa(3) = Tau;
+    Aa(4) = Ny;
+    Aa(5) = Phi;
+
+    Nn = Aa.max();
+    //cout << Aa.max() << endl;
+
     N = T+U+V+Tau+Ny+Phi;
     Rtau.set_size(N+2);
 
     //Rpc = Rpq - nucleiPos;
     Rpq2 = Rpq(0)*Rpq(0)+Rpq(1)*Rpq(1)+Rpq(2)*Rpq(2);
 
-    BoysFunction boys(N); //this function behaves oddly!!
+    BoysFunction boys(Nn+1); //this function behaves oddly!!
     boys.setx(alpha*Rpq2);
 
     for(int n=0;n<N+2;n++){
@@ -190,7 +213,6 @@ void integrator::setupRtau(){
             }
         }
     }
-    Rtau.print();
 }
 
 

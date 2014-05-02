@@ -90,9 +90,12 @@ int main(int argc, char* argv[]) {
     C(0) = 2.3;
     C(1) = 0.9;
     C(2) = 3.2;
+
+
     AB.setupRtuv(C);
     cout << AB.kinetic() << endl;
     cout << AB.pp(primitiveA, primitiveB) << endl;
+
 
 
     //double G = 6;
