@@ -226,6 +226,7 @@ double integrator::pNuclei(){
     }
     return result*(2*pi/p);
 }
+
 double integrator::pp(Primitive &pC, Primitive &pD){
     //The particle-particle interaction <pA pB|r**-1 |pC pD>_AS
     c = pC.exponent();          // exponential constant.
