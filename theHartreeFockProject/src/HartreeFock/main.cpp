@@ -69,15 +69,15 @@ int main(int argc, char* argv[]) {
     a1 = 0.2;
     weight = 1;
     i = 0;
-    k = 2;
-    m = 0;
+    k = 0;
+    m = 1;
     A = {1.2, 2.3, 3.4};
 
     // PrimitiveB:
     b1 = 0.3;
     weight = 1;
     j = 1;
-    l = 1;
+    l = 0;
     n = 0;
     B = {-1.3,1.4,-2.4};
 
@@ -95,7 +95,17 @@ int main(int argc, char* argv[]) {
     cout << AB.pp(primitiveA, primitiveB) << endl;
 
 
+    //double G = 6;
+    //BoysFunction boys(G);
+    //boys.setx(1);
     /*
+    for(int n=0;n<G;n++){
+         //this function behaves oddly!!
+        cout << boys.returnValue(n) << endl;
+    }
+
+
+
     //ReturnHermiteCoeffs Coeffs;
 
     field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);

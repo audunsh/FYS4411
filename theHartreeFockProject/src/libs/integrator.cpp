@@ -138,13 +138,7 @@ void integrator::setupRtuv(vec3 &nucleiPos){
 
 
 void integrator::setupRtau(){
-    //shared variables for C and D
-    q = c+d;
-    Q = (c*C+d*D)/q;
-    Xcd = C-D;
-    Xqc = Q-C;
-    Xqd = Q-D;
-    Xcd2 = Xcd(0)*Xcd(0)+Xcd(1)*Xcd(1)+Xcd(2)*Xcd(2);
+
 
     //shared variables for A,B,C,D
     alpha = p*q/(p+q);
@@ -170,7 +164,7 @@ void integrator::setupRtau(){
     for(int n=0;n<N+2;n++){
         Rtau(n).set_size(T+Tau+3,U+Ny+3,V+Phi+3);
         Rtau(n).zeros();
-        Rtau(n) (1,1,1) = pow((-2.0*p),(double) n)*boys.returnValue(n);
+        Rtau(n) (1,1,1) = pow((-2.0*alpha),(double) n)*boys.returnValue(n);
     }
 
 
@@ -196,6 +190,7 @@ void integrator::setupRtau(){
             }
         }
     }
+    Rtau.print();
 }
 
 
@@ -239,6 +234,7 @@ double integrator::pNuclei(){
     return result*(2*pi/p);
 }
 double integrator::pp(Primitive &pC, Primitive &pD){
+    //The particle-particle integral
     c = pC.exponent();          // exponential constant.
     C = pC.nucleusPosition();   // nucleus pC position
     pCijk(0) = pC.xExponent();
@@ -252,6 +248,14 @@ double integrator::pp(Primitive &pC, Primitive &pD){
     pDijk(1) = pD.yExponent();
     pDijk(2) = pD.zExponent();
     wD = pD.weight();
+
+    //shared variables for C and D
+    q = c+d;
+    Q = (c*C+d*D)/q;
+    Xcd = C-D;
+    Xqc = Q-C;
+    Xqd = Q-D;
+    Xcd2 = Xcd(0)*Xcd(0)+Xcd(1)*Xcd(1)+Xcd(2)*Xcd(2);
 
     setupEcd();
     setupRtau();
@@ -270,7 +274,7 @@ double integrator::pp(Primitive &pC, Primitive &pD){
                 for(int tau=0;tau<Tau+1;tau++){
                     for(int ny=0;ny<Ny+1;ny++){
                         for(int phi=0;phi<Phi+1;phi++){
-                            E1 = Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)*Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1)*Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
+                            E1 = Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)  *Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1) *Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
                             E2 = Ecd(0) ((int) pCijk(0)+1, (int) pDijk(0)+1, tau+1)*Ecd(1) ((int) pCijk(1)+1, (int) pDijk(1)+1, ny+1)*Ecd(2) ((int) pCijk(2)+1, (int) pDijk(2)+1, phi+1);
                             R1 = pow(-1,tau+ny+phi+1)*Rtau(0) (t+tau+1,u+ny+1,v+phi+1);
                             result += E1*E2*R1;
