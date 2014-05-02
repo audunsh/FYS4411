@@ -68,6 +68,33 @@ void integrator::setupEij(){
 
 }
 
+void integrator::setupEcd(){
+    //field <cube> Eij(3);
+    Ecd.set_size(3);
+    int I,J,T;
+    for(int coord=0;coord<3;coord++){
+        I = pCijk(coord);
+        J = pDijk(coord);
+        T = pCijk(coord)+pDijk(coord);
+        Ecd(coord).set_size(I+5,J+5,T+6); //not sure about these values (could be lower)
+        Ecd(coord).zeros();
+        Ecd(coord) (1,1,1) = exp(-(c*d/q)*(Xcd(coord)*Xcd(coord)));
+        for(int i=1;i<I+4;i++){
+            for(int t=1;t<T+5; t++){
+                Ecd(coord) (i+1,1,t) = Ecd(coord) (i,1,t-1)/(2*q) + Xqc(coord)*Ecd(coord) (i,1,t) + t* Eij (coord) (i,1,t+1);
+            }
+        }
+        for(int j=1;j<J+4;j++){
+            for(int i=1;i<I+4;i++){
+                for(int t=1;t<T+5; t++){
+                    Ecd(coord) (i,j+1,t) = Ecd(coord) (i,j,t-1)/(2*q) + Xqd(coord)*Ecd(coord) (i,j,t) + t* Eij (coord) (i,j,t+1);
+                }
+            }
+        }
+    }
+
+}
+
 void integrator::setupRtuv(vec3 &nucleiPos){
     int T,U,V,N;
     T = pAijk(0)+pBijk(0);
@@ -110,47 +137,61 @@ void integrator::setupRtuv(vec3 &nucleiPos){
 }
 
 
-void integrator::setupRtau(vec3 &nucleiPos, Primitive &pC, Primitive &pD){
-    /*
-    int Tau,Ny,Phi,N;
-    Tau = pAijk(0)+pBijk(0);
-    Ny  = pAijk(1)+pBijk(1);
-    Phi = pAijk(2)+pBijk(2);
-    N = Tau+Ny+Phi;
-    Rtuv.set_size(N+2);
+void integrator::setupRtau(){
+    //shared variables for C and D
+    q = c+d;
+    Q = (c*C+d*D)/q;
+    Xcd = C-D;
+    Xqc = Q-C;
+    Xqd = Q-D;
+    Xcd2 = Xcd(0)*Xcd(0)+Xcd(1)*Xcd(1)+Xcd(2)*Xcd(2);
 
-    Rpc = P - nucleiPos;
-    Rpc2 = Rpc(0)*Rpc(0)+Rpc(1)*Rpc(1)+Rpc(2)*Rpc(2);
+    //shared variables for A,B,C,D
+    alpha = p*q/(p+q);
+    Rpq = P-Q;
+
+    int T,U,V,N, Tau,Ny,Phi;
+    T = pAijk(0)+pBijk(0);
+    U = pAijk(1)+pBijk(1);
+    V = pAijk(2)+pBijk(2);
+    Tau = pCijk(0)+pDijk(0);
+    Ny  = pCijk(1)+pDijk(1);
+    Phi = pCijk(2)+pDijk(2);
+
+    N = T+U+V+Tau+Ny+Phi;
+    Rtau.set_size(N+2);
+
+    //Rpc = Rpq - nucleiPos;
+    Rpq2 = Rpq(0)*Rpq(0)+Rpq(1)*Rpq(1)+Rpq(2)*Rpq(2);
 
     BoysFunction boys(N); //this function behaves oddly!!
-    boys.setx(p*Rpc2);
+    boys.setx(alpha*Rpq2);
     for(int n=0;n<N+2;n++){
-        Rtuv(n).set_size(T+3,U+3,V+3);
-        Rtuv(n).zeros();
-        Rtuv(n) (1,1,1) = pow((-2.0*p),(double) n)*boys.returnValue(n);
+        Rtau(n).set_size(T+Tau+3,U+Ny+3,V+Phi+3);
+        Rtau(n).zeros();
+        Rtau(n) (1,1,1) = pow((-2.0*p),(double) n)*boys.returnValue(n);
     }
-    for(int t=1;t<T+2;t++){
+    for(int t=1;t<T+Tau+2;t++){
         for(int n=0;n<N+1;n++){
-            Rtuv(n) (t+1,1,1) = t*Rtuv(n+1) (t-1,1,1) + Rpc(0) * Rtuv(n+1) (t,1,1);
+            Rtau(n) (t+1,1,1) = t*Rtau(n+1) (t-1,1,1) + Rpq(0) * Rtau(n+1) (t,1,1);
         }
     }
-    for(int u=1;u<U+2;u++){
-        for(int t=1;t<T+2;t++){
+    for(int u=1;u<U+Ny+2;u++){
+        for(int t=1;t<T+Tau+2;t++){
             for(int n=0;n<N+1;n++){
-                Rtuv(n) (t,u+1,1) = u*Rtuv(n+1) (t,u-1,1) + Rpc(1) * Rtuv(n+1) (t,u,1);
+                Rtau(n) (t,u+1,1) = u*Rtau(n+1) (t,u-1,1) + Rpq(1) * Rtau(n+1) (t,u,1);
             }
         }
     }
-    for(int v=1;v<V+2;v++){
-        for(int u=1;u<U+2;u++){
-            for(int t=1;t<T+2;t++){
+    for(int v=1;v<V+Phi+2;v++){
+        for(int u=1;u<U+Ny+2;u++){
+            for(int t=1;t<T+Tau+2;t++){
                 for(int n=0;n<N+1;n++){
-                    Rtuv(n) (t,u,v+1) = v*Rtuv(n+1) (t,u,v-1) + Rpc(2) * Rtuv(n+1) (t,u,v);
+                    Rtau(n) (t,u,v+1) = v*Rtau(n+1) (t,u,v-1) + Rpq(2) * Rtau(n+1) (t,u,v);
                 }
             }
         }
     }
-    */
 }
 
 
@@ -176,7 +217,6 @@ double integrator::kinetic(){
     return -.5*(Tijk(0)*Sijk(1)*Sijk(2) + Tijk(1)*Sijk(2)*Sijk(0)+Tijk(2)*Sijk(0)*Sijk(1));
 }
 
-
 double integrator::pNuclei(){
     int T,U,V,N;
     double r;
@@ -194,9 +234,44 @@ double integrator::pNuclei(){
     }
     return result*(2*pi/p);
 }
-double integrator::pp(){
-    //could this function possibly be called with Eij and Rtuv from another set of primitives?
-    //This would avoid having to set up Rtau twice during runtime
+double integrator::pp(Primitive &pC, Primitive &pD){
+    c = pC.exponent();          // exponential constant.
+    C = pC.nucleusPosition();   // nucleus pA position
+    pCijk(0) = pC.xExponent();
+    pCijk(1) = pC.yExponent();
+    pCijk(2) = pC.zExponent();
+    wC = pC.weight();
+
+    d = pD.exponent();          // exponential constant.
+    D = pD.nucleusPosition();   // nucleus pB position
+    pDijk(0) = pD.xExponent();
+    pDijk(1) = pD.yExponent();
+    pDijk(2) = pD.zExponent();
+    wD = pD.weight();
+
+    setupEcd();
+    setupRtau();
+
+    int T,U,V,N, Tau,Ny,Phi;
+    T = pAijk(0)+pBijk(0);
+    U = pAijk(1)+pBijk(1);
+    V = pAijk(2)+pBijk(2);
+    Tau = pCijk(0)+pDijk(0);
+    Ny  = pCijk(1)+pDijk(1);
+    Phi = pCijk(2)+pDijk(2);
+
+
+
+    N = T+U+V;
+    double result = 0;
+    for(int t=0;t<T+1;t++){
+        for(int u=0;u<U+1;u++){
+            for(int v=0;v<V+1;v++){
+                result += Rtuv(0) (t+1,u+1,v+1)* Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)*Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1)*Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
+            }
+        }
+    }
+    return result*(2*pi/p);
     return 0;
 }
 
