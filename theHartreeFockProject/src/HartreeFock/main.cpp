@@ -45,21 +45,8 @@ int main(int argc, char* argv[]) {
     double E = object.Solve(Bs);
 
     cout << "Energy of the ground state= " << E << endl;
-/*
-    double weight = 1.0;
-    int exponent = 2.0;
-    int xExponent = 2.0;
-    int yExponent = 2.0;
-    int zExponent = 2.0;
-    vec AnucleusPosition = {0,0,0};
-    vec BnucleusPosition = {1,1,1};
-    integrator integral;
-    Primitive a(weight,xExponent,yExponent,zExponent,exponent,AnucleusPosition);
-    Primitive b(weight,xExponent,yExponent,zExponent,exponent,BnucleusPosition);
+    */
 
-    double Sab = integral.overlapIntegral(a,b);
-    cout << Sab << endl;
-*/
     double weight = 1.0;
     double a1,b1;
     int i,j,k,l,m,n;
@@ -84,58 +71,11 @@ int main(int argc, char* argv[]) {
     Primitive primitiveA(weight,i,k,m,a1,A);
     Primitive primitiveB(weight,j,l,n,b1,B);
 
-    // testing ReturnHermiteCoeffs:
+    //Core position
     integrator AB (primitiveA, primitiveB);
-    vec3 C;
-    C(0) = 2.3;
-    C(1) = 0.9;
-    C(2) = 3.2;
-
+    vec3 C = {2.3,0.9,3.2};
 
     AB.setupRtuv(C);
-    cout << AB.kinetic() << endl;
-    cout << AB.pp(primitiveA, primitiveB) << endl;
-
-
-
-    //double G = 6;
-    //BoysFunction boys(G);
-    //boys.setx(1);
-    /*
-    for(int n=0;n<G;n++){
-         //this function behaves oddly!!
-        cout << boys.returnValue(n) << endl;
-    }
-
-
-
-    //ReturnHermiteCoeffs Coeffs;
-
-    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-
-    //double Sab2 = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a1+b1),3.0/2);
-    cout << setprecision(13) << " Sab = " << Sab2 << " and should be:" << endl;
-    cout << " Sab = -0.07329386373895" << endl;
-
-    // testing kinetic energy
-    KineticEnergy T(Eab,&primitiveA,&primitiveB);
-
-    double Tab = T.ReturnKineticIntegral();
-
-    cout << "-----------------------------------------------------------" << endl;
-    cout << "Tab= " << Tab << " And should be:" << endl;
-    cout << "Tab= -0.01598401092187" << endl;
-
-
-    // testing the Nuclei-Electron integral
-    int t,u,v;
-    double p = a1+b1;
-    vec corePosition = {0.0, 0.0, 0.0};
-    setupHermiteIntegral HermiteIntegral(primitiveA,primitiveB,corePosition);
-    field <cube> Rtuv = HermiteIntegral.ReturnHermiteIntegral();
-    cout << Rtuv(n)(t+1,u+1,v+1) << endl;
-
-    */
 
     return 0;
 } // End: function output()
