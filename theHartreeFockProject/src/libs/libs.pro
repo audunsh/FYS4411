@@ -11,7 +11,8 @@ SOURCES= myclass.cpp \
          primitive.cpp \
          returnhermitecoeffs.cpp \
     kineticenergy.cpp \
-    setuphermiteintegral.cpp
+    setuphermiteintegral.cpp \
+    contracted.cpp
 
 HEADERS= myclass.h \
          basis.h \
@@ -22,6 +23,7 @@ HEADERS= myclass.h \
          boysfunction.h \
          returnhermitecoeffs.h \
     kineticenergy.h \
-    setuphermiteintegral.h
+    setuphermiteintegral.h \
+    contracted.h
 
 LIBS += -larmadillo -lblas -llapack
