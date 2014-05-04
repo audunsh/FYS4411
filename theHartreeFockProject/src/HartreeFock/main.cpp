@@ -79,11 +79,6 @@ int main(int argc, char* argv[]) {
     AB.setupRtuv(C);
     Primitive contr[2] = {primitiveA, primitiveB};
     contracted BASE (2,contr);
-    cout << BASE.getPrimitive(0).exponent() << endl;
-    cout << BASE.getPrimitive(1).exponent() << endl;
-    contr[0]=primitiveA;
-    cout << BASE.getPrimitive(0).exponent() << endl;
-    cout << BASE.getPrimitive(1).exponent() << endl;
 
     return 0;
 } // End: function output()

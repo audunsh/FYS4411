@@ -22,11 +22,11 @@ TEST(HFSolve){
     int N = 4;   // Number of electrons
     int Ns = 4;  // 6 states
 
-    basis Bs(3, 0);              //creating the basis object
+    basis Bs(3);              //creating the basis object
     string filename;
     filename = "/home/goranbs/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/testingHF/m_elements_c.dat";
     Bs.read(filename, Z); //reading basis from file
-    Bs.set_orthonormal(true);
+    Bs.set_orthonormal();
 
     //Solving for N,Z with the provided basis
     HFSolve object (Z,N);

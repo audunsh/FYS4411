@@ -1,9 +1,8 @@
 #include <basis.h>
 
 
-basis::basis(int N, int b)
+basis::basis(int N)
 {
-    bMode = b;
     Nstates = N;
     Nstates2 = 2*Nstates;
     field<mat> vn(Nstates, Nstates); //no-spin basis
@@ -21,21 +20,33 @@ basis::basis(int N, int b)
     }
     v = vn;  // global variables for class basis.cpp
     V = Vn;
+    h.set_size(Nstates,Nstates);
+    h.zeros();
+    H.set_size(Nstates2,Nstates2);
+    H.zeros();
 
     //creating the overlap matrix
-    mat s;
-    s.zeros(Nstates2,Nstates2);
-    S = s;
+    S.set_size(Nstates,Nstates);
+    S.zeros();
 }
 
-void basis::set_orthonormal(bool t){
+void basis::set_orthonormal(){
     //sets the overlap matrix equal to the identity matrix
-    if(t){
-        for(int i=0;i < Nstates2;i++){
-            for(int j=0;j < Nstates2;j++){
-                if(i==j){
-                    S(i,j) = 1.0;
-                }
+    for(int i=0;i < Nstates2;i++){
+        for(int j=0;j < Nstates2;j++){
+            if(i==j){
+                S(i,j) = 1.0;
+            }
+        }
+    }
+}
+
+void basis::init_overlap(){
+    //calculates the overlap matrix for the generated basis
+    for(int i=0;i < Nstates2;i++){
+        for(int j=0;j < Nstates2;j++){
+            if(i==j){
+                S(i,j) = 1.0;
             }
         }
     }
@@ -43,7 +54,6 @@ void basis::set_orthonormal(bool t){
 
 void basis::read(string filename, int Zn){
     Z = Zn;
-    bMode = 0; //only
     //read basis from file
     //this also means you have to provide the one-body energy and the overlap matrix (use h0 and ...)
     cout << "Loading predefined basis from file: " << filename << endl;
@@ -63,7 +73,10 @@ void basis::read(string filename, int Zn){
             myfile >> value;
             //cout << p << q << r << s << endl;
             try{
-                v(p,q)(r,s) = value;
+                v(p,q)(r,s) = Z*value;
+                if(p==q){
+                    h(p,q) = h0(p*2,q*2);
+                }
             }
             catch(int e){
                 cout << "Failed to load basis." << endl;
@@ -73,6 +86,13 @@ void basis::read(string filename, int Zn){
     }
     else
         cout << "Did not manage to open file in HFSolve::init()"<< endl;
+    expand();
+}
+
+void basis::expand(){
+    h.set_size(Nstates2);
+    S.set_size(Nstates2,Nstates2);
+    S.zeros();
     //expanding basis to include spin
     double D = 0;
     double Ex = 0;
@@ -86,13 +106,14 @@ void basis::read(string filename, int Zn){
                         //cout << D << Ex << " ";
                         //cout << p << " " << q << " " << r << " " << s << endl;
 
-                        V(p,q)(r,s) = Z*state(p,q,r,s,D,Ex);
+                        V(p,q)(r,s) = state(p,q,r,s,D,Ex);
                     }
                     catch(int e){
                         cout << "Failed to read basis." << endl;
                     }
                 }
             }
+            H(p,q) = h0(p,q);
         }
     }
 }
