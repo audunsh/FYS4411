@@ -2,20 +2,25 @@
 #include <armadillo>
 #include <primitive.h>
 
+
 using namespace std;
 using namespace arma;
 
 
-contracted::contracted(int N)
-{
-
-    //lincomb.set_size(N);
+contracted::contracted(int N, Primitive primitives[]){
+    basisFunction[N];
+    for(int i=0; i<N; i++){
+        basisFunction[i] = primitives[i];
+    }
 }
 
-void contracted::setPrimitive(int n, Primitive P){
-    //lincomb(n) = P;
+void contracted::setPrimitive(int n){
 }
 
 Primitive contracted::getPrimitive(int n){
-    return Primitive(0,0,0,0,0,{0,0,0});//lincomb(n);
+    return basisFunction[n];
+}
+
+void contracted::free(){
+    delete[] basisFunction;
 }

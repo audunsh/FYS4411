@@ -11,6 +11,7 @@
 #include <returnhermitecoeffs.h>
 #include <kineticenergy.h>
 #include <setuphermiteintegral.h>
+#include <contracted.h>
 
 double pi = 4*atan(1);
 
@@ -76,6 +77,13 @@ int main(int argc, char* argv[]) {
     vec3 C = {2.3,0.9,3.2};
 
     AB.setupRtuv(C);
+    Primitive contr[2] = {primitiveA, primitiveB};
+    contracted BASE (2,contr);
+    cout << BASE.getPrimitive(0).exponent() << endl;
+    cout << BASE.getPrimitive(1).exponent() << endl;
+    contr[0]=primitiveA;
+    cout << BASE.getPrimitive(0).exponent() << endl;
+    cout << BASE.getPrimitive(1).exponent() << endl;
 
     return 0;
 } // End: function output()

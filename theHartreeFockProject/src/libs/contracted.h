@@ -3,17 +3,19 @@
 #include <armadillo>
 #include <primitive.h>
 
+
 using namespace std;
 using namespace arma;
 
 class contracted
 {
 public:
-    contracted(int N);
+    contracted(int N,Primitive primitives[]);
     Primitive getPrimitive(int n);
-    void setPrimitive(int n, Primitive P);
+    void setPrimitive(int n);
+    void free();
 private:
-    Primitive lincomb [];
+    Primitive basisFunction[];
 
 };
 
