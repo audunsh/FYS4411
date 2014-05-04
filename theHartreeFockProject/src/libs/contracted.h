@@ -16,6 +16,7 @@ public:
     void free();
 private:
     Primitive basisFunction[];
+    int Nprimitives;
 
 };
 

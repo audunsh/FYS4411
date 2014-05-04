@@ -8,6 +8,7 @@ using namespace arma;
 
 
 contracted::contracted(int N, Primitive primitives[]){
+    Nprimitives = N;
     basisFunction[N];
     for(int i=0; i<N; i++){
         basisFunction[i] = primitives[i];
