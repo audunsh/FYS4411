@@ -33,7 +33,8 @@ public:
     //we also need an array of contracted containing the primitives in each orbital
     //this will constitute the basis
 private:
-    contracted basisSet[];
+    contracted basisSet[]; //use one of these...
+    vector<contracted> basisSts; //use one of these...
     int Nprimitives;
 
 };

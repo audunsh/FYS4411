@@ -188,8 +188,13 @@ void basis::init_STO_3G(string configuration){
         Primitive P1[3] = {P1A,P1B,P1C};
 
         contracted C1 (3,S1);
-        //contracted C2(3,S2);
-        //contracted C3(3,P1);
+        contracted C2(3,S2);
+        contracted C3(3,P1);
+
+        basisSts.push_back(C1);
+        basisSts.push_back(C2);
+        basisSts.push_back(C3);
+
         cout << C1.getPrimitive(0).exponent() << endl;
         //contracted basisSet[3] = {C1,C1,C1};
 
@@ -207,17 +212,19 @@ void basis::init_integrals(){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<Nprimitives;i++){
                 for(int j=0; j<Nprimitives;j++){
-                    Primitive A = basisSet[p].getPrimitive(i);
-                    Primitive B = basisSet[q].getPrimitive(j);
+                    Primitive A = basisSts[p].getPrimitive(i);
+                    Primitive B = basisSts[q].getPrimitive(j);
                     integrator AB (A,B);
                     S(p,q) += AB.overlap();
+                    vec3 C = {2.3,0.9,3.2};
+                    AB.setupRtuv(C);
                     h(p,q) += AB.kinetic()+AB.pNuclei();
                     for(int r=0; r<Nstates; r++){
                         for(int s=0; s<Nstates; s++){
                             for(int k=0;k<Nprimitives;k++){
                                 for(int l=0;l<Nprimitives;l++){
-                                    Primitive C = basisSet[r].getPrimitive(k);
-                                    Primitive D = basisSet[s].getPrimitive(l);
+                                    Primitive C = basisSts[r].getPrimitive(k);
+                                    Primitive D = basisSts[s].getPrimitive(l);
                                     v(p,q)(r,s) += AB.pp(C,D);
                                 }
                             }

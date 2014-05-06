@@ -79,21 +79,15 @@ int main(int argc, char* argv[]) {
     vec3 C = {2.3,0.9,3.2};
     AB.setupRtuv(C);
 
-    cout << AB.pp(primitiveA,primitiveB) << endl;
+    //cout << AB.pp(primitiveA,primitiveB) << endl;
 
     //Primitive contr[2] = {primitiveA, primitiveB};
     //contracted BASE (2,contr);
-    //field<integrator> Hfield;
-    //Hfield.set_size(1);
 
-    //Hfield(0) = AB;
-    //cout << Hfield.n_elem << endl;
+    basis BS(3);
+    BS.init_STO_3G("Be");
+    BS.init_integrals();
+    //BS.init_integrals();
 
-
-
-
-    //basis BS(3);
-    //BS.init_STO_3G("Be");
-    //B.init_integrals();
     return 0;
 } // End: function output()

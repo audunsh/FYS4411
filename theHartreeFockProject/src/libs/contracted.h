@@ -16,6 +16,7 @@ public:
     void free();
 private:
     Primitive basisFunction[];
+    vector<Primitive> basisFs;
     int Nprimitives;
 
 };

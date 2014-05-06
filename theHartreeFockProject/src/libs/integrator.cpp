@@ -76,13 +76,15 @@ void integrator::setupEcd(){
         Ecd(coord) (1,1,1) = exp(-(c*d/q)*(Xcd(coord)*Xcd(coord)));
         for(int i=1;i<I+4;i++){
             for(int t=1;t<T+5; t++){
-                Ecd(coord) (i+1,1,t) = Ecd(coord) (i,1,t-1)/(2*q) + Xqc(coord)*Ecd(coord) (i,1,t) + t* Eij (coord) (i,1,t+1);
+                //Ecd(coord) (i+1,1,t) = Ecd(coord) (i,1,t-1)/(2*q) + Xqc(coord)*Ecd(coord) (i,1,t) + t* Eij (coord) (i,1,t+1);
+                Ecd(coord) (i+1,1,t) = Ecd(coord) (i,1,t-1)/(2*q) + Xqc(coord)*Ecd(coord) (i,1,t) + t* Ecd (coord) (i,1,t+1); //maybe getting late ?
             }
         }
         for(int j=1;j<J+4;j++){
             for(int i=1;i<I+4;i++){
                 for(int t=1;t<T+5; t++){
-                    Ecd(coord) (i,j+1,t) = Ecd(coord) (i,j,t-1)/(2*q) + Xqd(coord)*Ecd(coord) (i,j,t) + t* Eij (coord) (i,j,t+1);
+                    //Ecd(coord) (i,j+1,t) = Ecd(coord) (i,j,t-1)/(2*q) + Xqd(coord)*Ecd(coord) (i,j,t) + t* Eij (coord) (i,j,t+1);
+                    Ecd(coord) (i,j+1,t) = Ecd(coord) (i,j,t-1)/(2*q) + Xqd(coord)*Ecd(coord) (i,j,t) + t* Ecd (coord) (i,j,t+1);
                 }
             }
         }
