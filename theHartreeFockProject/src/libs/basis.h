@@ -5,6 +5,7 @@
 #include <armadillo>
 #include <contracted.h>
 #include <primitive.h>
+#include <integrator.h>
 
 using namespace std;
 using namespace arma;
@@ -18,6 +19,7 @@ public:
     void set_orthonormal();                                       //if true: set the overlap matrix to I
     void expand(); //expand basis for explicit spin-dependence
     void init_overlap();
+    void init_integrals();
     void init_STO_3G(string configuration); //set up STO-3G basis set for given configuration
     double get(int p, int q, int r, int s);                       //function to retrieve two-body integral (precalculated or otherwise
     double eval(int p, int q, int r, int s);                      //function to evaluate two-body integral
@@ -32,6 +34,8 @@ public:
     //this will constitute the basis
 private:
     contracted basisSet[];
+    int Nprimitives;
+
 };
 
 #endif // BASIS_H

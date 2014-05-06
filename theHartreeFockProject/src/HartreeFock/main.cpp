@@ -48,6 +48,8 @@ int main(int argc, char* argv[]) {
     cout << "Energy of the ground state= " << E << endl;
     */
 
+
+
     double weight = 1.0;
     double a1,b1;
     int i,j,k,l,m,n;
@@ -75,10 +77,23 @@ int main(int argc, char* argv[]) {
     //Core position
     integrator AB (primitiveA, primitiveB);
     vec3 C = {2.3,0.9,3.2};
-
     AB.setupRtuv(C);
-    Primitive contr[2] = {primitiveA, primitiveB};
-    contracted BASE (2,contr);
 
+    cout << AB.pp(primitiveA,primitiveB) << endl;
+
+    //Primitive contr[2] = {primitiveA, primitiveB};
+    //contracted BASE (2,contr);
+    //field<integrator> Hfield;
+    //Hfield.set_size(1);
+
+    //Hfield(0) = AB;
+    //cout << Hfield.n_elem << endl;
+
+
+
+
+    //basis BS(3);
+    //BS.init_STO_3G("Be");
+    //B.init_integrals();
     return 0;
 } // End: function output()
