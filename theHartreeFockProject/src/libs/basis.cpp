@@ -1,5 +1,7 @@
 #include <basis.h>
-
+#include <contracted.h>
+#include <primitive.h>
+#include <armadillo>
 
 basis::basis(int N)
 {
@@ -160,6 +162,41 @@ double basis::state(int p, int q, int r, int s, double D, double Ex){
         }
     }
     return S;
+}
+
+void basis::init_STO_3G(string configuration){
+    basisSet[3];
+    Nstates = 3;
+    if(configuration == "Be"){
+        Primitive S1A(30.1678710,0,0,0,0.15432897,{0,0,0});
+        Primitive S1B(5.4951153,0,0,0,0.53532814,{0,0,0});
+        Primitive S1C(1.4871927,0,0,0,0.44463454,{0,0,0});
+
+        Primitive S2A(1.3148331,0,0,0,-0.09996723,{0,0,0});
+        Primitive S2B(0.3055389,0,0,0,0.39951283,{0,0,0});
+        Primitive S2C(0.0993707,0,0,0,0.70011547,{0,0,0});
+
+        Primitive P1A(1.3148331,0,0,0,0.15591627,{0,0,0});
+        Primitive P1B(0.3055389,0,0,0,0.60768372,{0,0,0});
+        Primitive P1C(0.0993707,0,0,0,0.39195739,{0,0,0});
+
+        Primitive S1[3] = {S1A,S1B,S1C};
+        Primitive S2[3] = {S2A,S2B,S2C};
+        Primitive P1[3] = {P1A,P1B,P1C};
+
+        basisSet[0] = contracted(3,S1);
+        basisSet[1] = contracted(3,S2);
+        basisSet[2] = contracted(3,P1);
+
+        //S0[3];
+        /*S0[0](30.1678710,0,0,0,0.15432897,{0,0,0});
+
+
+
+
+
+        */
+    }
 }
 
 
