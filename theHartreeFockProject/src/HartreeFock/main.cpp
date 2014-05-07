@@ -86,11 +86,23 @@ int main(int argc, char* argv[]) {
 
     basis BS(3);
     BS.init_STO_3G("Be");
-    //BS.init_integrals();
+    BS.init_integrals();
+    for(int p=0;p<3;p++){
+        for(int q=0;q<3;q++){
+            for(int r=0;r<3;r++){
+                for(int s=0;s<3;s++){
+                    cout << p << q << r << s << " " << BS.v(p,q)(r,s) << endl;
+                }
+            }
+            cout << "    " << p << q << BS.h(p,q) << " " << BS.S(p,q);
+        }
+    }
+    //BS.v.print();
     //BS.init_integrals();
 
-    BoysFunction boys(2);
-    boys.setx(-3.26);
+    //BoysFunction boys(2);
+    //boys.setx(-3.26);
+    //boys.setx(-1.00);
 
     return 0;
 } // End: function output()

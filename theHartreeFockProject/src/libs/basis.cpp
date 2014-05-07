@@ -216,7 +216,7 @@ void basis::init_integrals(){
                     Primitive B = basisSts[q].getPrimitive(j);
                     integrator AB (A,B);
                     S(p,q) += AB.overlap();
-                    vec3 C = {2.3,0.9,3.2};
+                    vec3 C = {0,0,0};
                     AB.setupRtuv(C);
                     h(p,q) += AB.kinetic()+AB.pNuclei();
                     for(int r=0; r<Nstates; r++){

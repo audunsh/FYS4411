@@ -209,7 +209,7 @@ double integrator::kinetic(){
             Tijk(coord) += pBijk(coord)*(pBijk(coord)-1)*S*Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)-1, 1);
         }
     }
-    return -.5*(Tijk(0)*Sijk(1)*Sijk(2) + Tijk(1)*Sijk(2)*Sijk(0)+Tijk(2)*Sijk(0)*Sijk(1));
+    return -.5*wA*wB*(Tijk(0)*Sijk(1)*Sijk(2) + Tijk(1)*Sijk(2)*Sijk(0)+Tijk(2)*Sijk(0)*Sijk(1));
 }
 
 double integrator::pNuclei(){
@@ -226,7 +226,7 @@ double integrator::pNuclei(){
             }
         }
     }
-    return result*(2*pi/p);
+    return wA*wB*result*(2*pi/p);
 }
 
 double integrator::pp(Primitive &pC, Primitive &pD){
@@ -281,5 +281,5 @@ double integrator::pp(Primitive &pC, Primitive &pD){
             }
         }
     }
-    return result*(2*pow(pi,2.5))/(p*q*sqrt(p+q));
+    return wA*wB*wC*wD*result*(2*pow(pi,2.5))/(p*q*sqrt(p+q));
 }
