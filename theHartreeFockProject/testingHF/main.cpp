@@ -1,5 +1,4 @@
 #include <unittest++/UnitTest++.h>
-#include <myclass.h>
 #include <lib.h>
 #include <basis.h>
 #include <boysfunction.h>

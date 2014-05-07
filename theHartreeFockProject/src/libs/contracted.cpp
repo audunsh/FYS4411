@@ -2,10 +2,8 @@
 #include <armadillo>
 #include <primitive.h>
 
-
 using namespace std;
 using namespace arma;
-
 
 contracted::contracted(int N, Primitive primitives[]){
     Nprimitives = N;
