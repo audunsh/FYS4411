@@ -86,8 +86,11 @@ int main(int argc, char* argv[]) {
 
     basis BS(3);
     BS.init_STO_3G("Be");
-    BS.init_integrals();
     //BS.init_integrals();
+    //BS.init_integrals();
+
+    BoysFunction boys(2);
+    boys.setx(-3.26);
 
     return 0;
 } // End: function output()
