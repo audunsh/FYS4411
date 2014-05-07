@@ -6,8 +6,7 @@
 #include <primitive.h>
 #include <hfsolve.h>
 #include <iomanip>
-#include <returnhermitecoeffs.h>
-#include <kineticenergy.h>
+
 
 double pi = 4*atan(1);
 
@@ -55,7 +54,7 @@ TEST(HFSolve){
 }
 
 
-TEST(Return_Hermite_Coeffs_1){
+TEST(integrator1){
 
     double a,b,weight;
     int i,j,k,l,m,n;
@@ -75,9 +74,10 @@ TEST(Return_Hermite_Coeffs_1){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    ReturnHermiteCoeffs Coeffs;
-    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-    double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
+
+    integrator AB(primitiveA,primitiveB);
+
+    double Sab = AB.overlap(); //Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
     cout << "----------------------------------------------------------------" << endl;
     cout << "----------------------- TEST integrator 1 ----------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
@@ -88,7 +88,7 @@ TEST(Return_Hermite_Coeffs_1){
     CHECK_CLOSE(1.191723635809e-01,Sab,1e-5);
 }
 
-TEST(Return_Hermite_Coeffs_2){
+TEST(integrator2){
 
 
     double a,b,weight;
@@ -111,9 +111,9 @@ TEST(Return_Hermite_Coeffs_2){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    ReturnHermiteCoeffs Coeffs;
-    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-    double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
+    integrator AB(primitiveA,primitiveB);
+
+    double Sab = AB.overlap();
     cout << "----------------------------------------------------------------" << endl;
     cout << "------------------------ TEST Integrator 2 ---------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
@@ -124,7 +124,7 @@ TEST(Return_Hermite_Coeffs_2){
     CHECK_CLOSE(2.227321941537e-01, Sab, 1e-5);
 }
 
-TEST(Return_Hermite_Coeffs_3){
+TEST(integrator3){
 
 
     double a,b,weight;
@@ -147,9 +147,9 @@ TEST(Return_Hermite_Coeffs_3){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    ReturnHermiteCoeffs Coeffs;
-    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-    double Sab = Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
+    integrator AB(primitiveA,primitiveB);
+
+    double Sab = AB.overlap();
     cout << "----------------------------------------------------------------" << endl;
     cout << "----------------------- TEST Integrator 3 ----------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
@@ -180,11 +180,11 @@ TEST(Kinetic_integral_1){
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
 
-    ReturnHermiteCoeffs Coeffs;
-    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
+    integrator AB(primitiveA,primitiveB);
+
     //double Tab = Coeffs.ReturnKineticIntegral();
-    KineticEnergy T(Eab,&primitiveA,&primitiveB);
-    double Tab = T.ReturnKineticIntegral();
+
+    double Tab = AB.kinetic();
     cout << "----------------------------------------------------------------" << endl;
     cout << "                   TESTING THE KINTETIC INTEGRALS               " << endl;
     cout << "----------------------------------------------------------------" << endl;
@@ -217,11 +217,9 @@ TEST(Kinetic_integral_2){
     B = {-1.3, 1.4, -2.4 };
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    ReturnHermiteCoeffs Coeffs;
-    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-    //double Tab = Coeffs.ReturnKineticIntegral();
-    KineticEnergy T(Eab,&primitiveA,&primitiveB);
-    double Tab = T.ReturnKineticIntegral();
+    integrator AB(primitiveA,primitiveB);
+    double Tab = AB.kinetic();
+
     cout << "----------------------------------------------------------------" << endl;
     cout << "------------------- TEST Kinetic Integral 2 --------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
@@ -254,12 +252,8 @@ TEST(Kinetic_integral_3){
     B = {-1.3, 1.4, -2.4 };
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-
-    ReturnHermiteCoeffs Coeffs;
-    field <cube> Eab = Coeffs.ReturnCoeffs(primitiveA,primitiveB);
-    //double Tab = Coeffs.ReturnKineticIntegral();
-    KineticEnergy T(Eab,&primitiveA,&primitiveB);
-    double Tab = T.ReturnKineticIntegral();
+    integrator AB(primitiveA,primitiveB);
+    double Tab = AB.kinetic();
     cout << "----------------------------------------------------------------" << endl;
     cout << "-------------------- TEST Kinetic Integral 3 -------------------" << endl;
     cout << "----------------------------------------------------------------" << endl;

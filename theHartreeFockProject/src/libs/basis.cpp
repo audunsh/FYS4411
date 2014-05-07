@@ -226,6 +226,7 @@ void basis::init_integrals(){
                                     Primitive C = basisSts[r].getPrimitive(k);
                                     Primitive D = basisSts[s].getPrimitive(l);
                                     v(p,q)(r,s) += AB.pp(C,D);
+                                    cout << p << q << r << s << i << j << k << l << endl;
                                 }
                             }
                         }
