@@ -165,6 +165,9 @@ void integrator::setupRtau(){
         Rtau(n).set_size(T+Tau+3,U+Ny+3,V+Phi+3);
         Rtau(n).zeros();
         Rtau(n) (1,1,1) = pow((-2.0*alpha),(double) n)*boys.returnValue(n);
+        if(!isfinite(Rtau(n)(1,1,1))){
+            cout << "Bad initial condition, will return inf or nan.";
+        }
     }
     for(int t=1;t<T+Tau+2;t++){
         for(int n=0;n<N+1;n++){
@@ -276,12 +279,22 @@ double integrator::pp(Primitive &pC, Primitive &pD){
                             E1 = Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)  *Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1) *Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
                             E2 = Ecd(0) ((int) pCijk(0)+1, (int) pDijk(0)+1, tau+1)*Ecd(1) ((int) pCijk(1)+1, (int) pDijk(1)+1, ny+1)*Ecd(2) ((int) pCijk(2)+1, (int) pDijk(2)+1, phi+1);
                             R1 = pow(-1,tau+ny+phi+1)*Rtau(0) (t+tau+1,u+ny+1,v+phi+1);
+                            if(!isfinite(R1*E1*E2)){
+                                cout << "Error in evaluation of R1: function  returns " << R1 << endl;
+                            }
                             result += E1*E2*R1;
                         }
                     }
                 }
             }
         }
+    }
+    if((p+q)==0){
+        cout << "Error in evaluation of particle-particle integral: " << p << endl;
+    }
+    if(!isfinite(2*pow(pi,2.5)/(p*q*sqrt(p+q)))){
+        cout << 2*pow(pi,2.5) << " divided by " <<(p*q*sqrt(p+q)) << endl; //sqrt of negative number yields nan
+        cout << "Error in evaluation of prefactor, twobody integral." <<  p << " " << q << " " << pow(pi,2.5) << endl;
     }
     return wA*wB*wC*wD*result*(2*pow(pi,2.5))/(p*q*sqrt(p+q));
 }

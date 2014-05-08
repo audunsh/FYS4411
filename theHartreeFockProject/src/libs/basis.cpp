@@ -209,7 +209,7 @@ void basis::init_STO_3G(string configuration){
 void basis::init_integrals(){
     //initialize all integrals needed for HF-scheme
     //integrator AB;
-    BoysFunction boys(2);
+    BoysFunction boys(3);
     double K = 0;
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
@@ -230,7 +230,7 @@ void basis::init_integrals(){
                                     Primitive D = basisSts[s].getPrimitive(l);
                                     K = AB.pp(C,D);
                                     if(!isfinite(K)){
-                                        cout << p << q << r << s << i << j << k << l << K << endl;
+                                        cout << p << q << r << s << i << j << k << l << " " << K << endl;
                                     }
                                     v(p,q)(r,s) += AB.pp(C,D);
                                     //cout << p << q << r << s << i << j << k << l << endl;
