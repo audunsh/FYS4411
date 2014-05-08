@@ -8,6 +8,7 @@ using namespace arma;
 class BoysFunction
 {
 public:
+    BoysFunction();
     BoysFunction(int angMomMax);
     void setx(double x);
     double returnValue(int n);

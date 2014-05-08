@@ -6,6 +6,8 @@
 #include <contracted.h>
 #include <primitive.h>
 #include <integrator.h>
+#include <boysfunction.h>
+
 
 using namespace std;
 using namespace arma;

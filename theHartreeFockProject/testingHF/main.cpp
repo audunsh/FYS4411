@@ -55,6 +55,7 @@ TEST(HFSolve){
 
 
 TEST(integrator1){
+    BoysFunction boys(2);
 
     double a,b,weight;
     int i,j,k,l,m,n;
@@ -75,7 +76,7 @@ TEST(integrator1){
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
 
-    integrator AB(primitiveA,primitiveB);
+    integrator AB(primitiveA,primitiveB,boys);
 
     double Sab = AB.overlap(); //Eab(0)(i,j,0)*Eab(1)(k,l,0)*Eab(2)(m,n,0)*pow(pi/(a+b),3.0/2);
     cout << "----------------------------------------------------------------" << endl;
@@ -90,6 +91,7 @@ TEST(integrator1){
 
 TEST(integrator2){
 
+    BoysFunction boys(2);
 
     double a,b,weight;
     int i,j,k,l,m,n;
@@ -111,7 +113,7 @@ TEST(integrator2){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    integrator AB(primitiveA,primitiveB);
+    integrator AB(primitiveA,primitiveB,boys);
 
     double Sab = AB.overlap();
     cout << "----------------------------------------------------------------" << endl;
@@ -125,6 +127,7 @@ TEST(integrator2){
 }
 
 TEST(integrator3){
+    BoysFunction boys(2);
 
 
     double a,b,weight;
@@ -147,7 +150,7 @@ TEST(integrator3){
 
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    integrator AB(primitiveA,primitiveB);
+    integrator AB(primitiveA,primitiveB,boys);
 
     double Sab = AB.overlap();
     cout << "----------------------------------------------------------------" << endl;
@@ -161,6 +164,7 @@ TEST(integrator3){
 }
 
 TEST(Kinetic_integral_1){
+    BoysFunction boys(2);
     double a,b,weight;
     int i,j,k,l,m,n;
     vec A,B;
@@ -180,7 +184,7 @@ TEST(Kinetic_integral_1){
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
 
-    integrator AB(primitiveA,primitiveB);
+    integrator AB(primitiveA,primitiveB,boys);
 
     //double Tab = Coeffs.ReturnKineticIntegral();
 
@@ -198,6 +202,7 @@ TEST(Kinetic_integral_1){
 }
 
 TEST(Kinetic_integral_2){
+    BoysFunction boys(2);
     double a,b,weight;
     int i,j,k,l,m,n;
     vec A,B;
@@ -217,7 +222,7 @@ TEST(Kinetic_integral_2){
     B = {-1.3, 1.4, -2.4 };
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    integrator AB(primitiveA,primitiveB);
+    integrator AB(primitiveA,primitiveB,boys);
     double Tab = AB.kinetic();
 
     cout << "----------------------------------------------------------------" << endl;
@@ -233,6 +238,7 @@ TEST(Kinetic_integral_2){
 }
 
 TEST(Kinetic_integral_3){
+    BoysFunction boys(2);
     double a,b,weight;
     int i,j,k,l,m,n;
     vec A,B;
@@ -252,7 +258,7 @@ TEST(Kinetic_integral_3){
     B = {-1.3, 1.4, -2.4 };
     Primitive primitiveA(weight,i,k,m,a,A);
     Primitive primitiveB(weight,j,l,n,b,B);
-    integrator AB(primitiveA,primitiveB);
+    integrator AB(primitiveA,primitiveB,boys);
     double Tab = AB.kinetic();
     cout << "----------------------------------------------------------------" << endl;
     cout << "-------------------- TEST Kinetic Integral 3 -------------------" << endl;

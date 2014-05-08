@@ -3,6 +3,7 @@
 #include <primitive.h>
 #include <armadillo>
 #include <integrator.h>
+#include <boysfunction.h>
 
 basis::basis(int N)
 {
@@ -208,13 +209,15 @@ void basis::init_STO_3G(string configuration){
 void basis::init_integrals(){
     //initialize all integrals needed for HF-scheme
     //integrator AB;
+    BoysFunction boys(2);
+    double K = 0;
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<Nprimitives;i++){
                 for(int j=0; j<Nprimitives;j++){
                     Primitive A = basisSts[p].getPrimitive(i);
                     Primitive B = basisSts[q].getPrimitive(j);
-                    integrator AB (A,B);
+                    integrator AB (A,B, boys);
                     S(p,q) += AB.overlap();
                     vec3 C = {0,0,0};
                     AB.setupRtuv(C);
@@ -225,8 +228,12 @@ void basis::init_integrals(){
                                 for(int l=0;l<Nprimitives;l++){
                                     Primitive C = basisSts[r].getPrimitive(k);
                                     Primitive D = basisSts[s].getPrimitive(l);
+                                    K = AB.pp(C,D);
+                                    if(!isfinite(K)){
+                                        cout << p << q << r << s << i << j << k << l << K << endl;
+                                    }
                                     v(p,q)(r,s) += AB.pp(C,D);
-                                    cout << p << q << r << s << i << j << k << l << endl;
+                                    //cout << p << q << r << s << i << j << k << l << endl;
                                 }
                             }
                         }

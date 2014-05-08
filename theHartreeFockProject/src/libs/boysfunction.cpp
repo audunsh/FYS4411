@@ -1,5 +1,8 @@
-
 #include "boysfunction.h"
+
+BoysFunction::BoysFunction(){
+
+}
 
 BoysFunction::BoysFunction(int angMomMax){
     m_nMax = 4*angMomMax;

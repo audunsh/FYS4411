@@ -12,7 +12,9 @@ double pi = 4*atan(1);
  *  Calculate integrals between primitive objects collected from class Primitive.
  *
  **********************************************************************************/
-integrator::integrator(Primitive &pA, Primitive &pB){
+integrator::integrator(Primitive &pA, Primitive &pB, BoysFunction &boysf){
+    boys = boysf;
+
     a = pA.exponent();          // exponential constant.
     A = pA.nucleusPosition();   // nucleus pA position
     pAijk(0) = pA.xExponent();
@@ -105,7 +107,7 @@ void integrator::setupRtuv(vec3 &nucleiPos){
     Rpc = P - nucleiPos;
     Rpc2 = Rpc(0)*Rpc(0)+Rpc(1)*Rpc(1)+Rpc(2)*Rpc(2);
 
-    BoysFunction boys(Aa.max()+1); //this function behaves oddly!!
+    //BoysFunction boys(Aa.max()+1); //this function behaves oddly!!
     boys.setx(p*Rpc2);
     for(int n=0;n<N+2;n++){
         Rtuv(n).set_size(T+3,U+3,V+3);
@@ -156,7 +158,7 @@ void integrator::setupRtau(){
 
     Rpq2 = Rpq(0)*Rpq(0)+Rpq(1)*Rpq(1)+Rpq(2)*Rpq(2);
 
-    BoysFunction boys(Aa.max()+1); //this function behaves oddly!!
+    //BoysFunction boys(Aa.max()+1); //this function behaves oddly!!
     boys.setx(alpha*Rpq2);
 
     for(int n=0;n<N+2;n++){

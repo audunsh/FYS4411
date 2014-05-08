@@ -34,6 +34,9 @@ int main(int argc, char* argv[]) {
     BS.init_STO_3G("Be"); //initialize the STO-3G basis for the Beryllium atom
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
     //output the result
+
+
+    /*
     for(int p=0;p<3;p++){
         for(int q=0;q<3;q++){
             for(int r=0;r<3;r++){
@@ -44,6 +47,7 @@ int main(int argc, char* argv[]) {
             cout << "    " << p << q << BS.h(p,q) << " " << BS.S(p,q);
         }
     }
+    */
     //HFSolve object (Z,N);
     //double E = object.Solve(BS);
     //cout << "Energy of the ground state= " << E << endl;
