@@ -15,11 +15,12 @@ public:
     double Solve(basis BS);
 
 private:
-    mat HF(mat C);
+    mat HFmatrix(mat C);
     double calc_energy(mat C);
-    mat C,U, V, F_trans, C_trans; //The transformed matrices (Thijessen, p38-39)
+    mat P,C,U, V, HF_trans, C_trans; //The transformed matrices (Thijessen, p38-39)
     vec s;
-    void normalize_C(mat C);
+    void normalize_col(mat C);
+    void setupP(mat C);
     basis Bs;
 
 };

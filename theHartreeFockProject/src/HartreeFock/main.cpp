@@ -16,6 +16,18 @@ using namespace std;
 using namespace arma;
 
 int main(int argc, char* argv[]) {
+    /* The code seems to be running fine, despite the result being obviously faulty.
+     * The error arise in the solver itself (HFSolve) as we still havent implemented
+     * the correct use of the density matrix.
+     *
+     * Pending work is then to work through the solver itself step by step, following Thijessen closely.
+     *
+     * This should not take too long.
+     *
+     * Audun, 8/5/14
+     */
+
+
     /*
     //set number of protons and electrons
     int Z = 4;   // Number of protons
@@ -33,24 +45,8 @@ int main(int argc, char* argv[]) {
     basis BS(3); //set up a basis containing 3 contracted/orbitals
     BS.init_STO_3G("Be"); //initialize the STO-3G basis for the Beryllium atom
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
-    //output the result
-
-
-    /*
-    for(int p=0;p<3;p++){
-        for(int q=0;q<3;q++){
-            for(int r=0;r<3;r++){
-                for(int s=0;s<3;s++){
-                    cout << p << q << r << s << " " << BS.v(p,q)(r,s) << endl;
-                }
-            }
-            cout << "    " << p << q << BS.h(p,q) << " " << BS.S(p,q);
-        }
-    }
-    */
-
-    HFSolve object (4,3);
-    double E = object.Solve(BS);
-    cout << "Energy of the ground state= " << E << endl;
+    HFSolve object (4,3); //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    double E = object.Solve(BS); //solve for the given basis
+    cout << "Energy of the ground state= " << E << endl; //print out approximated ground state energy
     return 0;
 } // End: function output()

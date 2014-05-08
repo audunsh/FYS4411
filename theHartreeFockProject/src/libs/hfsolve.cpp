@@ -17,7 +17,7 @@ HFSolve::HFSolve(int Zn, int Nn){
 double HFSolve::Solve(basis BS){
     //Solves the HF-eq's using the provided basis
     double tolerance = 10e-8;
-    mat C;
+    //mat C;
     vec e_v, e_v_prev;
     Bs = BS;
     Nstates = Bs.Nstates; //set number of states in basis
@@ -39,16 +39,18 @@ double HFSolve::Solve(basis BS){
     while (abs(e_v.min() - e_v_prev.min()) > tolerance){ // convergence test
         iters = iters + 1;
         e_v_prev = e_v;
-        F_trans = V.t()*HF(C)*V; //transforming the hartree fock matrix
+        HF_trans = V.t()*HFmatrix(C)*V; //transforming the hartree fock matrix
         // return the eigenvalues of the HF-mx to e_v and the eigenvectors to C.
-        eig_sym(e_v,C_trans,F_trans); //solving the transformed equation
+        eig_sym(e_v,C_trans,HF_trans); //solving the transformed equation
         C = V*C_trans; //transforming back
         C = trans(C);  //transposing C
-        normalize_C(C);
+
         if(iters>100){
             cout << "Maximum number of iterations (100) exceeded." << endl;
             break;}
     }
+    normalize_col(C); //normalizing the coulomns of C
+
     cout << "------------------------------" << endl;
     cout << "iterations: " << iters << endl;
     //cout << "eigenvalues: " << endl;
@@ -68,7 +70,7 @@ double HFSolve::Solve(basis BS){
 
 
 
-mat HFSolve::HF(mat C){
+mat HFSolve::HFmatrix(mat C){
     /* Sets up the Hartree-Fock matrix
      * using the coefficients given in C
      */
@@ -120,7 +122,7 @@ double HFSolve::calc_energy(mat C){
     return Energy;
 }
 
-void HFSolve::normalize_C(mat C){
+void HFSolve::normalize_col(mat C){
     //normalizing the C matrix, following Thijessen, p 76
     double result;
     for(int k = 0; k<Nstates;k++){
@@ -134,4 +136,7 @@ void HFSolve::normalize_C(mat C){
     }
 }
 
+void setupP(mat C){
+    mat P = 2*C*C.t();
 
+}
