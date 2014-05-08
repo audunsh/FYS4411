@@ -5,6 +5,8 @@
 #include <integrator.h>
 #include <boysfunction.h>
 
+basis::basis(){}
+
 basis::basis(int N)
 {
     Nstates = N;

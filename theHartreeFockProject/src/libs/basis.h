@@ -15,6 +15,7 @@ using namespace arma;
 class basis
 {
 public:
+    basis();
     basis(int N);                                                 //initialize object
     void read(string filename, int Zn);                           //read basis from file
     void generate();                                              //generate basis

@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     //output the result
 
 
-
+    /*
     for(int p=0;p<3;p++){
         for(int q=0;q<3;q++){
             for(int r=0;r<3;r++){
@@ -47,9 +47,10 @@ int main(int argc, char* argv[]) {
             cout << "    " << p << q << BS.h(p,q) << " " << BS.S(p,q);
         }
     }
+    */
 
-    //HFSolve object (Z,N);
-    //double E = object.Solve(BS);
-    //cout << "Energy of the ground state= " << E << endl;
+    HFSolve object (4,3);
+    double E = object.Solve(BS);
+    cout << "Energy of the ground state= " << E << endl;
     return 0;
 } // End: function output()
