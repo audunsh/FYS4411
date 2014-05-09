@@ -13,6 +13,7 @@ class HFSolve{
 public:
     HFSolve(int Zn, int Nn);
     double Solve(basis BS);
+    double energy();
 
 private:
     mat HFmatrix(mat C);

@@ -56,7 +56,6 @@ double HFSolve::Solve(basis BS){
 
     cout << "------------------------------" << endl;
     cout << "iterations: " << iters << endl;
-    //cout << "eigenvalues: " << endl;
     int minIndex = 0;
     for (int i = 0; i < Nstates; ++i) {
         if (e_v[i] < e_v[minIndex]){
@@ -64,6 +63,7 @@ double HFSolve::Solve(basis BS){
         }
         //cout << e_v[i] << endl;
     }
+    C.print();
     double E = calc_energy(C);
     //cout << "Ground State Energy: " << E << endl;
     return E;
@@ -141,5 +141,8 @@ void HFSolve::normalize_col(mat C){
 
 void HFSolve::setupP(mat C){
     mat P = 2*C*C.t();
+}
 
+double HFSolve::energy(){
+    return 0.5*accu(P % (Bs.h + HFmatrix(C)));
 }
