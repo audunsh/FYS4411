@@ -42,6 +42,24 @@ int main(int argc, char* argv[]) {
 
     cout << "Energy of the ground state= " << E << endl;
     */
+
+
+    /**************************************************************************************************************
+    // my thought is to make a python program that calls theHartreeFockProject with values Z,N,Ns and a distance,
+    // this distance is the absoulute distance between two cores. We run the python program for different distances,
+    // and makes a plot of the potential distribution we get from this :-)
+
+    // such a python program is added in the new folder python_programs.
+
+    int Z,N,Ns;
+    double dist;
+
+    Z = (int) argv[1];
+    N = (int) argv[2];
+    Ns = (int) argv[3];
+    dist = (double) argv[4];
+    *****************************************************************************************************************/
+
     basis BS(3); //set up a basis containing 3 contracted/orbitals
     BS.init_STO_3G("Be"); //initialize the STO-3G basis for the Beryllium atom
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction

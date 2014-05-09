@@ -9,7 +9,7 @@ SOURCES= \
          hfsolve.cpp \
          boysfunction.cpp \
          primitive.cpp \
-    contracted.cpp
+         contracted.cpp
 
 HEADERS= \
          basis.h \
@@ -18,6 +18,6 @@ HEADERS= \
          lib.h \
          hfsolve.h \
          boysfunction.h \
-    contracted.h
+         contracted.h
 
 LIBS += -larmadillo -lblas -llapack
