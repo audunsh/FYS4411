@@ -14,12 +14,16 @@ public:
     HFSolve(int Zn, int Nn);
     double Solve(basis BS);
     double energy();
+    void init_solver();
+    void advance();
+
 
 private:
+    void updateF();
     mat HFmatrix(mat C);
     double calc_energy(mat C);
-    mat P,C,U, V, HF_trans, C_trans; //The transformed matrices (Thijessen, p38-39)
-    vec s;
+    mat P,C,U, V, F,F_trans, C_trans; //The transformed matrices (Thijessen, p38-39)
+    vec s, e_v, e_v_prev;
     void normalize_col(mat C);
     void setupP(mat C);
     basis Bs;

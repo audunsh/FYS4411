@@ -31,6 +31,10 @@ basis::basis(int N)
     H.set_size(Nstates2,Nstates2);
     H.zeros();
 
+    nuclearPotential.set_size(Nstates,Nstates);
+    nuclearPotential.zeros();
+    H.zeros();
+
     //initializing the overlap matrix
     S.set_size(Nstates,Nstates);
     S.zeros();
@@ -223,7 +227,8 @@ void basis::init_integrals(){
                     S(p,q) += AB.overlap();
                     vec3 C = {0,0,0};
                     AB.setupRtuv(C);
-                    h(p,q) += AB.kinetic()+AB.pNuclei();
+                    h(p,q) += AB.kinetic();
+                    nuclearPotential(p,q) += AB.pNuclei();
                     for(int r=0; r<Nstates; r++){
                         for(int s=0; s<Nstates; s++){
                             for(int k=0;k<Nprimitives;k++){

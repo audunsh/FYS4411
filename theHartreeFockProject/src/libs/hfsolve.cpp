@@ -14,40 +14,65 @@ HFSolve::HFSolve(int Zn, int Nn){
     N = Nn;
 }
 
-double HFSolve::Solve(basis BS){
-    //Solves the HF-eq's using the provided basis
-    double tolerance = 10e-8;
-    //mat C;
-    vec e_v, e_v_prev;
-    Bs = BS;
-    Nstates = Bs.Nstates; //set number of states in basis
-    C.zeros(Nstates,Nstates);
-    e_v.zeros(Nstates);
-    e_v_prev.zeros(Nstates);
+void HFSolve::init_solver(){
+    //initialize and set up solver when basis is supplied
+    Nstates = Bs.Nstates;        //set number of states in basis
+    C.zeros(Nstates,Nstates);    //set initial C equal to the unit matrix
+    F.zeros(Nstates,Nstates);    //initialize Fock matrix
+    P.zeros(Nstates,Nstates);    //initialize Density matrix
     for (int i = 0; i < Nstates; ++i) {
         C(i,i) = 1.0;
     }
-
-    //set up and solve the transformed equation following Thijssen, p38-39
-    eig_sym(s,U,Bs.S);
+    e_v.zeros(Nstates);          //vec containing current eigenvalues of transformed Fock-matrix
+    e_v_prev.zeros(Nstates);     //vec containing previous eigenvalues of transformed Fock-matrix
+    eig_sym(s,U,Bs.S);           //set up the transformed equation following Thijssen, p38-39
     V = U*diagmat(1.0/sqrt(s));
     C_trans = inv(V)*C;
+    setupP(C);                   //set up the density matrix
+
+}
+
+void HFSolve::updateF(){
+    //Update the Fock matrix using P and basis Bs
+    for(int p = 0; p<Nstates;p++){
+        for(int q = 0; q<Nstates;q++){
+            F(p,q) = Bs.h(p,q);
+            for(int r = 0; r<Nstates;r++){
+                for(int s = 0; s<Nstates;s++){
+                    F(p,q) += 0.5 * P(r,s)* (2*Bs.v(p,q)(r,s) - Bs.v(p,q)(s,r));
+                }
+            }
+        }
+    }
+}
+
+void HFSolve::advance(){
+    //For each iteration in the HF-algorithm
+    e_v_prev = e_v;
+    updateF();
+    F_trans = V.t()*F*V; //transforming the hartree fock matrix
+    // return the eigenvalues of the HF-mx to e_v and the eigenvectors to C.
+    eig_sym(e_v,C_trans,F_trans); //solving the transformed equation
+    C = V*C_trans;    //transforming back
+    C = trans(C);     //transposing C
+    normalize_col(C); //normalizing the coloumns of C
     setupP(C);
 
+}
+
+double HFSolve::Solve(basis BS){
+    //Solves the HF-eq's using the provided basis
+    double tolerance = 10e-8;
+
+
+    Bs = BS;
+    init_solver();
 
     int iters = 0;
-    for(int i=0; i<Nstates;i++){e_v_prev(i) = 1.0;} // safety margin
+    for(int i=0; i<Nstates;i++){e_v_prev(i) = 1.0;}      //Set convergence parameter to false, see while-loop below
     while (abs(e_v.min() - e_v_prev.min()) > tolerance){ // convergence test
         iters = iters + 1;
-        e_v_prev = e_v;
-        HF_trans = V.t()*HFmatrix(C)*V; //transforming the hartree fock matrix
-        // return the eigenvalues of the HF-mx to e_v and the eigenvectors to C.
-        eig_sym(e_v,C_trans,HF_trans); //solving the transformed equation
-        C = V*C_trans; //transforming back
-        C = trans(C);  //transposing C
-        normalize_col(C); //normalizing the coulomns of C
-        setupP(C);
-
+        advance();
         if(iters>100){
             cout << "Maximum number of iterations (100) exceeded." << endl;
             break;}
@@ -65,6 +90,8 @@ double HFSolve::Solve(basis BS){
     }
     C.print();
     double E = calc_energy(C);
+    E = energy();
+
     //cout << "Ground State Energy: " << E << endl;
     return E;
 }
@@ -86,7 +113,7 @@ mat HFSolve::HFmatrix(mat C){
             for (int p = 0; p < N; ++p) {
                 for (int beta = 0; beta < Nstates; ++beta) {
                     for (int delta = 0; delta < Nstates; ++delta) {
-                        interaction += 0.5*C(p,beta)*C(p,delta)*(2*Bs.v(alpha,beta)(gamma,delta)-Bs.v(alpha,delta)(gamma,beta));
+                        interaction += 0.5*C(p,beta)*C(p,delta)*(2*Bs.v(alpha,beta)(gamma,delta)-Bs.v(alpha,beta)(delta,gamma));
                     }
                 }
             }
@@ -117,7 +144,8 @@ double HFSolve::calc_energy(mat C){
         for(int beta = 0; beta < Nstates; beta++){
             for(int gamma = 0; gamma<Nstates; gamma++){
                 for(int delta = 0; delta <Nstates; delta++){
-                    Energy += 0.5 * Ci.at(alpha, gamma) * Ci.at(beta, delta) * Bs.v(alpha, beta)(gamma, delta);
+                    //Energy += 0.5 * Ci.at(alpha, gamma) * Ci.at(beta, delta) * Bs.v(alpha, beta)(gamma, delta);
+                    Energy += 0.5 * Ci.at(alpha, gamma) * Ci.at(beta, delta) * (2*Bs.v(alpha, beta)(gamma, delta)-Bs.v(alpha, beta)(delta,gamma));
                 }
             }
         }
@@ -144,5 +172,5 @@ void HFSolve::setupP(mat C){
 }
 
 double HFSolve::energy(){
-    return 0.5*accu(P % (Bs.h + HFmatrix(C)));
+    return 0.5*accu(P % (Bs.h + F));//+Bs.nuclearPotential;
 }

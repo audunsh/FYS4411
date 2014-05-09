@@ -32,7 +32,7 @@ public:
     field<mat> V;                                                 //basis with spin included
     int Z;                                                        //interaction parameter (taken to be number of protons)
     double h0(int i, int j);                                      //one body interaction
-    mat S,h,H;                                                    //overlap matrix, onebody interaction matrices
+    mat S,h,H,nuclearPotential;                                   //overlap matrix, onebody interaction matrices
 
     //we also need an array of contracted containing the primitives in each orbital
     //this will constitute the basis
