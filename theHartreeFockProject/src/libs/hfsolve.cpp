@@ -32,6 +32,7 @@ double HFSolve::Solve(basis BS){
     eig_sym(s,U,Bs.S);
     V = U*diagmat(1.0/sqrt(s));
     C_trans = inv(V)*C;
+    setupP(C);
 
 
     int iters = 0;
@@ -44,12 +45,14 @@ double HFSolve::Solve(basis BS){
         eig_sym(e_v,C_trans,HF_trans); //solving the transformed equation
         C = V*C_trans; //transforming back
         C = trans(C);  //transposing C
+        normalize_col(C); //normalizing the coulomns of C
+        setupP(C);
 
         if(iters>100){
             cout << "Maximum number of iterations (100) exceeded." << endl;
             break;}
     }
-    normalize_col(C); //normalizing the coulomns of C
+
 
     cout << "------------------------------" << endl;
     cout << "iterations: " << iters << endl;
@@ -83,7 +86,7 @@ mat HFSolve::HFmatrix(mat C){
             for (int p = 0; p < N; ++p) {
                 for (int beta = 0; beta < Nstates; ++beta) {
                     for (int delta = 0; delta < Nstates; ++delta) {
-                        interaction += C(p,beta)*C(p,delta)*Bs.v(alpha,beta)(gamma,delta);
+                        interaction += 0.5*C(p,beta)*C(p,delta)*(2*Bs.v(alpha,beta)(gamma,delta)-Bs.v(alpha,delta)(gamma,beta));
                     }
                 }
             }
@@ -136,7 +139,7 @@ void HFSolve::normalize_col(mat C){
     }
 }
 
-void setupP(mat C){
+void HFSolve::setupP(mat C){
     mat P = 2*C*C.t();
 
 }
