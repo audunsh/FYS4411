@@ -166,7 +166,7 @@ void integrator::setupRtau(){
         Rtau(n).zeros();
         Rtau(n) (1,1,1) = pow((-2.0*alpha),(double) n)*boys.returnValue(n);
     }
-    cout << "Rpq:" << Rpq(0) << " " << Rpq(1) << " " << Rpq(2) << endl;
+
     for(int t=1;t<T+Tau+2;t++){
         for(int n=0;n<N+1;n++){
             Rtau(n) (t+1,1,1) = (t-1)*Rtau(n+1) (t-1,1,1) + Rpq(0) * Rtau(n+1) (t,1,1);
@@ -277,14 +277,7 @@ double integrator::pp(Primitive &pC, Primitive &pD){
                             E1 = Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)  *Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1) *Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
                             E2 = Ecd(0) ((int) pCijk(0)+1, (int) pDijk(0)+1, tau+1)*Ecd(1) ((int) pCijk(1)+1, (int) pDijk(1)+1, ny+1)*Ecd(2) ((int) pCijk(2)+1, (int) pDijk(2)+1, phi+1);
                             R1 = Rtau(0) (t+tau+1,u+ny+1,v+phi+1)*pow(-1,tau+ny+phi);
-                            cout << "-------------Output from ppIntegral------------" << endl;
-
-                            cout << "R1*E1*E2:" << R1 << " * " << E1 << " * " << E2 << endl;
-                            cout << "t u v tau ny phi:" << t << " " << u << " " << v << " " << tau << " " << ny << " " << phi << endl;
-                            //F2 = (1-2*((tau + ny + phi) %2));
-                            cout << "-----------------------------------------------" << endl;
-
-                            result += E1*E2*R1;//*F2;
+                            result += E1*E2*R1;
                         }
                     }
                 }

@@ -42,8 +42,8 @@ basis::basis(int N)
 
 void basis::set_orthonormal(){
     //sets the overlap matrix equal to the identity matrix
-    for(int i=0;i < Nstates2;i++){
-        for(int j=0;j < Nstates2;j++){
+    for(int i=0;i < Nstates;i++){
+        for(int j=0;j < Nstates;j++){
             if(i==j){
                 S(i,j) = 1.0;
             }
@@ -85,7 +85,7 @@ void basis::read(string filename, int Zn){
             try{
                 v(p,q)(r,s) = Z*value;
                 if(p==q){
-                    h(p,q) = h0(p*2,q*2);
+                    h(p,q) = h0(p,q);
                 }
             }
             catch(int e){
@@ -96,7 +96,7 @@ void basis::read(string filename, int Zn){
     }
     else
         cout << "Did not manage to open file in HFSolve::init()"<< endl;
-    expand();
+    //expand();
 }
 
 void basis::expand(){
@@ -132,7 +132,7 @@ double basis::h0(int i, int j){
     // the one-body interaction
     double h = 0;
     if (i == j){
-        double n = i/2 + 1.0;
+        double n = i+1; //2 + 1.0;
         h = -(Z*Z)/(2*n*n);
     }
     return h;
@@ -216,7 +216,6 @@ void basis::init_integrals(){
     //initialize all integrals needed for HF-scheme
     //integrator AB;
     BoysFunction boys(3);
-    double K = 0;
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<Nprimitives;i++){
@@ -235,12 +234,7 @@ void basis::init_integrals(){
                                 for(int l=0;l<Nprimitives;l++){
                                     Primitive C = basisSts[r].getPrimitive(k);
                                     Primitive D = basisSts[s].getPrimitive(l);
-                                    K = AB.pp(C,D);
-                                    if(!isfinite(K)){
-                                        cout << p << q << r << s << i << j << k << l << " " << K << endl;
-                                    }
                                     v(p,q)(r,s) += AB.pp(C,D);
-                                    //cout << p << q << r << s << i << j << k << l << endl;
                                 }
                             }
                         }

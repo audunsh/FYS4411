@@ -72,7 +72,10 @@ double HFSolve::Solve(basis BS){
     for(int i=0; i<Nstates;i++){e_v_prev(i) = 1.0;}      //Set convergence parameter to false, see while-loop below
     while (abs(e_v.min() - e_v_prev.min()) > tolerance){ // convergence test
         iters = iters + 1;
+
         advance();
+
+
         if(iters>100){
             cout << "Maximum number of iterations (100) exceeded." << endl;
             break;}
