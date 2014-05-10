@@ -20,12 +20,19 @@ public:
 
 private:
     void updateF();
-    mat HFmatrix(mat C);
-    double calc_energy(mat C);
-    mat P,C,U, V, F,F_trans, C_trans; //The transformed matrices (Thijessen, p38-39)
-    vec s, e_v, e_v_prev;
     void normalize_col(mat C);
     void setupP(mat C);
+    void setupG();
+
+    //borrowed from Henrik
+    void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons);
+    void buildFockMatrix();
+
+    mat HFmatrix(mat C);
+    double calc_energy(mat C);
+
+    mat G,P,C,U, V, F,F_trans, C_trans; //The transformed matrices (Thijessen, p38-39)
+    vec s, e_v, e_v_prev;
     basis Bs;
 
 };

@@ -9,6 +9,7 @@
 #include <integrator.h>
 #include <hfsolve.h>
 #include <contracted.h>
+#include <hartreefocksolver.h>
 
 double pi = 4*atan(1);
 
@@ -22,7 +23,7 @@ int main(int argc, char* argv[]) {
      * The error arise in the solver itself (HFSolve) as we still havent implemented
      * the correct use of the density matrix.
      *
-     * Pending work is then to work through the solver itself step by step, following Thijessen closely.
+     * Pending work is then to work through the solver itself step by step, following Thijssen closely.
      *
      * This should not take too long.
      *
@@ -95,7 +96,7 @@ int main(int argc, char* argv[]) {
     dist = (double) argv[4];
     *****************************************************************************************************************/
 
-    basis BS(3); //set up a basis containing 3 contracted/orbitals
+    basis BS(3, 4); //set up a basis containing 3 contracted/orbitals
     //BS.init_STO_3G("Be"); //initialize the STO-3G basis for the Beryllium atom
     //BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
 
@@ -104,8 +105,8 @@ int main(int argc, char* argv[]) {
     BS.read(filename, 4); //reading basis from file
     BS.set_orthonormal();
 
-    HFSolve object (4,3); //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
-    double E = object.Solve(BS); //solve for the given basis
+    hartreefocksolver object (BS,4,3); //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    double E = object.solve(); //solve for the given basis
     cout << "Energy of the ground state= " << E << endl; //print out approximated ground state energy
     return 0;
 } // End: function output()

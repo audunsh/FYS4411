@@ -7,7 +7,7 @@
 
 basis::basis(){}
 
-basis::basis(int N)
+basis::basis(int N, int Z)
 {
     Nstates = N;
     Nstates2 = 2*Nstates;

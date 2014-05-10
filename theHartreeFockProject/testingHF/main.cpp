@@ -20,7 +20,7 @@ TEST(HFSolve){
     int N = 4;   // Number of electrons
     int Ns = 4;  // 6 states
 
-    basis Bs(3);              //creating the basis object
+    basis Bs(3, 4);              //creating the basis object
     string filename;
     filename = "/home/goranbs/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/testingHF/m_elements_c.dat";
     Bs.read(filename, Z); //reading basis from file

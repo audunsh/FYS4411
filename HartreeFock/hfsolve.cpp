@@ -48,6 +48,7 @@ void HFSolve::Solve(basis Bs){
         }
         //cout << e_v[i] << endl;
     }
+    C.print();
     double E = calc_energy(C,Bs);
     cout << "Ground State Energy: " << E << endl;
 

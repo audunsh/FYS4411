@@ -16,7 +16,7 @@ class basis
 {
 public:
     basis();
-    basis(int N);                                                 //initialize object
+    basis(int N, int Z);                                          //initialize object
     void read(string filename, int Zn);                           //read basis from file
     void generate();                                              //generate basis
     void set_orthonormal();                                       //if true: set the overlap matrix to I
