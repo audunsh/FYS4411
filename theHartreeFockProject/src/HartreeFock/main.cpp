@@ -16,6 +16,8 @@ using namespace std;
 using namespace arma;
 
 int main(int argc, char* argv[]) {
+
+
     /* The code seems to be running fine, despite the result being obviously faulty.
      * The error arise in the solver itself (HFSolve) as we still havent implemented
      * the correct use of the density matrix.
@@ -27,6 +29,39 @@ int main(int argc, char* argv[]) {
      * Audun, 8/5/14
      */
 
+    //testing pp-interaction
+    // Primitives
+    double a = 13.0077;
+    double wA = 1;
+    vec A = {0.5,0,0};
+    Primitive primitiveA(wA,0,0,0,a,A);
+
+    double b = 0.121949;
+    double wB = 1;
+    vec B = {-0.5,0,0};
+    Primitive primitiveB(wB,0,0,0,b,B);
+
+    double c = 0.444529;
+    double wC = 1;
+    vec C = {-0.5,0,0};
+    Primitive primitiveC(wC,0,0,0,c,C);
+
+    double d = 13.0077;
+    double wD = 1;
+    vec D = {0.5,0,0};
+    Primitive primitiveD(wD,0,0,0,d,D);
+
+    BoysFunction boys(5);
+
+    integrator AB (primitiveA, primitiveB, boys);
+    cout << "->Comparing:" << 0.0221246 << " " << AB.pp(primitiveC,primitiveD) << endl;
+    cout << " " << endl;
+
+    Primitive primitiveE(wB,0,1,0,b,B);
+    Primitive primitiveF(wC,0,1,0,c,C);
+
+    integrator BC (primitiveA, primitiveE, boys);
+    cout << "->Comparing:" << 0.0001385 << " " << BC.pp(primitiveF,primitiveD) << endl;
 
     /*
     //set number of protons and electrons
@@ -60,11 +95,11 @@ int main(int argc, char* argv[]) {
     dist = (double) argv[4];
     *****************************************************************************************************************/
 
-    basis BS(3); //set up a basis containing 3 contracted/orbitals
-    BS.init_STO_3G("Be"); //initialize the STO-3G basis for the Beryllium atom
-    BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
-    HFSolve object (4,3); //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
-    double E = object.Solve(BS); //solve for the given basis
-    cout << "Energy of the ground state= " << E << endl; //print out approximated ground state energy
+    //basis BS(3); //set up a basis containing 3 contracted/orbitals
+    //BS.init_STO_3G("Be"); //initialize the STO-3G basis for the Beryllium atom
+    //BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
+    //HFSolve object (4,3); //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    //double E = object.Solve(BS); //solve for the given basis
+    //cout << "Energy of the ground state= " << E << endl; //print out approximated ground state energy
     return 0;
 } // End: function output()

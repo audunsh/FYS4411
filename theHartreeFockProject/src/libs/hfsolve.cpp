@@ -90,7 +90,7 @@ double HFSolve::Solve(basis BS){
     }
     C.print();
     double E = calc_energy(C);
-    E = energy();
+    //E = energy();
 
     //cout << "Ground State Energy: " << E << endl;
     return E;

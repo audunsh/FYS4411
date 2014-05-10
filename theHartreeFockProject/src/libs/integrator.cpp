@@ -151,7 +151,7 @@ void integrator::setupRtau(){
     Ny  = pCijk(1)+pDijk(1);
     Phi = pCijk(2)+pDijk(2);
 
-    vec Aa = {T,U,V,Tau,Ny,Phi};
+    //vec Aa = {T,U,V,Tau,Ny,Phi};
 
     N = T+U+V+Tau+Ny+Phi;
     Rtau.set_size(N+2);
@@ -165,19 +165,17 @@ void integrator::setupRtau(){
         Rtau(n).set_size(T+Tau+3,U+Ny+3,V+Phi+3);
         Rtau(n).zeros();
         Rtau(n) (1,1,1) = pow((-2.0*alpha),(double) n)*boys.returnValue(n);
-        if(!isfinite(Rtau(n)(1,1,1))){
-            cout << "Bad initial condition, will return inf or nan.";
-        }
     }
+    cout << "Rpq:" << Rpq(0) << " " << Rpq(1) << " " << Rpq(2) << endl;
     for(int t=1;t<T+Tau+2;t++){
         for(int n=0;n<N+1;n++){
-            Rtau(n) (t+1,1,1) = t*Rtau(n+1) (t-1,1,1) + Rpq(0) * Rtau(n+1) (t,1,1);
+            Rtau(n) (t+1,1,1) = (t-1)*Rtau(n+1) (t-1,1,1) + Rpq(0) * Rtau(n+1) (t,1,1);
         }
     }
     for(int u=1;u<U+Ny+2;u++){
         for(int t=1;t<T+Tau+2;t++){
             for(int n=0;n<N+1;n++){
-                Rtau(n) (t,u+1,1) = u*Rtau(n+1) (t,u-1,1) + Rpq(1) * Rtau(n+1) (t,u,1);
+                Rtau(n) (t,u+1,1) = (u-1)*Rtau(n+1) (t,u-1,1) + Rpq(1) * Rtau(n+1) (t,u,1);
             }
         }
     }
@@ -185,7 +183,7 @@ void integrator::setupRtau(){
         for(int u=1;u<U+Ny+2;u++){
             for(int t=1;t<T+Tau+2;t++){
                 for(int n=0;n<N+1;n++){
-                    Rtau(n) (t,u,v+1) = v*Rtau(n+1) (t,u,v-1) + Rpq(2) * Rtau(n+1) (t,u,v);
+                    Rtau(n) (t,u,v+1) = (v-1)*Rtau(n+1) (t,u,v-1) + Rpq(2) * Rtau(n+1) (t,u,v);
                 }
             }
         }
@@ -268,7 +266,7 @@ double integrator::pp(Primitive &pC, Primitive &pD){
     Tau = pCijk(0)+pDijk(0);
     Ny  = pCijk(1)+pDijk(1);
     Phi = pCijk(2)+pDijk(2);
-    double E1,E2,R1;
+    double E1,E2,R1,F2;
     double result = 0;
     for(int t=0;t<T+1;t++){
         for(int u=0;u<U+1;u++){
@@ -278,23 +276,20 @@ double integrator::pp(Primitive &pC, Primitive &pD){
                         for(int phi=0;phi<Phi+1;phi++){
                             E1 = Eij(0) ((int) pAijk(0)+1, (int) pBijk(0)+1, t+1)  *Eij(1) ((int) pAijk(1)+1, (int) pBijk(1)+1, u+1) *Eij(2) ((int) pAijk(2)+1, (int) pBijk(2)+1, v+1);
                             E2 = Ecd(0) ((int) pCijk(0)+1, (int) pDijk(0)+1, tau+1)*Ecd(1) ((int) pCijk(1)+1, (int) pDijk(1)+1, ny+1)*Ecd(2) ((int) pCijk(2)+1, (int) pDijk(2)+1, phi+1);
-                            R1 = pow(-1,tau+ny+phi+1)*Rtau(0) (t+tau+1,u+ny+1,v+phi+1);
-                            if(!isfinite(R1*E1*E2)){
-                                cout << "Error in evaluation of R1: function  returns " << R1 << endl;
-                            }
-                            result += E1*E2*R1;
+                            R1 = Rtau(0) (t+tau+1,u+ny+1,v+phi+1)*pow(-1,tau+ny+phi);
+                            cout << "-------------Output from ppIntegral------------" << endl;
+
+                            cout << "R1*E1*E2:" << R1 << " * " << E1 << " * " << E2 << endl;
+                            cout << "t u v tau ny phi:" << t << " " << u << " " << v << " " << tau << " " << ny << " " << phi << endl;
+                            //F2 = (1-2*((tau + ny + phi) %2));
+                            cout << "-----------------------------------------------" << endl;
+
+                            result += E1*E2*R1;//*F2;
                         }
                     }
                 }
             }
         }
-    }
-    if((p+q)==0){
-        cout << "Error in evaluation of particle-particle integral: " << p << endl;
-    }
-    if(!isfinite(2*pow(pi,2.5)/(p*q*sqrt(p+q)))){
-        cout << 2*pow(pi,2.5) << " divided by " <<(p*q*sqrt(p+q)) << endl; //sqrt of negative number yields nan
-        cout << "Error in evaluation of prefactor, twobody integral." <<  p << " " << q << " " << pow(pi,2.5) << endl;
     }
     return wA*wB*wC*wD*result*(2*pow(pi,2.5))/(p*q*sqrt(p+q));
 }

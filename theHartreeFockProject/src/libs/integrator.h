@@ -19,6 +19,7 @@ public:
     void setupEcd();
     void setupRtuv(vec3 &nucleiPos);
     void setupRtau();
+    void setR(); //borrowed from Henrik
 
     //the integrals
     double overlap();
@@ -32,6 +33,9 @@ private:
     field <cube> Ecd;
     field <cube> Rtuv;
     field <cube> Rtau;
+
+    vector<cube> m_R; //borrowed from Henrik
+
     vec3 P, pAijk, pBijk, pCijk, pDijk,A,B,C,D,Xab,Xcd,Xpa,Xpb,Xqc,Xqd,Rpc,Sijk,Tijk,Q, Rpq;
     double a,b,c,d,p,mu, Xab2,Xcd2,wA,wB,wC,wD,R, Rpc2,Rpq2,S,q, alpha;
     BoysFunction boys;
