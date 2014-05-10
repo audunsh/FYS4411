@@ -18,9 +18,15 @@ public:
     bool convergenceCriteria(); //check for convergence
     double energy(); //return ground state energy
     double solve(); //automated solving process, returns energy
+    double coupledMatrixTilde(int p, int q, int r, int s); //return direct and exchange term
+    void setupCoupledMatrix(); //set up direct and exchange terms from basis
+
 
 private:
     basis Bs;
+
+    field<mat> coupledMatrix;
+
     mat V; //Transformation matrix
     mat P; //Density matrix
     mat P_prev; //previous density matrix

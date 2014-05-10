@@ -241,6 +241,7 @@ void HFSolve::normalize_col(mat C){
 }
 
 void HFSolve::setupP(mat C){
+    //set up the density matrix, following Dragly at github.com/dragly/hartree-fock
     for(int p = 0; p<Nstates;p++){
         for(int q=0; q<Nstates;q++){
             for(int k = 0; k<N;k++){

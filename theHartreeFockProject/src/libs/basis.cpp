@@ -70,7 +70,7 @@ void basis::read(string filename, int Zn){
     ifstream myfile;
     myfile.open(filename.c_str());
     if(!myfile.good()){
-        cout << "file is not open" << endl;
+        cout << "Failed to read file." << endl;
     }
     if (myfile.is_open()){
         int p,q,r,s;
@@ -84,9 +84,10 @@ void basis::read(string filename, int Zn){
             //cout << p << q << r << s << endl;
             try{
                 v(p,q)(r,s) = Z*value;
-                if(p==q){
-                    h(p,q) = h0(p,q);
-                }
+                //h(p,q) = h0(p,q);
+                //if(p==q){
+                //    h(p,q) = h0(p,q);
+                //}
             }
             catch(int e){
                 cout << "Failed to load basis." << endl;
@@ -97,6 +98,11 @@ void basis::read(string filename, int Zn){
     else
         cout << "Did not manage to open file in HFSolve::init()"<< endl;
     //expand();
+    for(int p=0; p<Nstates;p++){
+        for(int q=0; q<Nstates;q++){
+            h(p,q) = h0(p,q);
+        }
+    }
 }
 
 void basis::expand(){
@@ -132,7 +138,7 @@ double basis::h0(int i, int j){
     // the one-body interaction
     double h = 0;
     if (i == j){
-        double n = i+1; //2 + 1.0;
+        double n = i + 1.0;
         h = -(Z*Z)/(2*n*n);
     }
     return h;

@@ -95,17 +95,19 @@ int main(int argc, char* argv[]) {
     Ns = (int) argv[3];
     dist = (double) argv[4];
     *****************************************************************************************************************/
-
-    basis BS(3, 4); //set up a basis containing 3 contracted/orbitals
+    int nStates   = 3; //number of stats to expand in
+    int nProtons  = 4; //number of protons
+    int nElectrons= 4; //number of electrons
+    basis BS(nStates, nProtons); //set up a basis containing 3 contracted/orbitals
     //BS.init_STO_3G("Be"); //initialize the STO-3G basis for the Beryllium atom
     //BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
 
     string filename;
     filename = "m_elements_c.dat";
-    BS.read(filename, 4); //reading basis from file
+    BS.read(filename, nProtons); //reading basis from file
     BS.set_orthonormal();
 
-    hartreefocksolver object (BS,4,3); //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    hartreefocksolver object (BS,nElectrons,nProtons); //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve(); //solve for the given basis
     cout << "Energy of the ground state= " << E << endl; //print out approximated ground state energy
     return 0;
