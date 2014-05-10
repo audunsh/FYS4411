@@ -7,35 +7,28 @@
 
 basis::basis(){}
 
-basis::basis(int N, int Z)
+basis::basis(int N)
 {
     Nstates = N;
-    Nstates2 = 2*Nstates;
-    field<mat> vn(Nstates, Nstates); //no-spin basis
+    //initializing fields and matrices
+    //two-body interaction
+    field<mat> vn(Nstates, Nstates);
     for (int i = 0; i < Nstates; ++i) {
         for (int j = 0; j < Nstates; ++j) {
             vn(i,j) = zeros<mat>(Nstates,Nstates); // fill V with 3x3 mx elements
         }
     }
+    v = vn;
 
-    field<mat> Vn(Nstates2, Nstates2); //spin-basis
-    for (int i = 0; i < Nstates2; ++i) {
-        for (int j = 0; j < Nstates2; ++j) {
-            Vn(i,j) = zeros<mat>(Nstates2,Nstates2); // fill V with 3x3 mx elements
-        }
-    }
-    v = vn;  // global variables for class basis.cpp
-    V = Vn;
+    //one-body contribution
     h.set_size(Nstates,Nstates);
     h.zeros();
-    H.set_size(Nstates2,Nstates2);
-    H.zeros();
 
+    //nuclear potential
     nuclearPotential.set_size(Nstates,Nstates);
     nuclearPotential.zeros();
-    H.zeros();
 
-    //initializing the overlap matrix
+    //overlap matrix
     S.set_size(Nstates,Nstates);
     S.zeros();
 }
@@ -51,16 +44,7 @@ void basis::set_orthonormal(){
     }
 }
 
-void basis::init_overlap(){
-    //calculates the overlap matrix for the generated basis
-    for(int i=0;i < Nstates2;i++){
-        for(int j=0;j < Nstates2;j++){
-            if(i==j){
-                S(i,j) = 1.0;
-            }
-        }
-    }
-}
+
 
 void basis::read(string filename, int Zn){
     Z = Zn;
@@ -70,7 +54,7 @@ void basis::read(string filename, int Zn){
     ifstream myfile;
     myfile.open(filename.c_str());
     if(!myfile.good()){
-        cout << "Failed to read file." << endl;
+        cout << "Failed to load file." << endl;
     }
     if (myfile.is_open()){
         int p,q,r,s;
@@ -81,35 +65,40 @@ void basis::read(string filename, int Zn){
             myfile >> r;
             myfile >> s;
             myfile >> value;
-            //cout << p << q << r << s << endl;
             try{
                 v(p,q)(r,s) = Z*value;
-                //h(p,q) = h0(p,q);
-                //if(p==q){
-                //    h(p,q) = h0(p,q);
-                //}
             }
             catch(int e){
-                cout << "Failed to load basis." << endl;
+                cout << "Failed to read basis from file." << endl;
             }
-
         }
     }
     else
-        cout << "Did not manage to open file in HFSolve::init()"<< endl;
-    //expand();
+        cout << "Did not manage to load basis from file."<< endl;
     for(int p=0; p<Nstates;p++){
         for(int q=0; q<Nstates;q++){
             h(p,q) = h0(p,q);
         }
     }
+    set_orthonormal();
 }
 
 void basis::expand(){
-    //expand basis to include spin
+    //expand basis for explicid spin inclusion
+    Nstates2 = 2*Nstates;
+    field<mat> Vn(Nstates2, Nstates2); //spin-basis
+    for (int i = 0; i < Nstates2; ++i) {
+        for (int j = 0; j < Nstates2; ++j) {
+            Vn(i,j) = zeros<mat>(Nstates2,Nstates2); // fill V with 3x3 mx elements
+        }
+    }
+    V = Vn;
     h.set_size(Nstates2);
     S.set_size(Nstates2,Nstates2);
+    h.zeros();
     S.zeros();
+    H.set_size(Nstates2,Nstates2);
+    H.zeros();
     double D = 0;
     double Ex = 0;
     for (int p = 0; p < Nstates2; ++p) {
@@ -118,10 +107,7 @@ void basis::expand(){
                 for (int s= 0; s < Nstates2; ++s) {
                     try{
                         D = v(p/2,q/2)(r/2,s/2);  // Direct term
-                        Ex =v(p/2,q/2)(s/2,r/2); // Exchange term
-                        //cout << D << Ex << " ";
-                        //cout << p << " " << q << " " << r << " " << s << endl;
-
+                        Ex =v(p/2,q/2)(s/2,r/2);  // Exchange term
                         V(p,q)(r,s) = state(p,q,r,s,D,Ex);
                     }
                     catch(int e){
@@ -132,6 +118,7 @@ void basis::expand(){
             H(p,q) = h0(p,q);
         }
     }
+
 }
 
 double basis::h0(int i, int j){
@@ -145,7 +132,7 @@ double basis::h0(int i, int j){
 }
 
 double basis::state(int p, int q, int r, int s, double D, double Ex){
-    //Evaluating spin configuration, returning direct and/or exchange term or 0
+    //Explicid spin implementation using direct and exchange term
     double S = 0;
     int s1 = 0; int s2 = 0;int s3 = 0;int s4 = 0;
     s1 = p%2;
@@ -179,7 +166,7 @@ double basis::state(int p, int q, int r, int s, double D, double Ex){
 }
 
 void basis::init_STO_3G(string configuration){
-    //initialize STO-3G basis sets
+    //initialize STO-3G basis sets, following slides from Helgaker (2006)
     basisSet[3];
     Nstates = 3;
     Nprimitives = 3;
@@ -207,20 +194,11 @@ void basis::init_STO_3G(string configuration){
         basisSts.push_back(C1);
         basisSts.push_back(C2);
         basisSts.push_back(C3);
-
-        cout << C1.getPrimitive(0).exponent() << endl;
-        //contracted basisSet[3] = {C1,C1,C1};
-
-
-        //basisSet[0] = contracted(3,S1);
-        //basisSet[1] = contracted(3,S2);
-        //basisSet[2] = contracted(3,P1);
     }
 }
 
 void basis::init_integrals(){
-    //initialize all integrals needed for HF-scheme
-    //integrator AB;
+    //Set up and solve all intergals for the current gaussian basis
     BoysFunction boys(3);
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
@@ -232,7 +210,7 @@ void basis::init_integrals(){
                     S(p,q) += AB.overlap();
                     vec3 C = {0,0,0};
                     AB.setupRtuv(C);
-                    h(p,q) += AB.kinetic();
+                    h(p,q) += AB.kinetic()+  AB.pNuclei();
                     nuclearPotential(p,q) += AB.pNuclei();
                     for(int r=0; r<Nstates; r++){
                         for(int s=0; s<Nstates; s++){
@@ -252,16 +230,4 @@ void basis::init_integrals(){
 }
 
 
-double basis::get(int p, int q, int r, int s){
-    //returns matrix element pqrs
-}
-
-void basis::generate(){
-    //function to generate the basis using STO/GTOs
-}
-
-double basis::eval(int p, int q, int r, int s){
-    //function to calculate the matrix elements, possibly on the fly
-    //This function also needs a variable to specify type of orbitals
-}
 

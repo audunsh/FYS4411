@@ -16,16 +16,12 @@ class basis
 {
 public:
     basis();
-    basis(int N, int Z);                                          //initialize object
+    basis(int N);                                                 //initialize basis
     void read(string filename, int Zn);                           //read basis from file
-    void generate();                                              //generate basis
     void set_orthonormal();                                       //if true: set the overlap matrix to I
-    void expand(); //expand basis for explicit spin-dependence
-    void init_overlap();
-    void init_integrals();
-    void init_STO_3G(string configuration); //set up STO-3G basis set for given configuration
-    double get(int p, int q, int r, int s);                       //function to retrieve two-body integral (precalculated or otherwise
-    double eval(int p, int q, int r, int s);                      //function to evaluate two-body integral
+    void expand();                                                //expand basis for explicit spin-dependence
+    void init_integrals();                                        //set up and solve all integrals for a gaussian basis
+    void init_STO_3G(string configuration);                       //set up STO-3G basis set for given configuration
     double state(int p, int q, int r, int s, double D, double E); //function to evaluate spin-dependence
     int Nstates, Nstates2;                                        //number of basis states (spin not included)
     field<mat> v;                                                 //basis, spin not included
@@ -34,8 +30,7 @@ public:
     double h0(int i, int j);                                      //one body interaction
     mat S,h,H,nuclearPotential;                                   //overlap matrix, onebody interaction matrices
 
-    //we also need an array of contracted containing the primitives in each orbital
-    //this will constitute the basis
+
 private:
     contracted basisSet[]; //use one of these...
     vector<contracted> basisSts; //use one of these...

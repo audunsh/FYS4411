@@ -86,48 +86,7 @@ void HFSolve::advance(){
 
 }
 
-void HFSolve::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons)
-{
-    //Borrowed from Henrik
-    vec eigVal;
-    mat eigVec;
-    mat F2 = zeros<mat>(Nstates,Nstates);
 
-    F2 = V.t()*F*V;
-
-    // Diagonalize matrix h2
-    eig_sym(eigVal, eigVec, F2);
-    C = V*eigVec;
-
-    // Normalize the orbitals (phi = sum_p(C_p chi_p)). For vector C this means:
-    normalize_col(C);
-
-    // Compute density matrix. m_densityFactor accounts for the fact that the density matrix is
-    // defined differently for RHF and UHF
-    setupP(C);
-    //P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix. Sometimes needed in order to achieve correct convergence.
-
-    e_v = eigVal;
-}
-
-void HFSolve::buildFockMatrix()
-{
-    //Borrowed from Henrik)
-    for (int i = 0; i < Nstates; i++){
-        for (int j = 0; j < Nstates; j++){
-
-            // One-electron integrals
-            F(i,j) = Bs.h(i,j)+Bs.nuclearPotential(i,j);
-
-            // Add two-electron integrals
-            for (int k = 0; k < Nstates; k++){
-                for (int l = 0; l < Nstates; l++){
-                    F(i,j) += 0.5*P(l,k)*(2*Bs.v(i,k)(j,l) - Bs.v(i,k)(l,j));
-                }
-            }
-        }
-    }
-}
 
 double HFSolve::Solve(basis BS){
     //Solves the HF-eq's using the provided basis
@@ -142,11 +101,7 @@ double HFSolve::Solve(basis BS){
     while (true){//abs(e_v.min() - e_v_prev.min()) > tolerance){ // convergence test
         iters = iters + 1;
 
-        //advance();
-        e_v_prev = e_v;
-        //fockEnergyOld = m_fockEnergy(0);
-        buildFockMatrix();
-        solveSingle(F, C, P, e_v, N);
+        advance();
 
         if(iters>100){
             cout << "Maximum number of iterations (100) exceeded." << endl;

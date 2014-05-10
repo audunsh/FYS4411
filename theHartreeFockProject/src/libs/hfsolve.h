@@ -24,9 +24,7 @@ private:
     void setupP(mat C);
     void setupG();
 
-    //borrowed from Henrik
-    void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons);
-    void buildFockMatrix();
+
 
     mat HFmatrix(mat C);
     double calc_energy(mat C);
