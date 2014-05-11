@@ -26,8 +26,8 @@ int main(int argc, char* argv[]) {
 
 
     //set number of protons and electrons
-    int Z = 2;   // Number of protons
-    int N = 2;   // Number of electrons
+    int Z = 4;   // Number of protons
+    int N = 4;   // Number of electrons
     int Ns = 4;  // 6 states
 
     basis Bs(3, 0);              //creating the basis object

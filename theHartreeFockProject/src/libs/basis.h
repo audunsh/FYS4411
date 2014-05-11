@@ -25,6 +25,12 @@ public:
     void init_HTO4(int nProtons);                                //initialize hydrogen type basis with 4 orbitals
     void init_molecule(string configuration, vec nProtons, field<vec> corePos);
 
+    void init_H2(vec3 corePos1, vec3 corePos2);
+    void init_Be2(vec3 corePos1, vec3 corePos2);
+
+    void add_atom_STO3G(string configuration, vec3 corePos);
+    //void init_Be2(vec3 corePos1, vec3 corePos2);
+
     double state(int p, int q, int r, int s, double D, double E); //function to evaluate spin-dependence
     int Nstates, Nstates2;                                        //number of basis states (spin not included)
     field<mat> v;                                                 //basis, spin not included

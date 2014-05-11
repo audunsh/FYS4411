@@ -142,6 +142,165 @@ double basis::state(int p, int q, int r, int s, double D, double Ex){
     return S;
 }
 
+void basis::init_Be2(vec3 corePos1, vec3 corePos2){
+    Nstates = 0;
+    Nprimitives = 3;
+    nucleusPositions.set_size(2);
+    nucleusCharges.set_size(2);
+    nucleusPositions(0) = corePos1;
+    nucleusPositions(1) = corePos1;
+    nucleusCharges(0) = 4;
+    nucleusCharges(1) = 4;
+    add_atom_STO3G("Be", corePos1);
+    add_atom_STO3G("Be", corePos2);
+    set_size(Nstates);
+
+}
+
+void basis::init_H2(vec3 corePos1, vec3 corePos2){
+    Nstates = 0;
+    Nprimitives = 3;
+    nucleusPositions.set_size(2);
+    nucleusCharges.set_size(2);
+    nucleusPositions(0) = corePos1;
+    nucleusPositions(1) = corePos1;
+    nucleusCharges(0) = 2;
+    nucleusCharges(1) = 2;
+    add_atom_STO3G("H", corePos1);
+    add_atom_STO3G("H", corePos2);
+    set_size(Nstates);
+}
+
+
+
+
+void basis::add_atom_STO3G(string configuration, vec3 corePos){
+    //add new atom to the basis
+    if(configuration == "H"){
+        Nstates += 1;
+        Primitive S1A(0.15432897,0,0,0,3.42525091,corePos);
+        Primitive S1B(0.53532814,0,0,0,0.62391373,corePos);
+        Primitive S1C(0.44463454,0,0,0,0.16885540,corePos);
+
+        Primitive S1[3] = {S1A,S1B,S1C};
+
+        contracted C1 (3,S1);
+
+        basisSts.push_back(C1);
+
+    }
+
+    if(configuration == "He"){
+        Nstates += 1;
+        Primitive S1A(0.15432897,0,0,0,6.36242139,corePos);
+        Primitive S1B(0.53532814,0,0,0,1.15892300,corePos);
+        Primitive S1C(0.44463454,0,0,0,0.31364979,corePos);
+
+        Primitive S1[3] = {S1A,S1B,S1C};
+
+        contracted C1 (3,S1);
+
+        basisSts.push_back(C1);
+
+    }
+
+    if(configuration == "Be"){
+        Nstates += 3;
+        Primitive S1A(0.15432897,0,0,0,30.1678710,corePos);
+        Primitive S1B(0.53532814,0,0,0,5.4951153, corePos);
+        Primitive S1C(0.44463454,0,0,0,1.4871927, corePos);
+
+        Primitive S2A(-0.09996723,0,0,0,1.3148331,corePos);
+        Primitive S2B(0.39951283,0,0,0,0.3055389, corePos);
+        Primitive S2C(0.70011547,0,0,0,0.0993707, corePos);
+
+        Primitive P1A(0.15591627,1,0,0,1.3148331, corePos);
+        Primitive P1B(0.60768372,1,0,0,0.3055389, corePos);
+        Primitive P1C(0.39195739,1,0,0,0.0993707, corePos);
+
+        Primitive S1[3] = {S1A,S1B,S1C};
+        Primitive S2[3] = {S2A,S2B,S2C};
+        Primitive P1[3] = {P1A,P1B,P1C};
+
+        contracted C1 (3,S1);
+        contracted C2(3,S2);
+        contracted C3(3,P1);
+
+        basisSts.push_back(C1);
+        basisSts.push_back(C2);
+        basisSts.push_back(C3);
+    }
+
+    if(configuration == "O"){
+        Nstates += 3;
+        Primitive S1A(0.15432897,0,0,0,130.7093200,corePos);
+        Primitive S1B(0.53532814,0,0,0,23.8088610, corePos);
+        Primitive S1C(0.44463454,0,0,0,6.4436083, corePos);
+
+        Primitive S2A(-0.09996723,0,0,0,5.0331513,corePos);
+        Primitive S2B(0.39951283,0,0,0,1.1695961, corePos);
+        Primitive S2C(0.70011547,0,0,0,0.3803890, corePos);
+
+        Primitive P1A(0.15591627,1,0,0,5.0331513, corePos);
+        Primitive P1B(0.60768372,1,0,0,1.1695961, corePos);
+        Primitive P1C(0.39195739,1,0,0,0.3803890, corePos);
+
+        Primitive S1[3] = {S1A,S1B,S1C};
+        Primitive S2[3] = {S2A,S2B,S2C};
+        Primitive P1[3] = {P1A,P1B,P1C};
+
+        contracted C1 (3,S1);
+        contracted C2(3,S2);
+        contracted C3(3,P1);
+
+        basisSts.push_back(C1);
+        basisSts.push_back(C2);
+        basisSts.push_back(C3);
+    }
+
+    if(configuration == "Si"){
+        Nstates += 5;
+        Primitive S1A(0.1543289673,0,0,0,407.7975514,corePos);
+        Primitive S1B(0.5353281423,0,0,0,74.28083305, corePos);
+        Primitive S1C(0.4446345422,0,0,0,20.10329229, corePos);
+
+        Primitive S2A(-0.09996722919,0,0,0,23.19365606,corePos);
+        Primitive S2B(0.39951282610,0,0,0,5.389706871, corePos);
+        Primitive S2C(0.70011546890,0,0,0,1.752899952, corePos);
+
+        Primitive S3A(-2196203690,0,0,0,1.4787406220,corePos);
+        Primitive S3B(0.2255954336,0,0,0,0.4125648801, corePos);
+        Primitive S3C(0.9003984260,0,0,0,1.752899952, corePos);
+
+        Primitive P1A(0.1559162750,1,0,0,23.19365606, corePos);
+        Primitive P1B(0.6076837186,1,0,0,5.389706871, corePos);
+        Primitive P1C(0.3919573931,1,0,0,1.752899952, corePos);
+
+        Primitive P2A(0.01058760429,0,1,0,1.4787406220, corePos);
+        Primitive P2B(0.59516700530,0,1,0,0.4125648801, corePos);
+        Primitive P2C(0.46200101200,0,1,0,0.1614750979, corePos);
+
+        Primitive S1[3] = {S1A,S1B,S1C};
+        Primitive S2[3] = {S2A,S2B,S2C};
+        Primitive S3[3] = {S3A,S3B,S3C};
+
+        Primitive P1[3] = {P1A,P1B,P1C};
+        Primitive P2[3] = {P2A,P2B,P2C};
+
+        contracted C1(3,S1);
+        contracted C2(3,S2);
+        contracted C3(3,S3);
+        contracted C4(3,P1);
+        contracted C5(3,P2);
+
+        basisSts.push_back(C1);
+        basisSts.push_back(C2);
+        basisSts.push_back(C3);
+        basisSts.push_back(C4);
+        basisSts.push_back(C5);
+    }
+}
+
 void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos){
     //using STO-3G for molecules
     if(configuration == "Be"){
@@ -359,16 +518,18 @@ double basis::nnInteraction(){
             result += nucleusCharges(i)*nucleusCharges(j)/r;
         }
     }
-    return result;
+    return 0;//result;
 }
 
 void basis::init_integrals(){
     //Set up and solve all intergals for the current gaussian basis
     BoysFunction boys(3);
+
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<Nprimitives;i++){
                 for(int j=0; j<Nprimitives;j++){
+
                     Primitive A = basisSts[p].getPrimitive(i);
                     Primitive B = basisSts[q].getPrimitive(j);
                     integrator AB (A,B, boys);
