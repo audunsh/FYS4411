@@ -143,8 +143,9 @@ double basis::state(int p, int q, int r, int s, double D, double Ex){
 }
 
 void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos){
+    //using STO-3G for molecules
     if(configuration == "Be"){
-        //basisSet[3];
+        //multiple Be atoms interacting as a molecule
         Nstates = 3*nProtons.size();
         set_size(Nstates);
         Nprimitives = 3;
@@ -177,6 +178,116 @@ void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos
             basisSts.push_back(C3);
         }
     }
+    if(configuration == "H"){
+        //multiple H-atoms interacting as a molecule
+        Nstates = nProtons.size();
+        set_size(Nstates);
+        Nprimitives = 3;
+        nucleusPositions.set_size(nProtons.size());
+        for(int i=0;i<nProtons.size();i++){
+            nucleusCharges(i) = nProtons(i);
+            nucleusPositions(i) = corePos(i);
+            Primitive S1A(0.15432897,0,0,0,6.36242139,corePos(i));
+            Primitive S1B(0.53532814,0,0,0,1.15892300,corePos(i));
+            Primitive S1C(0.44463454,0,0,0,0.31364979,corePos(i));
+
+            Primitive S1[3] = {S1A,S1B,S1C};
+
+            contracted C1 (3,S1);
+
+            basisSts.push_back(C1);
+        }
+    }
+    if(configuration == "O"){
+        //multiple H-atoms interacting as a molecule
+        Nstates = 3*nProtons.size();
+        set_size(Nstates);
+        Nprimitives = 3;
+        nucleusPositions.set_size(nProtons.size());
+        for(int i=0;i<nProtons.size();i++){
+            nucleusCharges(i) = nProtons(i);
+            nucleusPositions(i) = corePos(i);
+            Primitive S1A(0.15432897,0,0,0,130.7093200,corePos(i));
+            Primitive S1B(0.53532814,0,0,0,23.8088610, corePos(i));
+            Primitive S1C(0.44463454,0,0,0,6.4436083, corePos(i));
+
+            Primitive S2A(-0.09996723,0,0,0,5.0331513,corePos(i));
+            Primitive S2B(0.39951283,0,0,0,1.1695961, corePos(i));
+            Primitive S2C(0.70011547,0,0,0,0.3803890, corePos(i));
+
+            Primitive P1A(0.15591627,1,0,0,5.0331513, corePos(i));
+            Primitive P1B(0.60768372,1,0,0,1.1695961, corePos(i));
+            Primitive P1C(0.39195739,1,0,0,0.3803890, corePos(i));
+
+            Primitive S1[3] = {S1A,S1B,S1C};
+            Primitive S2[3] = {S2A,S2B,S2C};
+            Primitive P1[3] = {P1A,P1B,P1C};
+
+            contracted C1 (3,S1);
+            contracted C2(3,S2);
+            contracted C3(3,P1);
+
+            basisSts.push_back(C1);
+            basisSts.push_back(C2);
+            basisSts.push_back(C3);
+        }
+    }
+
+    if(configuration == "Si"){
+        //multiple Si-atoms interacting as a molecule
+        Nstates = 5*nProtons.size();
+        set_size(Nstates);
+        Nprimitives = 3;
+        nucleusPositions.set_size(nProtons.size());
+        for(int i=0;i<nProtons.size();i++){
+            nucleusCharges(i) = nProtons(i);
+            nucleusPositions(i) = corePos(i);
+            Primitive S1A(0.1543289673,0,0,0,407.7975514,corePos(i));
+            Primitive S1B(0.5353281423,0,0,0,74.28083305, corePos(i));
+            Primitive S1C(0.4446345422,0,0,0,20.10329229, corePos(i));
+
+            Primitive S2A(-0.09996722919,0,0,0,23.19365606,corePos(i));
+            Primitive S2B(0.39951282610,0,0,0,5.389706871, corePos(i));
+            Primitive S2C(0.70011546890,0,0,0,1.752899952, corePos(i));
+
+            Primitive S3A(-2196203690,0,0,0,1.4787406220,corePos(i));
+            Primitive S3B(0.2255954336,0,0,0,0.4125648801, corePos(i));
+            Primitive S3C(0.9003984260,0,0,0,1.752899952, corePos(i));
+
+            Primitive P1A(0.1559162750,1,0,0,23.19365606, corePos(i));
+            Primitive P1B(0.6076837186,1,0,0,5.389706871, corePos(i));
+            Primitive P1C(0.3919573931,1,0,0,1.752899952, corePos(i));
+
+            Primitive P2A(0.01058760429,0,1,0,1.4787406220, corePos(i));
+            Primitive P2B(0.59516700530,0,1,0,0.4125648801, corePos(i));
+            Primitive P2C(0.46200101200,0,1,0,0.1614750979, corePos(i));
+
+            Primitive S1[3] = {S1A,S1B,S1C};
+            Primitive S2[3] = {S2A,S2B,S2C};
+            Primitive S3[3] = {S3A,S3B,S3C};
+
+            Primitive P1[3] = {P1A,P1B,P1C};
+            Primitive P2[3] = {P2A,P2B,P2C};
+
+            contracted C1(3,S1);
+            contracted C2(3,S2);
+            contracted C3(3,S3);
+            contracted C4(3,P1);
+            contracted C5(3,P2);
+
+            basisSts.push_back(C1);
+            basisSts.push_back(C2);
+            basisSts.push_back(C3);
+            basisSts.push_back(C4);
+            basisSts.push_back(C5);
+
+        }
+    }
+
+
+
+
+
 }
 
 void basis::init_STO_3G(string configuration, double nProtons){
