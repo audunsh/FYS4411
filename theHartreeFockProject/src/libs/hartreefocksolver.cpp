@@ -11,7 +11,7 @@ hartreefocksolver::hartreefocksolver(basis BS, int N, int Z){
     nElectrons = N;              //set number of electrons
     nProtons = Z;                //set number of protons
     //initializing all matrices and vectors
-    C.zeros(nStates,nStates);    //set initial C equal to the unit matrix
+    C.zeros(nStates,nElectrons/2);    //set initial C equal to the unit matrix
     F.zeros(nStates,nStates);    //initialize Fock matrix
     P.zeros(nStates,nStates);    //initialize Density matrix
     U.zeros(nStates,nStates);    //initialize Unitary matrix
@@ -20,6 +20,8 @@ hartreefocksolver::hartreefocksolver(basis BS, int N, int Z){
     epsilon.zeros(nStates);       //eigenvalues from diagonalization
     epsilon_prev.zeros(nStates);  //eigenvalues from previous diagonalization
     setupCoupledMatrix();
+    setupP();
+    setupF();
     s_diag.zeros(nStates);
 }
 
@@ -28,14 +30,16 @@ double hartreefocksolver::solve(){
     setupUnitMatrices();
     setupP();
     iterations = 0;
+    //printMatrices();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
+
         setupF();
         diagonalizeF();
         normalizeC();
         updateP();
+
         iterations += 1;
-        cout << energy() << endl;
     }
     return energy();
 }
@@ -63,7 +67,8 @@ void hartreefocksolver::setupF(){
             F(p,q) = Bs.h(p,q);
             for(int r=0;r<nStates;r++){
                 for(int s=0;s<nStates;s++){
-                    F(p,q) += 0.5*P(s,r)*coupledMatrixTilde(p,q,r,s);
+                    //F(p,q) += 0.5*P(s,r)*coupledMatrixTilde(p,q,r,s);
+                    F(p,q) += P(s,r) * (coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
                 }
             }
         }
@@ -94,9 +99,6 @@ void hartreefocksolver::normalizeC(){
 void hartreefocksolver::updateP(){
     //construct new density matrix
     //following Dragly at github.com/dragly/hartree-fock
-
-    //mat Ptemp = 2*C.cols(0,nElectrons/2-1)*C.cols(0,nElectrons/2 - 1).t();
-    //P = 0.5*P + 0.5*Ptemp;
     mat Ptemp = 2*C*C.t();
     if(P.n_elem>0){
         P = .5 * P + (1 - .5)* Ptemp;
@@ -125,6 +127,8 @@ double hartreefocksolver::energy(){
             for(int r = 0; r<nStates;r++){
                 for(int s = 0; s<nStates; s++){
                     e0 += 0.25*P(p,q)*P(s,r)*coupledMatrixTilde(p,q,r,s);
+                    //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
+
                 }
             }
         }
@@ -136,9 +140,10 @@ double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
     //return direct and exchange term, following Svenn-Arne Dragly at
     //www.github.com/dragly/hartree-fock
     return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q);
+
 }
 
-void hartreefocksolver::setupCoupledMatrix(){
+void hartreefocksolver::setupCoupledMatrix_unused(){
     //still following Dragly, further references to indexation differences between Thijssen and Helgaker
     coupledMatrix.set_size(nStates,nStates);
     for(int p = 0; p<nStates;p++){
@@ -164,6 +169,42 @@ void hartreefocksolver::setupCoupledMatrix(){
                     coupledMatrix(s,p)(r,q) = val;
                     coupledMatrix(r,q)(s,p) = val;
                     coupledMatrix(s,q)(r,p) = val;
+                }
+            }
+        }
+    }
+    coupledMatrix.print();
+}
+
+void hartreefocksolver::printMatrices(){
+    cout << "Fock matrix" << endl;
+    F.print();
+    cout << " " << endl;
+
+    cout << "Coeff matrix" << endl;
+    C.print();
+    cout << " " << endl;
+
+    cout << "Density matrix" << endl;
+    P.print();
+    cout << " " << endl;
+    cout << "----------------------" << endl;
+
+}
+
+void hartreefocksolver::setupCoupledMatrix(){
+    int n = Bs.Nstates;
+    coupledMatrix.set_size(n, n);
+    for (int p = 0; p<n; p++){
+        for (int q = 0; q<n; q++){
+            coupledMatrix(p, q) = zeros(n, n);
+        }
+    }
+    for (int p = 0; p<n; p++){
+        for (int q = 0; q<n; q++){
+            for (int r = 0; r<n; r++){
+                for (int s = 0; s<n; s++){
+                    coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s);
                 }
             }
         }

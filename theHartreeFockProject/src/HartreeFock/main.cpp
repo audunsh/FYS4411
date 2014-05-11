@@ -52,13 +52,12 @@ int main(int argc, char* argv[]) {
     Ns = (int) argv[3];
     dist = (double) argv[4];
     *****************************************************************************************************************/
-    int nStates   = 3; //number of states in expansion
-    int nProtons  = 4; //number of protons
-    int nElectrons= 4; //number of electrons
-    basis BS(nStates); //set up a basis of 3 states
 
-    string filename = "m_elements_c.dat";
-    BS.read(filename, nProtons); //read basis from file
+    double nProtons  = 4; //number of protons
+    int nElectrons= 4; //number of electrons
+
+    basis BS; //initialize basis object
+    BS.init_HTO4(nProtons);
 
     //BS.init_STO_3G("Be"); //initialize the STO-3G basis for the Beryllium atom
     //BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction

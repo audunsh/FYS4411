@@ -16,10 +16,15 @@ public:
     void normalizeC();   //normalize the coefficient matrix
     void updateP();      //construct new density matrix
     void setupCoupledMatrix(); //set up direct and exchange terms from basis
+    void printMatrices();//print the iterating matrices
     bool convergenceCriteria(); //check for convergence
     double energy();     //return ground state energy
     double solve();      //automated solving process, returns energy
     double coupledMatrixTilde(int p, int q, int r, int s); //return direct and exchange term
+
+    //new code to debug
+    void setupCoupledMatrix_unused();
+    double calcEnergy2();
 
 private:
     basis Bs;
