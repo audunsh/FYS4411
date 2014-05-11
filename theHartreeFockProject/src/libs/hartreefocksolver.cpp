@@ -137,7 +137,7 @@ double hartreefocksolver::energy(){
             }
         }
     }
-    return e0;
+    return e0+Bs.nnInteraction();
 }
 
 double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){

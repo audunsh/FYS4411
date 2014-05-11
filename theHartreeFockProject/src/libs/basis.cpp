@@ -142,12 +142,53 @@ double basis::state(int p, int q, int r, int s, double D, double Ex){
     return S;
 }
 
+void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos){
+    if(configuration == "Be"){
+        //basisSet[3];
+        Nstates = 3*nProtons.size();
+        set_size(Nstates);
+        Nprimitives = 3;
+        nucleusPositions.set_size(nProtons.size());
+        for(int i=0;i<nProtons.size();i++){
+            nucleusCharges(i) = nProtons(i);
+            nucleusPositions(i) = corePos(i);
+            Primitive S1A(0.15432897,0,0,0,30.1678710,corePos(i));
+            Primitive S1B(0.53532814,0,0,0,5.4951153, corePos(i));
+            Primitive S1C(0.44463454,0,0,0,1.4871927, corePos(i));
+
+            Primitive S2A(-0.09996723,0,0,0,1.3148331,corePos(i));
+            Primitive S2B(0.39951283,0,0,0,0.3055389, corePos(i));
+            Primitive S2C(0.70011547,0,0,0,0.0993707, corePos(i));
+
+            Primitive P1A(0.15591627,1,0,0,1.3148331, corePos(i));
+            Primitive P1B(0.60768372,1,0,0,0.3055389, corePos(i));
+            Primitive P1C(0.39195739,1,0,0,0.0993707, corePos(i));
+
+            Primitive S1[3] = {S1A,S1B,S1C};
+            Primitive S2[3] = {S2A,S2B,S2C};
+            Primitive P1[3] = {P1A,P1B,P1C};
+
+            contracted C1 (3,S1);
+            contracted C2(3,S2);
+            contracted C3(3,P1);
+
+            basisSts.push_back(C1);
+            basisSts.push_back(C2);
+            basisSts.push_back(C3);
+        }
+    }
+}
+
 void basis::init_STO_3G(string configuration, double nProtons){
     //initialize STO-3G basis sets, following slides from Helgaker (2006)
     Z = nProtons; //set nuclear charge
+    nucleusCharges.set_size(1);
+    nucleusCharges(0) = nProtons;
+    nucleusPositions.set_size(1);
+    nucleusPositions(0) = {0,0,0};
 
     if(configuration == "Be"){
-        basisSet[3];
+        //basisSet[3];
         Nstates = 3;
         set_size(Nstates);
         Nprimitives = 3;
@@ -196,6 +237,20 @@ void basis::init_STO_3G(string configuration, double nProtons){
     }
 }
 
+double basis::nnInteraction(){
+    double result = 0;
+    vec3 Rnn;
+    double r;
+    for(int i=0; i<nucleusCharges.size(); i++){
+        for(int j=i+1; j<nucleusCharges.size(); j++){
+            Rnn = nucleusPositions(i)-nucleusPositions(j);
+            r = sqrt(Rnn(0)*Rnn(0)+Rnn(1)*Rnn(1)+Rnn(2)*Rnn(2));
+            result += nucleusCharges(i)*nucleusCharges(j)/r;
+        }
+    }
+    return result;
+}
+
 void basis::init_integrals(){
     //Set up and solve all intergals for the current gaussian basis
     BoysFunction boys(3);
@@ -207,11 +262,13 @@ void basis::init_integrals(){
                     Primitive B = basisSts[q].getPrimitive(j);
                     integrator AB (A,B, boys);
                     S(p,q) += AB.overlap();
-                    vec3 corePos = {0,0,0}; //this needs to be worked out
                     h(p,q) += AB.kinetic();
-                    AB.setupRtuv(corePos);
-                    h(p,q) -= Z*AB.pNuclei();
-                    nuclearPotential(p,q) += AB.pNuclei();
+                    for(int n = 0; n < nucleusCharges.size(); n++){
+                        //add relevant interaction for each nucleus
+                        AB.setupRtuv(nucleusPositions(n));
+                        h(p,q) -= nucleusCharges(n)*AB.pNuclei();
+                        nuclearPotential(p,q) += AB.pNuclei();
+                    }
                     for(int r=0; r<Nstates; r++){
                         for(int s=0; s<Nstates; s++){
                             for(int k=0;k<Nprimitives;k++){

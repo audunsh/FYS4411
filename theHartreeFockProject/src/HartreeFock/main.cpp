@@ -59,6 +59,7 @@ int main(int argc, char* argv[]) {
     basis BS; //initialize basis object
     //BS.init_HTO4(nProtons);
 
+
     BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
 
