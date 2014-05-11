@@ -33,6 +33,7 @@ double hartreefocksolver::solve(){
     //printMatrices();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
+        energyPrev = energy();
 
         setupF();
         diagonalizeF();
@@ -79,7 +80,7 @@ void hartreefocksolver::diagonalizeF(){
     //diagonalize the Fock matrix
     Fprime = V.t()*F*V;
     eig_sym(epsilon, Cprime, Fprime);
-    C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 - 1);
+    C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
 }
 
 void hartreefocksolver::normalizeC(){
@@ -112,6 +113,9 @@ bool hartreefocksolver::convergenceCriteria(){
     //Evaluate convergence conditions
     bool condition = true;
     if(iterations>100){
+        condition = false;
+    }
+    if(abs(energyPrev-energy())<tolerance){
         condition = false;
     }
     return condition;

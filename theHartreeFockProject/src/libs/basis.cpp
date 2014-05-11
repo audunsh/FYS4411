@@ -142,14 +142,16 @@ double basis::state(int p, int q, int r, int s, double D, double Ex){
     return S;
 }
 
-void basis::init_STO_3G(string configuration){
+void basis::init_STO_3G(string configuration, double nProtons){
     //initialize STO-3G basis sets, following slides from Helgaker (2006)
+    Z = nProtons; //set nuclear charge
 
-    basisSet[3];
-    Nstates = 3;
-    set_size(Nstates);
-    Nprimitives = 3;
     if(configuration == "Be"){
+        basisSet[3];
+        Nstates = 3;
+        set_size(Nstates);
+        Nprimitives = 3;
+
         Primitive S1A(0.15432897,0,0,0,30.1678710,{0,0,0});
         Primitive S1B(0.53532814,0,0,0,5.4951153, {0,0,0});
         Primitive S1C(0.44463454,0,0,0,1.4871927, {0,0,0});
@@ -174,6 +176,24 @@ void basis::init_STO_3G(string configuration){
         basisSts.push_back(C2);
         basisSts.push_back(C3);
     }
+
+    if(configuration == "He"){
+        basisSet[1];
+        Nstates = 1;
+        set_size(Nstates);
+        Nprimitives = 3;
+
+        Primitive S1A(0.15432897,0,0,0,6.36242139,{0,0,0});
+        Primitive S1B(0.53532814,0,0,0,1.15892300,{0,0,0});
+        Primitive S1C(0.44463454,0,0,0,0.31364979,{0,0,0});
+
+        Primitive S1[3] = {S1A,S1B,S1C};
+
+        contracted C1 (3,S1);
+
+        basisSts.push_back(C1);
+
+    }
 }
 
 void basis::init_integrals(){
@@ -187,9 +207,10 @@ void basis::init_integrals(){
                     Primitive B = basisSts[q].getPrimitive(j);
                     integrator AB (A,B, boys);
                     S(p,q) += AB.overlap();
-                    vec3 C = {0,0,0};
-                    AB.setupRtuv(C);
-                    h(p,q) += AB.kinetic()+  AB.pNuclei();
+                    vec3 corePos = {0,0,0}; //this needs to be worked out
+                    h(p,q) += AB.kinetic();
+                    AB.setupRtuv(corePos);
+                    h(p,q) -= Z*AB.pNuclei();
                     nuclearPotential(p,q) += AB.pNuclei();
                     for(int r=0; r<Nstates; r++){
                         for(int s=0; s<Nstates; s++){

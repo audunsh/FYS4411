@@ -22,7 +22,7 @@ public:
     double solve();      //automated solving process, returns energy
     double coupledMatrixTilde(int p, int q, int r, int s); //return direct and exchange term
 
-    //new code to debug
+    //new code to debug, possibly for deletion
     void setupCoupledMatrix_unused();
     double calcEnergy2();
 
@@ -50,6 +50,9 @@ private:
     int nStates;    //number of states
     int nProtons;   //number of protons
     int iterations; //number of iterations (counter)
+
+    double energyPrev = 10e10;
+    double tolerance = 10e-8;
 };
 
 #endif // HARTREEFOCKSOLVER_H
