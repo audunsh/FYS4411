@@ -329,6 +329,35 @@ TEST(GaussianElectronElectron_test2){
     CHECK_CLOSE(0.022124581472837051566, particleParticleIntegral,1.0e-13);
 }
 
+TEST(GaussianElectronElectron_test3){
+    vec posA = {0.5, 0, 0};
+    vec posB = {-0.5, 0, 0};
+    vec posC = {-0.5, 0, 0};
+    vec posD = {0.5, 0, 0};
+    double a = 13.0077;
+    double b = 0.121949;
+    double c = 0.444529;
+    double d = 13.0077;
+
+    BoysFunction boys(2);
+
+    Primitive primitiveA(1.0, 0, 0 ,0, a,posA);
+    Primitive primitiveB(1.0, 0, 1 ,0, b,posB);
+    Primitive primitiveC(1.0, 0, 1 ,0, c,posC);
+    Primitive primitiveD(1.0, 0, 0 ,0, d,posD);
+
+    integrator AB(primitiveA,primitiveB,boys);
+    double particleParticleIntegral = AB.pp(primitiveC,primitiveD);
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "-------------- TEST Particle-Particle Integral 2 ---------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " pp = " << particleParticleIntegral << " and should be:" << endl;
+    cout << " pp = 0.0001385810300677682" << endl;
+    cout << "________________________________________________________________" << endl;
+    // regression test
+    CHECK_CLOSE(0.0001385810300677682,particleParticleIntegral,1.0e-13);
+}
+
 int main() {
 
     return UnitTest::RunAllTests();
