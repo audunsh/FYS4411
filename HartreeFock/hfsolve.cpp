@@ -34,7 +34,7 @@ void HFSolve::Solve(basis Bs){
         // return the eigenvalues of the HF-mx to e_v and the eigenvectors to C.
         eig_sym(e_v,C,HF(C,Bs));
         C = trans(C);
-        if(iters>100){
+        if(iters>1000){
             cout << "Maximum number of iterations (100) exceeded." << endl;
             break;}
     }

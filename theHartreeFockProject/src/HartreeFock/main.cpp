@@ -54,17 +54,17 @@ int main(int argc, char* argv[]) {
     dist = (double) argv[4];
     *****************************************************************************************************************/
 
-    double nProtons  = 2; //number of protons
-    int nElectrons= 2; //number of electrons
+    double nProtons  = 4; //number of protons
+    int nElectrons= 4; //number of electrons
 
     basis BS; //initialize basis object
-    BS.init_HTO4(nProtons); //setting up hydrogenlike basis
-    BS.h.print();
+    //BS.init_HTO4(nProtons); //setting up hydrogenlike basis
+    //BS.h.print();
 
 
-    //BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom
+    BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom
     //BS.init_Be2({1,0,0}, {0,0,0});
-    //BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
+    BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
 
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis

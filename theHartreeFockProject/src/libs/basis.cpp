@@ -508,6 +508,7 @@ void basis::init_STO_3G(string configuration, double nProtons){
 }
 
 double basis::nnInteraction(){
+    //Contribution to the energy from the nucleon-nucleon interactions
     double result = 0;
     vec3 Rnn;
     double r;
@@ -547,10 +548,17 @@ void basis::init_integrals(){
                                     Primitive C = basisSts[r].getPrimitive(k);
                                     Primitive D = basisSts[s].getPrimitive(l);
                                     v(p,q)(r,s) += AB.pp(C,D);
+                                    if(AB.pp(C,D)==0){
+                                        cout << "-----------------------------" << endl;
+                                        cout << "p|q|r|s: " << p << " | "<< q << " | "<< r << " | "<< s << endl;
+                                        cout << "i|j|k|l: " << i << " | "<< j << " | "<< k << " | "<< l << endl;
+                                        cout << "-----------------------------" << endl;
+                                    }
                                 }
                             }
                         }
                     }
+                    //v.print();
                 }
             }
         }
@@ -596,8 +604,6 @@ void basis::init_HTO4(double nProtons){
         h(i,i) = h0(i,i);
     }
 
-    //[pq|rs]
-    //<pr|qs>
     v(0,0)(0,0)= 5*Z/8;
     v(0,0)(0,1)= 4096*sqrt(2)*Z/64827;
     v(0,0)(0,2)= 1269*sqrt(3)*Z/50000;

@@ -4,25 +4,25 @@
 hartreefocksolver::hartreefocksolver(){}
 
 hartreefocksolver::hartreefocksolver(basis BS, int N, int Z){
-    //initialize solver with given basis
+    //initialize solver with given basis, number of electrons (and now superfluos number of protons)
     //This solver follows the algo described in Thijssen, p74-76
     Bs = BS;
     nStates = Bs.Nstates;        //set number of states in basis
     nElectrons = N;              //set number of electrons
-    nProtons = Z;                //set number of protons
+    nProtons = Z;                //set number of protons, may be removed
+
     //initializing all matrices and vectors
-    C.zeros(nStates,nElectrons/2);    //set initial C equal to the unit matrix
-    F.zeros(nStates,nStates);    //initialize Fock matrix
-    P.zeros(nStates,nStates);    //initialize Density matrix
-    U.zeros(nStates,nStates);    //initialize Unitary matrix
-    G.zeros(nStates,nStates);    //initialize Fock-component matrix
+    C.zeros(nStates,nElectrons/2);//set initial C equal to the unit matrix
+    F.zeros(nStates,nStates);     //initialize Fock matrix
+    P.zeros(nStates,nStates);     //initialize Density matrix
+    U.zeros(nStates,nStates);     //initialize Unitary matrix
+    G.zeros(nStates,nStates);     //initialize Fock-component matrix
     Fprime.zeros(nStates,nStates);//transformed Fock matrix
     epsilon.zeros(nStates);       //eigenvalues from diagonalization
     epsilon_prev.zeros(nStates);  //eigenvalues from previous diagonalization
 
-    setupCoupledMatrix(); //default
-    //setupCoupledMatrix_unused(); //alternative
-    setupP();
+    setupCoupledMatrix();  //import particle-particle interaction integrals
+    setupP();              //set up initial density matrix
     s_diag.zeros(nStates);
 }
 
@@ -31,10 +31,9 @@ double hartreefocksolver::solve(){
     setupUnitMatrices();
     setupP();
     iterations = 0;
-    printMatrices();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
-        energyPrev = energy();
+        energyPrev = energyCalc();
 
         setupF();
         diagonalizeF();
@@ -43,11 +42,11 @@ double hartreefocksolver::solve(){
 
         iterations += 1;
     }
-    printMatrices();
-    return energy();
+    return energyCalc();
 }
 
 void hartreefocksolver::setupCoupledMatrix(){
+    //import particle-particle interaction integrals
     int n = Bs.Nstates;
     coupledMatrix.set_size(n, n);
     for (int p = 0; p<n; p++){
@@ -59,9 +58,7 @@ void hartreefocksolver::setupCoupledMatrix(){
         for (int q = 0; q<n; q++){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
-                    //coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Thijssen"
-                    coupledMatrix(s, q)(p, r) = Bs.v(p, q)(r, s); //alt (1) "Thijssen"
-                    //coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s); //alt (2) "Unchanged"
+                    coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
                 }
             }
         }
@@ -70,21 +67,12 @@ void hartreefocksolver::setupCoupledMatrix(){
 
 void hartreefocksolver::setupF(){
     //set up the Fock matrix
-    //Comment, 10/5/14
-    /* I'm not sure about the steps laid out by Thijssen at page 75; "Calculate Coulomb and exchange contribution ..."
-     * How does the matrix G below compare to Thijssens? (G as the sum over r,s)
-     * Update: Changed indices to match www.github.com/dragly/hartree-fock
-     */
     for(int p=0;p<nStates;p++){
         for(int q=0;q<nStates;q++){
             F(p,q) = Bs.h(p,q);
             for(int r=0;r<nStates;r++){
                 for(int s=0;s<nStates;s++){
                     F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(s,r);  //Alt. 1 "Thijssen"
-                    //F(p,q) += P(r,s) * (coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
-                    //F(p,q) += P(r,s) * (coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
-                    //F(p,q) += 0.5*P(r,s) * coupledMatrixTilde(p,r,q,s);//coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
-                    //F(p,q) += 0.5*P(r,s) * (2*coupledMatrix(p,r)(q,s)-coupledMatrix(p,r)(s,q));//identical to MiladHM
                 }
             }
         }
@@ -92,34 +80,28 @@ void hartreefocksolver::setupF(){
 }
 
 double hartreefocksolver::energyCalc(){
+    //return energy for current Fock matrix
     return 0.5*accu(P % (Bs.h + F));
 }
 
 double hartreefocksolver::energy(){
-    //return ground state energy, following Svenn-Arne Dragly at
-    //www.github.com/dragly/hartree-fock
+    //return ground state energy
     double e0 = 0;
     for(int p = 0; p<nStates;p++){
         for(int q = 0; q<nStates; q++){
             e0 += P(p,q)*Bs.h(p,q);
             for(int r = 0; r<nStates;r++){
                 for(int s = 0; s<nStates; s++){
-                    //e0 += .5*P(p,q)*P(s,r)*coupledMatrixTilde(p,q,r,s);
-                    //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
-                    //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,q)(r,s)-.5*coupledMatrix(p,q)(s,r));
                     e0 += 0.25*coupledMatrixTilde(p,q,r,s)*P(p,q)*P(r,s);
-
                 }
             }
         }
     }
-    return e0;//+Bs.nnInteraction();
+    return e0+Bs.nnInteraction();
 }
 
 double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
-    //return direct and exchange term, following Svenn-Arne Dragly at
-    //www.github.com/dragly/hartree-fock
-    //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q);
+    //return direct and exchange term, weigthed to include spin
     return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,s)(r,q);
 }
 
@@ -134,29 +116,15 @@ void hartreefocksolver::setupP(){
     P.zeros(); //we don't have any reason to do this any other ways yet.
 }
 
-
-
 void hartreefocksolver::diagonalizeF(){
     //diagonalize the Fock matrix
     Fprime = V.t()*F*V;
     eig_sym(epsilon, Cprime, Fprime);
     C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
-    //C = V*Cprime; //identical to Milad
 }
 
 void hartreefocksolver::normalizeC(){
-    //normalizing the C matrix, following Thijessen, p 76
-    /*
-    double result;
-    for(int k = 0; k<nElectrons/2;k++){
-        result = 0.0;
-        for(int p = 0; p<nStates;p++){
-            for(int q = 0; q<nStates;q++){
-                result += C(p,k)*Bs.S(p,q)*C(q,k);
-            }
-        }
-        C.col(k)=C.col(k)/sqrt(result);
-    }*/
+    //Normalize the coefficient matrix
     double norm;
     for(int i = 0; i<nElectrons/2;i++){
         norm = dot(C.col(i),Bs.S*C.col(i));
@@ -166,15 +134,7 @@ void hartreefocksolver::normalizeC(){
 
 void hartreefocksolver::updateP(){
     //construct new density matrix
-    //following Dragly at github.com/dragly/hartree-fock
-    mat Ptemp = 2*C*C.t();
-    if(P.n_elem>0){
-        P = .5 * P + (1 - .5)* Ptemp;
-    }
-    else{
-        P = Ptemp;
-    }
-    P = 0.5*P + C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
+    P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
 }
 
 bool hartreefocksolver::convergenceCriteria(){
@@ -188,7 +148,6 @@ bool hartreefocksolver::convergenceCriteria(){
     }
     return condition;
 }
-
 
 
 void hartreefocksolver::setupCoupledMatrix_unused(){

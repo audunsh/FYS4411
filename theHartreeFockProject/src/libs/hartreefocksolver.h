@@ -49,11 +49,12 @@ private:
 
     int nElectrons; //number of electrons
     int nStates;    //number of states
-    int nProtons;   //number of protons
+    int nProtons;   //number of protons, can be removed
     int iterations; //number of iterations (counter)
 
     double energyPrev = 10e10;
     double tolerance = 10e-8;
+    double dampingFactor = 0.5;
 };
 
 #endif // HARTREEFOCKSOLVER_H
