@@ -148,7 +148,7 @@ void basis::init_Be2(vec3 corePos1, vec3 corePos2){
     nucleusPositions.set_size(2);
     nucleusCharges.set_size(2);
     nucleusPositions(0) = corePos1;
-    nucleusPositions(1) = corePos1;
+    nucleusPositions(1) = corePos2;
     nucleusCharges(0) = 4;
     nucleusCharges(1) = 4;
     add_atom_STO3G("Be", corePos1);
@@ -511,14 +511,14 @@ double basis::nnInteraction(){
     double result = 0;
     vec3 Rnn;
     double r;
-    for(int i=0; i<nucleusCharges.size(); i++){
-        for(int j=i+1; j<nucleusCharges.size(); j++){
+    for(int i=0; i<nucleusCharges.size()-1; i++){
+        for(int j=i+1; j<nucleusCharges.size(); ++j){
             Rnn = nucleusPositions(i)-nucleusPositions(j);
             r = sqrt(Rnn(0)*Rnn(0)+Rnn(1)*Rnn(1)+Rnn(2)*Rnn(2));
             result += nucleusCharges(i)*nucleusCharges(j)/r;
         }
     }
-    return 0;//result;
+    return result;
 }
 
 void basis::init_integrals(){
@@ -583,8 +583,13 @@ void basis::set_size(int N){
     S.zeros();
 }
 
-void basis::init_HTO4(int nProtons){
+void basis::init_HTO4(double nProtons){
     //initialize 4 hydrogenlike orbitals
+    nucleusPositions.set_size(1);
+    nucleusCharges.set_size(1);
+    nucleusPositions(0) = {0,0,0};
+    nucleusCharges(0) = (double) nProtons;
+
     set_size(4);
     set_orthonormal();
     Z = (double) nProtons;

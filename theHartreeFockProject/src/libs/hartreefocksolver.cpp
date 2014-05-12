@@ -30,7 +30,7 @@ double hartreefocksolver::solve(){
     setupUnitMatrices();
     setupP();
     iterations = 0;
-    //printMatrices();
+    printMatrices();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
         energyPrev = energy();
@@ -42,6 +42,7 @@ double hartreefocksolver::solve(){
 
         iterations += 1;
     }
+    printMatrices();
     return energy();
 }
 
@@ -69,7 +70,8 @@ void hartreefocksolver::setupF(){
             for(int r=0;r<nStates;r++){
                 for(int s=0;s<nStates;s++){
                     //F(p,q) += 0.5*P(s,r)*coupledMatrixTilde(p,q,r,s);
-                    F(p,q) += P(s,r) * (coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
+                    //F(p,q) += P(r,s) * (coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
+                    F(p,q) += P(r,s) * (coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
                 }
             }
         }

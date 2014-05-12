@@ -60,8 +60,8 @@ int main(int argc, char* argv[]) {
     //BS.init_HTO4(nProtons);
 
 
-    //BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom
-    BS.init_Be2({-.1,0,0}, {0,0,0});
+    BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom
+    //BS.init_Be2({1,0,0}, {0,0,0});
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
 
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals

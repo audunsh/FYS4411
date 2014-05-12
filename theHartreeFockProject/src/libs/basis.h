@@ -22,7 +22,7 @@ public:
     void expand();                                                //expand basis for explicit spin-dependence
     void init_integrals();                                        //set up and solve all integrals for a gaussian basis
     void init_STO_3G(string configuration, double nProtons);                       //initialize STO-3G basis set for given configuration
-    void init_HTO4(int nProtons);                                //initialize hydrogen type basis with 4 orbitals
+    void init_HTO4(double nProtons);                                //initialize hydrogen type basis with 4 orbitals
     void init_molecule(string configuration, vec nProtons, field<vec> corePos);
 
     void init_H2(vec3 corePos1, vec3 corePos2);
