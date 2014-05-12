@@ -19,9 +19,10 @@ hartreefocksolver::hartreefocksolver(basis BS, int N, int Z){
     Fprime.zeros(nStates,nStates);//transformed Fock matrix
     epsilon.zeros(nStates);       //eigenvalues from diagonalization
     epsilon_prev.zeros(nStates);  //eigenvalues from previous diagonalization
-    setupCoupledMatrix();
+
+    setupCoupledMatrix(); //default
+    //setupCoupledMatrix_unused(); //alternative
     setupP();
-    setupF();
     s_diag.zeros(nStates);
 }
 
@@ -33,7 +34,7 @@ double hartreefocksolver::solve(){
     printMatrices();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
-        energyPrev = energyCalc();
+        energyPrev = energy();
 
         setupF();
         diagonalizeF();
@@ -43,18 +44,28 @@ double hartreefocksolver::solve(){
         iterations += 1;
     }
     printMatrices();
-    return energyCalc();
+    return energy();
 }
 
-void hartreefocksolver::setupUnitMatrices(){
-    //Bring overlap matrix to unit form, set up V
-    eig_sym(s_diag,U,Bs.S);           //following Thijssen, p38-39
-    V = U*diagmat(1.0/sqrt(s_diag));
-}
-
-void hartreefocksolver::setupP(){
-    //setup density matrix, make a first guess
-    P.zeros(); //we don't have any reason to do this any other ways yet.
+void hartreefocksolver::setupCoupledMatrix(){
+    int n = Bs.Nstates;
+    coupledMatrix.set_size(n, n);
+    for (int p = 0; p<n; p++){
+        for (int q = 0; q<n; q++){
+            coupledMatrix(p, q) = zeros(n, n);
+        }
+    }
+    for (int p = 0; p<n; p++){
+        for (int q = 0; q<n; q++){
+            for (int r = 0; r<n; r++){
+                for (int s = 0; s<n; s++){
+                    //coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Thijssen"
+                    coupledMatrix(s, q)(p, r) = Bs.v(p, q)(r, s); //alt (1) "Thijssen"
+                    //coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s); //alt (2) "Unchanged"
+                }
+            }
+        }
+    }
 }
 
 void hartreefocksolver::setupF(){
@@ -69,23 +80,68 @@ void hartreefocksolver::setupF(){
             F(p,q) = Bs.h(p,q);
             for(int r=0;r<nStates;r++){
                 for(int s=0;s<nStates;s++){
-                    //F(p,q) += 0.5*P(s,r)*coupledMatrixTilde(p,q,r,s);
+                    F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(s,r);  //Alt. 1 "Thijssen"
                     //F(p,q) += P(r,s) * (coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
                     //F(p,q) += P(r,s) * (coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
                     //F(p,q) += 0.5*P(r,s) * coupledMatrixTilde(p,r,q,s);//coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
-                    F(p,q) += 0.5*P(r,s) * (2*coupledMatrix(p,q)(r,s)-coupledMatrix(p,s)(r,q));//identical to MiladHM
+                    //F(p,q) += 0.5*P(r,s) * (2*coupledMatrix(p,r)(q,s)-coupledMatrix(p,r)(s,q));//identical to MiladHM
                 }
             }
         }
     }
 }
 
+double hartreefocksolver::energyCalc(){
+    return 0.5*accu(P % (Bs.h + F));
+}
+
+double hartreefocksolver::energy(){
+    //return ground state energy, following Svenn-Arne Dragly at
+    //www.github.com/dragly/hartree-fock
+    double e0 = 0;
+    for(int p = 0; p<nStates;p++){
+        for(int q = 0; q<nStates; q++){
+            e0 += P(p,q)*Bs.h(p,q);
+            for(int r = 0; r<nStates;r++){
+                for(int s = 0; s<nStates; s++){
+                    //e0 += .5*P(p,q)*P(s,r)*coupledMatrixTilde(p,q,r,s);
+                    //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
+                    //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,q)(r,s)-.5*coupledMatrix(p,q)(s,r));
+                    e0 += 0.25*coupledMatrixTilde(p,q,r,s)*P(p,q)*P(r,s);
+
+                }
+            }
+        }
+    }
+    return e0;//+Bs.nnInteraction();
+}
+
+double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
+    //return direct and exchange term, following Svenn-Arne Dragly at
+    //www.github.com/dragly/hartree-fock
+    //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q);
+    return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,s)(r,q);
+}
+
+void hartreefocksolver::setupUnitMatrices(){
+    //Bring overlap matrix to unit form, set up V
+    eig_sym(s_diag,U,Bs.S);           //following Thijssen, p38-39
+    V = U*diagmat(1.0/sqrt(s_diag));
+}
+
+void hartreefocksolver::setupP(){
+    //setup density matrix, make a first guess
+    P.zeros(); //we don't have any reason to do this any other ways yet.
+}
+
+
+
 void hartreefocksolver::diagonalizeF(){
     //diagonalize the Fock matrix
     Fprime = V.t()*F*V;
     eig_sym(epsilon, Cprime, Fprime);
-    //C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
-    C = V*Cprime; //identical to Milad
+    C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
+    //C = V*Cprime; //identical to Milad
 }
 
 void hartreefocksolver::normalizeC(){
@@ -102,7 +158,7 @@ void hartreefocksolver::normalizeC(){
         C.col(k)=C.col(k)/sqrt(result);
     }*/
     double norm;
-    for(int i = 0; i<nElectrons/2-1;i++){
+    for(int i = 0; i<nElectrons/2;i++){
         norm = dot(C.col(i),Bs.S*C.col(i));
         C.col(i) = C.col(i)/sqrt(norm);
     }
@@ -133,37 +189,7 @@ bool hartreefocksolver::convergenceCriteria(){
     return condition;
 }
 
-double hartreefocksolver::energyCalc(){
-    return 0.5*accu(P % (Bs.h + F));
-}
 
-double hartreefocksolver::energy(){
-    //return ground state energy, following Svenn-Arne Dragly at
-    //www.github.com/dragly/hartree-fock
-    double e0 = 0;
-    for(int p = 0; p<nStates;p++){
-        for(int q = 0; q<nStates; q++){
-            e0 += P(p,q)*Bs.h(p,q);
-            for(int r = 0; r<nStates;r++){
-                for(int s = 0; s<nStates; s++){
-                    //e0 += .5*P(p,q)*P(s,r)*coupledMatrixTilde(p,q,r,s);
-                    //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
-                    //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,q)(r,s)-.5*coupledMatrix(p,q)(s,r));
-                    e0 += .5*P(p,q)*P(r,s)*coupledMatrixTilde(p,r,q,s);
-
-                }
-            }
-        }
-    }
-    return e0;//+Bs.nnInteraction();
-}
-
-double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
-    //return direct and exchange term, following Svenn-Arne Dragly at
-    //www.github.com/dragly/hartree-fock
-    //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q);
-    return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,s)(r,q);
-}
 
 void hartreefocksolver::setupCoupledMatrix_unused(){
     //still following Dragly, further references to indexation differences between Thijssen and Helgaker
@@ -214,22 +240,4 @@ void hartreefocksolver::printMatrices(){
 
 }
 
-void hartreefocksolver::setupCoupledMatrix(){
-    int n = Bs.Nstates;
-    coupledMatrix.set_size(n, n);
-    for (int p = 0; p<n; p++){
-        for (int q = 0; q<n; q++){
-            coupledMatrix(p, q) = zeros(n, n);
-        }
-    }
-    for (int p = 0; p<n; p++){
-        for (int q = 0; q<n; q++){
-            for (int r = 0; r<n; r++){
-                for (int s = 0; s<n; s++){
-                    //coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s);
-                    coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s);
-                }
-            }
-        }
-    }
-}
+

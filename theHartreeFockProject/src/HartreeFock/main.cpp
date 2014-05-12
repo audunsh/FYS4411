@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 
     basis BS; //initialize basis object
     BS.init_HTO4(nProtons); //setting up hydrogenlike basis
-    //cout << sqrt(2/3.0) << endl;
+    BS.h.print();
 
 
     //BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom
