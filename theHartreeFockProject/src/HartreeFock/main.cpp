@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
     int nElectrons= 4; //number of electrons
 
     basis BS; //initialize basis object
-    BS.init_HTO4(nProtons);
+    BS.init_HTO4(nProtons); //setting up hydrogenlike basis
 
 
     //BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom

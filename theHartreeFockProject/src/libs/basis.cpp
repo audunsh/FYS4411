@@ -524,7 +524,6 @@ double basis::nnInteraction(){
 void basis::init_integrals(){
     //Set up and solve all intergals for the current gaussian basis
     BoysFunction boys(3);
-
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<Nprimitives;i++){
