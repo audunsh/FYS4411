@@ -2,6 +2,8 @@
 
 *.txt
 *.pro.user*
+*.pro.user
+*.user
 *.o
 *~
 *.png
