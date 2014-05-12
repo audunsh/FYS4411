@@ -467,7 +467,7 @@ void basis::init_STO_3G(string configuration, double nProtons){
         Primitive S1B(0.53532814,0,0,0,5.4951153, {0,0,0});
         Primitive S1C(0.44463454,0,0,0,1.4871927, {0,0,0});
 
-        Primitive S2A(-0.09996723,0,0,0,1.3148331,{0,0,0});
+        Primitive S2A(0.09996723,0,0,0,1.3148331,{0,0,0});
         Primitive S2B(0.39951283,0,0,0,0.3055389, {0,0,0});
         Primitive S2C(0.70011547,0,0,0,0.0993707, {0,0,0});
 
@@ -525,13 +525,17 @@ double basis::nnInteraction(){
 void basis::init_integrals(){
     //Set up and solve all intergals for the current gaussian basis
     BoysFunction boys(3);
+    //initializing 4 dummy primitives used in the iteration below
+    Primitive A(0,0,0,0,0,{0,0,0});
+    Primitive B(0,0,0,0,0,{0,0,0});
+    Primitive C(0,0,0,0,0,{0,0,0});
+    Primitive D(0,0,0,0,0,{0,0,0});
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<Nprimitives;i++){
                 for(int j=0; j<Nprimitives;j++){
-
-                    Primitive A = basisSts[p].getPrimitive(i);
-                    Primitive B = basisSts[q].getPrimitive(j);
+                    A = basisSts[p].getPrimitive(i);
+                    B = basisSts[q].getPrimitive(j);
                     integrator AB (A,B, boys);
                     S(p,q) += AB.overlap();
                     h(p,q) += AB.kinetic();
@@ -539,26 +543,19 @@ void basis::init_integrals(){
                         //add relevant interaction for each nucleus
                         AB.setupRtuv(nucleusPositions(n));
                         h(p,q) -= nucleusCharges(n)*AB.pNuclei();
-                        nuclearPotential(p,q) += AB.pNuclei();
+                        //nuclearPotential(p,q) += AB.pNuclei();
                     }
                     for(int r=0; r<Nstates; r++){
                         for(int s=0; s<Nstates; s++){
                             for(int k=0;k<Nprimitives;k++){
                                 for(int l=0;l<Nprimitives;l++){
-                                    Primitive C = basisSts[r].getPrimitive(k);
-                                    Primitive D = basisSts[s].getPrimitive(l);
+                                    C = basisSts[r].getPrimitive(k);
+                                    D = basisSts[s].getPrimitive(l);
                                     v(p,q)(r,s) += AB.pp(C,D);
-                                    if(AB.pp(C,D)==0){
-                                        cout << "-----------------------------" << endl;
-                                        cout << "p|q|r|s: " << p << " | "<< q << " | "<< r << " | "<< s << endl;
-                                        cout << "i|j|k|l: " << i << " | "<< j << " | "<< k << " | "<< l << endl;
-                                        cout << "-----------------------------" << endl;
-                                    }
                                 }
                             }
                         }
                     }
-                    //v.print();
                 }
             }
         }
