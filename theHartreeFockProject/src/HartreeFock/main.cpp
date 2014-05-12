@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
 
     int Z,N,Ns;
     double dist;
+    //test
 
     Z = (int) argv[1];
     N = (int) argv[2];
