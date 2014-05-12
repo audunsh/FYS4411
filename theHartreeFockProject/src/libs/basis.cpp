@@ -597,6 +597,8 @@ void basis::init_HTO4(double nProtons){
         h(i,i) = h0(i,i);
     }
 
+    //[pq|rs]
+    //<pr|qs>
     v(0,0)(0,0)= 5*Z/8;
     v(0,0)(0,1)= 4096*sqrt(2)*Z/64827;
     v(0,0)(0,2)= 1269*sqrt(3)*Z/50000;
