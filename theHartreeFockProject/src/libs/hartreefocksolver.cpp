@@ -73,7 +73,7 @@ void hartreefocksolver::setupF(){
                     //F(p,q) += P(r,s) * (coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
                     //F(p,q) += P(r,s) * (coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
                     //F(p,q) += 0.5*P(r,s) * coupledMatrixTilde(p,r,q,s);//coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
-                    F(p,q) += 0.5*P(r,s) * (2*coupledMatrix(p,q)(r,s)-coupledMatrix(p,s)(r,q));//coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
+                    F(p,q) += 0.5*P(r,s) * (2*coupledMatrix(p,q)(r,s)-coupledMatrix(p,s)(r,q));//identical to MiladHM
                 }
             }
         }
@@ -85,11 +85,12 @@ void hartreefocksolver::diagonalizeF(){
     Fprime = V.t()*F*V;
     eig_sym(epsilon, Cprime, Fprime);
     //C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
-    C = V*Cprime;
+    C = V*Cprime; //identical to Milad
 }
 
 void hartreefocksolver::normalizeC(){
     //normalizing the C matrix, following Thijessen, p 76
+    /*
     double result;
     for(int k = 0; k<nElectrons/2;k++){
         result = 0.0;
@@ -99,6 +100,11 @@ void hartreefocksolver::normalizeC(){
             }
         }
         C.col(k)=C.col(k)/sqrt(result);
+    }*/
+    double norm;
+    for(int i = 0; i<nElectrons/2-1;i++){
+        norm = dot(C.col(i),Bs.S*C.col(i));
+        C.col(i) = C.col(i)/sqrt(norm);
     }
 }
 
@@ -112,6 +118,7 @@ void hartreefocksolver::updateP(){
     else{
         P = Ptemp;
     }
+    P = 0.5*P + C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
 }
 
 bool hartreefocksolver::convergenceCriteria(){
@@ -219,7 +226,8 @@ void hartreefocksolver::setupCoupledMatrix(){
         for (int q = 0; q<n; q++){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
-                    coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s);
+                    //coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s);
+                    coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s);
                 }
             }
         }
