@@ -115,8 +115,6 @@ TEST(integrator2){
     integrator AB(primitiveA,primitiveB,boys);
 
     double Sab = AB.overlap();
-    AB.kinetic();
-    AB.pNuclei();
     AB.pp(primitiveA,primitiveB);
     cout << "----------------------------------------------------------------" << endl;
     cout << "------------------------ TEST Integrator 2 ---------------------" << endl;
