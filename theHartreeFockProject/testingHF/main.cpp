@@ -349,13 +349,42 @@ TEST(GaussianElectronElectron_test3){
     integrator AB(primitiveA,primitiveB,boys);
     double particleParticleIntegral = AB.pp(primitiveC,primitiveD);
     cout << "----------------------------------------------------------------" << endl;
-    cout << "-------------- TEST Particle-Particle Integral 2 ---------------" << endl;
+    cout << "-------------- TEST Particle-Particle Integral 3 ---------------" << endl;
     cout << "----------------------------------------------------------------" << endl;
     cout << setprecision(13) << " pp = " << particleParticleIntegral << " and should be:" << endl;
     cout << " pp = 0.0001385810300677682" << endl;
     cout << "________________________________________________________________" << endl;
     // regression test
     CHECK_CLOSE(0.0001385810300677682,particleParticleIntegral,1.0e-13);
+}
+
+TEST(GaussianElectronElectron_test4){
+    vec posA = {1.2,2.3,3.4};
+    vec posB = {-1.3,1.4,-2.4};
+    vec posC = {2.3,0.9,3.2};
+    vec posD = {5.0,1.9,1.2};
+    double a = 0.2;
+    double b = 0.3;
+    double c = 0.4;
+    double d = 0.1;
+
+    BoysFunction boys(2);
+
+    Primitive primitiveA(1.0, 0, 0 ,0, a,posA);
+    Primitive primitiveB(1.0, 1, 0 ,0, b,posB);
+    Primitive primitiveC(1.0, 0, 2 ,0, c,posC);
+    Primitive primitiveD(1.0, 0, 0 ,1, d,posD);
+
+    integrator AB(primitiveA,primitiveB,boys);
+    double particleParticleIntegral = AB.pp(primitiveC,primitiveD);
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "-------------- TEST Particle-Particle Integral 4 ---------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " pp = " << particleParticleIntegral << " and should be:" << endl;
+    cout << " pp = 0.2681206720738772" << endl;
+    cout << "________________________________________________________________" << endl;
+    // regression test
+    CHECK_CLOSE(0.2681206720738772,particleParticleIntegral,1.0e-13);
 }
 
 int main() {
