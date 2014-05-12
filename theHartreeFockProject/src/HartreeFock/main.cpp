@@ -54,8 +54,8 @@ int main(int argc, char* argv[]) {
     dist = (double) argv[4];
     *****************************************************************************************************************/
 
-    double nProtons  = 4; //number of protons
-    int nElectrons= 4; //number of electrons
+    double nProtons  = 2; //number of protons
+    int nElectrons= 2; //number of electrons
 
     basis BS; //initialize basis object
     BS.init_HTO4(nProtons); //setting up hydrogenlike basis

@@ -43,7 +43,7 @@ double hartreefocksolver::solve(){
         iterations += 1;
     }
     printMatrices();
-    return energy();
+    return energyCalc();
 }
 
 void hartreefocksolver::setupUnitMatrices(){
@@ -72,7 +72,8 @@ void hartreefocksolver::setupF(){
                     //F(p,q) += 0.5*P(s,r)*coupledMatrixTilde(p,q,r,s);
                     //F(p,q) += P(r,s) * (coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
                     //F(p,q) += P(r,s) * (coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
-                    F(p,q) += 0.5*P(r,s) * coupledMatrixTilde(p,q,r,s);//coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
+                    //F(p,q) += 0.5*P(r,s) * coupledMatrixTilde(p,r,q,s);//coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
+                    F(p,q) += 0.5*P(r,s) * (2*coupledMatrix(p,q)(r,s)-coupledMatrix(p,s)(r,q));//coupledMatrix(p,q)(r,s)-0.5*coupledMatrix(p,q)(s,r));
                 }
             }
         }
@@ -140,7 +141,8 @@ double hartreefocksolver::energy(){
                 for(int s = 0; s<nStates; s++){
                     //e0 += .5*P(p,q)*P(s,r)*coupledMatrixTilde(p,q,r,s);
                     //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,r)(q,s)-0.5*coupledMatrix(p,r)(s,q));
-                    e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,q)(r,s)-.5*coupledMatrix(p,q)(s,r));
+                    //e0 += 0.5*P(p,q)*P(s,r)*(coupledMatrix(p,q)(r,s)-.5*coupledMatrix(p,q)(s,r));
+                    e0 += .5*P(p,q)*P(r,s)*coupledMatrixTilde(p,r,q,s);
 
                 }
             }
@@ -153,7 +155,7 @@ double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
     //return direct and exchange term, following Svenn-Arne Dragly at
     //www.github.com/dragly/hartree-fock
     //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q);
-    return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,q)(s,r);
+    return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,s)(r,q);
 }
 
 void hartreefocksolver::setupCoupledMatrix_unused(){
@@ -217,8 +219,7 @@ void hartreefocksolver::setupCoupledMatrix(){
         for (int q = 0; q<n; q++){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
-                    //coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s);
-                    coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s);
+                    coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s);
                 }
             }
         }
