@@ -25,6 +25,7 @@ public:
     //new code to debug, possibly for deletion
     void setupCoupledMatrix_unused();
     double calcEnergy2();
+    double energyCalc();
 
 private:
     basis Bs;

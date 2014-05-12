@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
 
     int Z,N,Ns;
     double dist;
+    //test
 
     Z = (int) argv[1];
     N = (int) argv[2];
@@ -57,15 +58,15 @@ int main(int argc, char* argv[]) {
     int nElectrons= 4; //number of electrons
 
     basis BS; //initialize basis object
-    //BS.init_HTO4(nProtons);
+    BS.init_HTO4(nProtons); //setting up hydrogenlike basis
 
 
-    BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom
+    //BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom
     //BS.init_Be2({1,0,0}, {0,0,0});
-    BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
+    //BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
 
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
-    cout << "Energy of the ground state:" << E << endl; //print out approximated ground state energy
+    cout << "Ground state energy:" << E << endl; //print out approximated ground state energy
     return 0;
 } // End: function output()

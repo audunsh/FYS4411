@@ -524,7 +524,6 @@ double basis::nnInteraction(){
 void basis::init_integrals(){
     //Set up and solve all intergals for the current gaussian basis
     BoysFunction boys(3);
-
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<Nprimitives;i++){
@@ -597,6 +596,8 @@ void basis::init_HTO4(double nProtons){
         h(i,i) = h0(i,i);
     }
 
+    //[pq|rs]
+    //<pr|qs>
     v(0,0)(0,0)= 5*Z/8;
     v(0,0)(0,1)= 4096*sqrt(2)*Z/64827;
     v(0,0)(0,2)= 1269*sqrt(3)*Z/50000;

@@ -6,6 +6,7 @@
 #include <primitive.h>
 #include <hfsolve.h>
 #include <iomanip>
+#include <hartreefocksolver.h>
 
 
 double pi = 4*atan(1);
@@ -15,20 +16,18 @@ TEST(HFSolve){
     // Test HFSolve using the known value of the groundstate energy of Beryllium
     // as a controll.
 
-    //set number of protons and electrons
-    int Z = 4;   // Number of protons
-    int N = 4;   // Number of electrons
-    int Ns = 4;  // 6 states
 
-    basis Bs;              //creating the basis object
-    string filename;
-    filename = "/home/goranbs/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/testingHF/m_elements_c.dat";
-    Bs.read(filename, Z); //reading basis from file
-    Bs.set_orthonormal();
 
-    //Solving for N,Z with the provided basis
-    HFSolve object (Z,N);
-    double E = object.Solve(Bs);
+    double nProtons  = 4; //number of protons
+    int nElectrons= 4; //number of electrons
+
+    basis BS; //initialize basis object
+    BS.init_HTO4(nProtons);
+
+
+    hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    double E = object.solve();                          //solve for the given basis
+
 
     double E_GroundState_Beryllium = -14.6;
     double margin = 0.1;
