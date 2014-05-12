@@ -273,8 +273,64 @@ TEST(Kinetic_integral_3){
     CHECK_CLOSE( -1.598401092187e-02, Tab, 1e-5);
 }
 
+TEST(GaussianElectronElectron_test1){
 
+    vec posA = {-0.5, 0, 0};
+    vec posB = {-0.5, 0, 0};
+    vec posC = {-0.5, 0, 0};
+    vec posD = {-0.5, 0, 0};
+    double a = 13.0077;
+    double b = 13.0077;
+    double c = 13.0077;
+    double d = 13.0077;
 
+    BoysFunction boys(2);
+
+    Primitive primitiveA(1.0, 0, 0 ,0, a, posA);
+    Primitive primitiveB(1.0, 0, 0 ,0, b, posB);
+    Primitive primitiveC(1.0, 0, 0 ,0, c, posC);
+    Primitive primitiveD(1.0, 0, 0 ,0, d, posD);
+
+    integrator AB(primitiveA,primitiveB,boys);
+    double particleParticleIntegral = AB.pp(primitiveC,primitiveD);
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "-------------- TEST Particle-Particle Integral 1 ---------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " pp = " << particleParticleIntegral << " and should be:" << endl;
+    cout << " pp = 0.0071666040410096028615" << endl;
+    cout << "________________________________________________________________" << endl;
+    // regression test
+    CHECK_CLOSE(0.0071666040410096028615, particleParticleIntegral, 1.0e-13);
+}
+
+TEST(GaussianElectronElectron_test2){
+    vec posA = {0.5, 0, 0};
+    vec posB = {-0.5, 0, 0};
+    vec posC = {-0.5, 0, 0};
+    vec posD = {0.5, 0, 0};
+    double a = 13.0077;
+    double b = 0.121949;
+    double c = 0.444529;
+    double d = 13.0077;
+
+    BoysFunction boys(2);
+
+    Primitive primitiveA(1.0, 0, 0 ,0, a,posA);
+    Primitive primitiveB(1.0, 0, 0 ,0, b,posB);
+    Primitive primitiveC(1.0, 0, 0 ,0, c,posC);
+    Primitive primitiveD(1.0, 0, 0 ,0, d,posD);
+
+    integrator AB(primitiveA,primitiveB,boys);
+    double particleParticleIntegral = AB.pp(primitiveC,primitiveD);
+    cout << "----------------------------------------------------------------" << endl;
+    cout << "-------------- TEST Particle-Particle Integral 2 ---------------" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    cout << setprecision(13) << " pp = " << particleParticleIntegral << " and should be:" << endl;
+    cout << " pp = 0.022124581472837051566" << endl;
+    cout << "________________________________________________________________" << endl;
+    // regression test
+    CHECK_CLOSE(0.022124581472837051566, particleParticleIntegral,1.0e-13);
+}
 
 int main() {
 
