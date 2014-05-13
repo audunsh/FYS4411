@@ -1,10 +1,6 @@
-# FYS4411 - Quantum Mechanical Systems
-#
-# Project: Hartree-Fock method. On project:
+# FYS4411 - Computational physics for QM Systems
+# Hartree-Fock solver with gaussian integrator
 # Gøran Brekke Svaland and Audun Skau Hansen
-#
-# About the project:
-#
 #
 $ echo "#This is the README file"
 $ git add README.md
