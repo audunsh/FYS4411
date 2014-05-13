@@ -40,6 +40,10 @@ public:
     mat S,h,H,nuclearPotential;                                   //overlap matrix, onebody interaction matrices
     double nnInteraction(); //nucleon-nucleon contribution to energy
 
+    //Correction due to normalization factor from the Turbomole format
+    double factorial(double n);
+    double turboNormalization(double x, double i, double j ,double k);
+
 
 private:
     contracted basisSet[]; //use one of these...
@@ -48,6 +52,7 @@ private:
     vec nucleusCharges;
     int nNucelons;
     int Nprimitives;
+    double pi = 4*atan(1);
 
 };
 

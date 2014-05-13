@@ -5,6 +5,7 @@
 #include <integrator.h>
 #include <boysfunction.h>
 
+
 basis::basis(){
     set_size(3);
 }
@@ -192,9 +193,10 @@ void basis::add_atom_STO3G(string configuration, vec3 corePos){
 
     if(configuration == "He"){
         Nstates += 1;
-        Primitive S1A(0.15432897,0,0,0,6.36242139,corePos);
-        Primitive S1B(0.53532814,0,0,0,1.15892300,corePos);
-        Primitive S1C(0.44463454,0,0,0,0.31364979,corePos);
+        //Primitive A();
+        Primitive S1A(turboNormalization(6.36242139,0,0,0)*0.15432897,0,0,0,6.36242139,corePos);
+        Primitive S1B(turboNormalization(1.15892300,0,0,0)*0.53532814,0,0,0,1.15892300,corePos);
+        Primitive S1C(turboNormalization(0.31364979,0,0,0)*0.44463454,0,0,0,0.31364979,corePos);
 
         Primitive S1[3] = {S1A,S1B,S1C};
 
@@ -442,11 +444,6 @@ void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos
 
         }
     }
-
-
-
-
-
 }
 
 void basis::init_STO_3G(string configuration, double nProtons){
@@ -459,7 +456,7 @@ void basis::init_STO_3G(string configuration, double nProtons){
 
     if(configuration == "Be"){
         //basisSet[3];
-        Nstates = 3;
+        Nstates = 2;
         set_size(Nstates);
         Nprimitives = 3;
 
@@ -494,9 +491,12 @@ void basis::init_STO_3G(string configuration, double nProtons){
         set_size(Nstates);
         Nprimitives = 3;
 
-        Primitive S1A(0.15432897,0,0,0,6.36242139,{0,0,0});
-        Primitive S1B(0.53532814,0,0,0,1.15892300,{0,0,0});
-        Primitive S1C(0.44463454,0,0,0,0.31364979,{0,0,0});
+        //Primitive S1A(0.15432897,0,0,0,6.36242139,{0,0,0});
+        //Primitive S1B(0.53532814,0,0,0,1.15892300,{0,0,0});
+        //Primitive S1C(0.44463454,0,0,0,0.31364979,{0,0,0});
+        Primitive S1A(0.44063,0,0,0,6.36242139,{0,0,0});
+        Primitive S1B(0.426158,0,0,0,1.15892300,{0,0,0});
+        Primitive S1C(0.132815,0,0,0,0.31364979,{0,0,0});
 
         Primitive S1[3] = {S1A,S1B,S1C};
 
@@ -523,6 +523,7 @@ double basis::nnInteraction(){
 }
 
 void basis::init_integrals(){
+    cout << Nstates << endl;
     //Set up and solve all intergals for the current gaussian basis
     BoysFunction boys(3);
     //initializing 4 dummy primitives used in the iteration below
@@ -530,6 +531,7 @@ void basis::init_integrals(){
     Primitive B(0,0,0,0,0,{0,0,0});
     Primitive C(0,0,0,0,0,{0,0,0});
     Primitive D(0,0,0,0,0,{0,0,0});
+
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<Nprimitives;i++){
@@ -539,9 +541,11 @@ void basis::init_integrals(){
                     integrator AB (A,B, boys);
                     S(p,q) += AB.overlap();
                     h(p,q) += AB.kinetic();
+                    cout << A.weight() <<" " << B.weight() <<" " <<AB.kinetic() << endl;
                     for(int n = 0; n < nucleusCharges.size(); n++){
                         //add relevant interaction for each nucleus
                         AB.setupRtuv(nucleusPositions(n));
+                        cout << i << j << " " << nucleusCharges(n)*AB.pNuclei()<<endl;
                         h(p,q) -= nucleusCharges(n)*AB.pNuclei();
                         //nuclearPotential(p,q) += AB.pNuclei();
                     }
@@ -561,6 +565,17 @@ void basis::init_integrals(){
         }
     }
 }
+double basis::factorial(double n){
+    double result = 0;
+    for(int i = 1; i<(int) n +1; i++){
+        result *= i;
+    }
+    return result;
+}
+double basis::turboNormalization(double x, double i, double j, double k){
+    return pow(2*x/pi,0.75)*sqrt(pow(8*x,i+j+k)*factorial(i)*factorial(j)*factorial(k)/(factorial(2*i)*factorial(2*j)*factorial(2*k)));
+}
+
 
 void basis::set_size(int N){
     Nstates = N;
@@ -858,5 +873,4 @@ void basis::init_HTO4(double nProtons){
     v(3,3)( 3,2 )= 413631006610176000*sqrt(3.0)*Z/249430673908303812379.0;
     v(3,3)(3,3)= 19541*Z/524288;
 }
-
 

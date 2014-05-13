@@ -31,17 +31,24 @@ double hartreefocksolver::solve(){
     setupUnitMatrices();
     setupP();
     iterations = 0;
+    setupF();
+    coupledMatrix.print();
+    printMatrices();
+    cout << "---";
+    Bs.h.print();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
         energyPrev = energyCalc();
 
         setupF();
+        cout << energyCalc() << endl;
         diagonalizeF();
         normalizeC();
         updateP();
 
         iterations += 1;
     }
+    printMatrices();
     return energyCalc();
 }
 
@@ -140,7 +147,7 @@ void hartreefocksolver::updateP(){
 bool hartreefocksolver::convergenceCriteria(){
     //Evaluate convergence conditions
     bool condition = true;
-    if(iterations>100){
+    if(iterations>1000){
         condition = false;
     }
     if(abs(energyPrev-energy())<tolerance){
