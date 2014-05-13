@@ -164,7 +164,7 @@ void basis::init_H2(vec3 corePos1, vec3 corePos2){
     nucleusPositions.set_size(2);
     nucleusCharges.set_size(2);
     nucleusPositions(0) = corePos1;
-    nucleusPositions(1) = corePos1;
+    nucleusPositions(1) = corePos2;
     nucleusCharges(0) = 2;
     nucleusCharges(1) = 2;
     add_atom_STO3G("H", corePos1);
@@ -495,7 +495,7 @@ void basis::init_STO_3G(string configuration, double nProtons){
         //Primitive S1A(0.15432897,0,0,0,6.36242139,{0,0,0});
         //Primitive S1B(0.53532814,0,0,0,1.15892300,{0,0,0});
         //Primitive S1C(0.44463454,0,0,0,0.31364979,{0,0,0});
-        cout << turboNormalization(6.36242139,0,0,0)*0.15432897 << endl;
+        //cout << turboNormalization(6.36242139,0,0,0)*0.15432897 << endl;
         Primitive S1A(0.44063,0,0,0,6.36242139,{0,0,0});
         Primitive S1B(0.426158,0,0,0,1.15892300,{0,0,0});
         Primitive S1C(0.132815,0,0,0,0.31364979,{0,0,0});
@@ -518,6 +518,7 @@ double basis::nnInteraction(){
         for(int j=i+1; j<nucleusCharges.size(); ++j){
             Rnn = nucleusPositions(i)-nucleusPositions(j);
             r = sqrt(Rnn(0)*Rnn(0)+Rnn(1)*Rnn(1)+Rnn(2)*Rnn(2));
+            //cout << i << " " << j << ": " << r << endl;
             result += nucleusCharges(i)*nucleusCharges(j)/r;
         }
     }
@@ -545,6 +546,7 @@ void basis::init_integrals(){
                     for(int n = 0; n < nucleusCharges.size(); n++){
                         //add relevant interaction for each nucleus
                         AB.setupRtuv(nucleusPositions(n));
+                        //cout << nucleusCharges(n)*AB.pNuclei() << endl;
                         h(p,q) -= nucleusCharges(n)*AB.pNuclei();
                     }
                     for(int r=0; r<Nstates; r++){
@@ -553,7 +555,7 @@ void basis::init_integrals(){
                                 for(int l=0;l<Nprimitives;l++){
                                     C = basisSts[r].getPrimitive(k);
                                     D = basisSts[s].getPrimitive(l);
-                                    v(p,q)(r,s) += AB.pp(C,D);
+                                    v(p,r)(q,s) += AB.pp(C,D);
                                 }
                             }
                         }

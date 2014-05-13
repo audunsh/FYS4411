@@ -66,7 +66,7 @@ void hartreefocksolver::setupCoupledMatrix(){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
                     //coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
-                    coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
+                    coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
                 }
             }
         }
@@ -89,7 +89,7 @@ void hartreefocksolver::setupF(){
 
 double hartreefocksolver::energyCalc(){
     //return energy for current Fock matrix
-    return 0.5*accu(P % (Bs.h + F));
+    return 0.5*accu(P % (Bs.h + F))+Bs.nnInteraction();
 }
 
 double hartreefocksolver::energy(){
