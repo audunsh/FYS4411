@@ -179,9 +179,9 @@ void basis::add_atom_STO3G(string configuration, vec3 corePos){
     //add new atom to the basis
     if(configuration == "H"){
         Nstates += 1;
-        Primitive S1A(0.15432897,0,0,0,3.42525091,corePos);
-        Primitive S1B(0.53532814,0,0,0,0.62391373,corePos);
-        Primitive S1C(0.44463454,0,0,0,0.16885540,corePos);
+        Primitive S1A(turboNormalization(3.42525091,0,0,0)*0.15432897,0,0,0,3.42525091,corePos);
+        Primitive S1B(turboNormalization(0.62391373,0,0,0)*0.53532814,0,0,0,0.62391373,corePos);
+        Primitive S1C(turboNormalization(0.16885540,0,0,0)*0.44463454,0,0,0,0.16885540,corePos);
 
         Primitive S1[3] = {S1A,S1B,S1C};
 
@@ -208,17 +208,17 @@ void basis::add_atom_STO3G(string configuration, vec3 corePos){
 
     if(configuration == "Be"){
         Nstates += 3;
-        Primitive S1A(0.15432897,0,0,0,30.1678710,corePos);
-        Primitive S1B(0.53532814,0,0,0,5.4951153, corePos);
-        Primitive S1C(0.44463454,0,0,0,1.4871927, corePos);
+        Primitive S1A(turboNormalization(30.1678710,0,0,0)*0.15432897,0,0,0,30.1678710,corePos);
+        Primitive S1B(turboNormalization(5.4951153,0,0,0)*0.53532814,0,0,0,5.4951153, corePos);
+        Primitive S1C(turboNormalization(1.4871927,0,0,0)*0.44463454,0,0,0,1.4871927, corePos);
 
-        Primitive S2A(-0.09996723,0,0,0,1.3148331,corePos);
-        Primitive S2B(0.39951283,0,0,0,0.3055389, corePos);
-        Primitive S2C(0.70011547,0,0,0,0.0993707, corePos);
+        Primitive S2A(turboNormalization(1.3148331,0,0,0)*-0.09996723,0,0,0,1.3148331,corePos);
+        Primitive S2B(turboNormalization(0.3055389,0,0,0)*0.39951283,0,0,0,0.3055389, corePos);
+        Primitive S2C(turboNormalization(0.0993707,0,0,0)*0.70011547,0,0,0,0.0993707, corePos);
 
-        Primitive P1A(0.15591627,1,0,0,1.3148331, corePos);
-        Primitive P1B(0.60768372,1,0,0,0.3055389, corePos);
-        Primitive P1C(0.39195739,1,0,0,0.0993707, corePos);
+        Primitive P1A(turboNormalization(1.3148331,0,0,0)*0.15591627,1,0,0,1.3148331, corePos);
+        Primitive P1B(turboNormalization(0.3055389,0,0,0)*0.60768372,1,0,0,0.3055389, corePos);
+        Primitive P1C(turboNormalization(0.0993707,0,0,0)*0.39195739,1,0,0,0.0993707, corePos);
 
         Primitive S1[3] = {S1A,S1B,S1C};
         Primitive S2[3] = {S2A,S2B,S2C};
@@ -235,17 +235,17 @@ void basis::add_atom_STO3G(string configuration, vec3 corePos){
 
     if(configuration == "O"){
         Nstates += 3;
-        Primitive S1A(0.15432897,0,0,0,130.7093200,corePos);
-        Primitive S1B(0.53532814,0,0,0,23.8088610, corePos);
-        Primitive S1C(0.44463454,0,0,0,6.4436083, corePos);
+        Primitive S1A(turboNormalization(130.7093200,0,0,0)*0.15432897,0,0,0,130.7093200,corePos);
+        Primitive S1B(turboNormalization(23.8088610,0,0,0)*0.53532814,0,0,0,23.8088610, corePos);
+        Primitive S1C(turboNormalization(6.4436083,0,0,0)*0.44463454,0,0,0,6.4436083, corePos);
 
-        Primitive S2A(-0.09996723,0,0,0,5.0331513,corePos);
-        Primitive S2B(0.39951283,0,0,0,1.1695961, corePos);
-        Primitive S2C(0.70011547,0,0,0,0.3803890, corePos);
+        Primitive S2A(turboNormalization(5.0331513,0,0,0)*-0.09996723,0,0,0,5.0331513,corePos);
+        Primitive S2B(turboNormalization(1.1695961,0,0,0)*0.39951283,0,0,0,1.1695961, corePos);
+        Primitive S2C(turboNormalization(0.3803890,0,0,0)*0.70011547,0,0,0,0.3803890, corePos);
 
-        Primitive P1A(0.15591627,1,0,0,5.0331513, corePos);
-        Primitive P1B(0.60768372,1,0,0,1.1695961, corePos);
-        Primitive P1C(0.39195739,1,0,0,0.3803890, corePos);
+        Primitive P1A(turboNormalization(5.0331513,1,0,0)*0.15591627,1,0,0,5.0331513, corePos);
+        Primitive P1B(turboNormalization(1.1695961,1,0,0)*0.60768372,1,0,0,1.1695961, corePos);
+        Primitive P1C(turboNormalization(0.3803890,1,0,0)*0.39195739,1,0,0,0.3803890, corePos);
 
         Primitive S1[3] = {S1A,S1B,S1C};
         Primitive S2[3] = {S2A,S2B,S2C};
@@ -262,25 +262,25 @@ void basis::add_atom_STO3G(string configuration, vec3 corePos){
 
     if(configuration == "Si"){
         Nstates += 5;
-        Primitive S1A(0.1543289673,0,0,0,407.7975514,corePos);
-        Primitive S1B(0.5353281423,0,0,0,74.28083305, corePos);
-        Primitive S1C(0.4446345422,0,0,0,20.10329229, corePos);
+        Primitive S1A(turboNormalization(407.7975514,0,0,0)*0.1543289673,0,0,0,407.7975514,corePos);
+        Primitive S1B(turboNormalization(74.28083305,0,0,0)*0.5353281423,0,0,0,74.28083305, corePos);
+        Primitive S1C(turboNormalization(20.10329229,0,0,0)*0.4446345422,0,0,0,20.10329229, corePos);
 
-        Primitive S2A(-0.09996722919,0,0,0,23.19365606,corePos);
-        Primitive S2B(0.39951282610,0,0,0,5.389706871, corePos);
-        Primitive S2C(0.70011546890,0,0,0,1.752899952, corePos);
+        Primitive S2A(turboNormalization(23.19365606,0,0,0)*-0.09996722919,0,0,0,23.19365606,corePos);
+        Primitive S2B(turboNormalization(5.389706871,0,0,0)*0.39951282610,0,0,0,5.389706871, corePos);
+        Primitive S2C(turboNormalization(1.752899952,0,0,0)*0.70011546890,0,0,0,1.752899952, corePos);
 
-        Primitive S3A(-2196203690,0,0,0,1.4787406220,corePos);
-        Primitive S3B(0.2255954336,0,0,0,0.4125648801, corePos);
-        Primitive S3C(0.9003984260,0,0,0,1.752899952, corePos);
+        Primitive S3A(turboNormalization(1.4787406220,0,0,0)*-0.2196203690,0,0,0,1.4787406220,corePos);
+        Primitive S3B(turboNormalization(0.4125648801,0,0,0)*0.2255954336,0,0,0,0.4125648801, corePos);
+        Primitive S3C(turboNormalization(1.752899952,0,0,0)*0.9003984260,0,0,0,1.752899952, corePos);
 
-        Primitive P1A(0.1559162750,1,0,0,23.19365606, corePos);
-        Primitive P1B(0.6076837186,1,0,0,5.389706871, corePos);
-        Primitive P1C(0.3919573931,1,0,0,1.752899952, corePos);
+        Primitive P1A(turboNormalization(23.19365606,1,0,0)*0.1559162750,1,0,0,23.19365606, corePos);
+        Primitive P1B(turboNormalization(5.389706871,1,0,0)*0.6076837186,1,0,0,5.389706871, corePos);
+        Primitive P1C(turboNormalization(1.752899952,1,0,0)*0.3919573931,1,0,0,1.752899952, corePos);
 
-        Primitive P2A(0.01058760429,0,1,0,1.4787406220, corePos);
-        Primitive P2B(0.59516700530,0,1,0,0.4125648801, corePos);
-        Primitive P2C(0.46200101200,0,1,0,0.1614750979, corePos);
+        Primitive P2A(turboNormalization(1.4787406220,0,1,0)*0.01058760429,0,1,0,1.4787406220, corePos);
+        Primitive P2B(turboNormalization(0.4125648801,0,1,0)*0.59516700530,0,1,0,0.4125648801, corePos);
+        Primitive P2C(turboNormalization(0.1614750979,0,1,0)*0.46200101200,0,1,0,0.1614750979, corePos);
 
         Primitive S1[3] = {S1A,S1B,S1C};
         Primitive S2[3] = {S2A,S2B,S2C};
@@ -314,17 +314,17 @@ void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos
         for(int i=0;i<nProtons.size();i++){
             nucleusCharges(i) = nProtons(i);
             nucleusPositions(i) = corePos(i);
-            Primitive S1A(0.15432897,0,0,0,30.1678710,corePos(i));
-            Primitive S1B(0.53532814,0,0,0,5.4951153, corePos(i));
-            Primitive S1C(0.44463454,0,0,0,1.4871927, corePos(i));
+            Primitive S1A(turboNormalization(30.1678710,0,0,0)*0.15432897,0,0,0,30.1678710,corePos(i));
+            Primitive S1B(turboNormalization(5.4951153,0,0,0)*0.53532814,0,0,0,5.4951153, corePos(i));
+            Primitive S1C(turboNormalization(1.4871927,0,0,0)*0.44463454,0,0,0,1.4871927, corePos(i));
 
-            Primitive S2A(-0.09996723,0,0,0,1.3148331,corePos(i));
-            Primitive S2B(0.39951283,0,0,0,0.3055389, corePos(i));
-            Primitive S2C(0.70011547,0,0,0,0.0993707, corePos(i));
+            Primitive S2A(turboNormalization(1.3148331,0,0,0)*-0.09996723,0,0,0,1.3148331,corePos(i));
+            Primitive S2B(turboNormalization(0.3055389,0,0,0)*0.39951283,0,0,0,0.3055389, corePos(i));
+            Primitive S2C(turboNormalization(0.0993707,0,0,0)*0.70011547,0,0,0,0.0993707, corePos(i));
 
-            Primitive P1A(0.15591627,1,0,0,1.3148331, corePos(i));
-            Primitive P1B(0.60768372,1,0,0,0.3055389, corePos(i));
-            Primitive P1C(0.39195739,1,0,0,0.0993707, corePos(i));
+            Primitive P1A(turboNormalization(1.3148331,1,0,0)*0.15591627,1,0,0,1.3148331, corePos(i));
+            Primitive P1B(turboNormalization(0.3055389,1,0,0)*0.60768372,1,0,0,0.3055389, corePos(i));
+            Primitive P1C(turboNormalization(0.0993707,1,0,0)*0.39195739,1,0,0,0.0993707, corePos(i));
 
             Primitive S1[3] = {S1A,S1B,S1C};
             Primitive S2[3] = {S2A,S2B,S2C};
@@ -348,9 +348,9 @@ void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos
         for(int i=0;i<nProtons.size();i++){
             nucleusCharges(i) = nProtons(i);
             nucleusPositions(i) = corePos(i);
-            Primitive S1A(0.15432897,0,0,0,6.36242139,corePos(i));
-            Primitive S1B(0.53532814,0,0,0,1.15892300,corePos(i));
-            Primitive S1C(0.44463454,0,0,0,0.31364979,corePos(i));
+            Primitive S1A(turboNormalization(6.36242139,0,0,0)*0.15432897,0,0,0,6.36242139,corePos(i));
+            Primitive S1B(turboNormalization(1.15892300,0,0,0)*0.53532814,0,0,0,1.15892300,corePos(i));
+            Primitive S1C(turboNormalization(0.31364979,0,0,0)*0.44463454,0,0,0,0.31364979,corePos(i));
 
             Primitive S1[3] = {S1A,S1B,S1C};
 
@@ -368,17 +368,17 @@ void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos
         for(int i=0;i<nProtons.size();i++){
             nucleusCharges(i) = nProtons(i);
             nucleusPositions(i) = corePos(i);
-            Primitive S1A(0.15432897,0,0,0,130.7093200,corePos(i));
-            Primitive S1B(0.53532814,0,0,0,23.8088610, corePos(i));
-            Primitive S1C(0.44463454,0,0,0,6.4436083, corePos(i));
+            Primitive S1A(turboNormalization(130.7093200,0,0,0)*0.15432897,0,0,0,130.7093200,corePos(i));
+            Primitive S1B(turboNormalization(23.8088610,0,0,0)*0.53532814,0,0,0,23.8088610, corePos(i));
+            Primitive S1C(turboNormalization(6.4436083,0,0,0)*0.44463454,0,0,0,6.4436083, corePos(i));
 
-            Primitive S2A(-0.09996723,0,0,0,5.0331513,corePos(i));
-            Primitive S2B(0.39951283,0,0,0,1.1695961, corePos(i));
-            Primitive S2C(0.70011547,0,0,0,0.3803890, corePos(i));
+            Primitive S2A(turboNormalization(5.0331513,0,0,0)*-0.09996723,0,0,0,5.0331513,corePos(i));
+            Primitive S2B(turboNormalization(1.1695961,0,0,0)*0.39951283,0,0,0,1.1695961, corePos(i));
+            Primitive S2C(turboNormalization(0.3803890,0,0,0)*0.70011547,0,0,0,0.3803890, corePos(i));
 
-            Primitive P1A(0.15591627,1,0,0,5.0331513, corePos(i));
-            Primitive P1B(0.60768372,1,0,0,1.1695961, corePos(i));
-            Primitive P1C(0.39195739,1,0,0,0.3803890, corePos(i));
+            Primitive P1A(turboNormalization(5.0331513,1,0,0)*0.15591627,1,0,0,5.0331513, corePos(i));
+            Primitive P1B(turboNormalization(1.1695961,1,0,0)*0.60768372,1,0,0,1.1695961, corePos(i));
+            Primitive P1C(turboNormalization(0.3803890,1,0,0)*0.39195739,1,0,0,0.3803890, corePos(i));
 
             Primitive S1[3] = {S1A,S1B,S1C};
             Primitive S2[3] = {S2A,S2B,S2C};
@@ -403,25 +403,25 @@ void basis::init_molecule(string configuration, vec nProtons, field<vec> corePos
         for(int i=0;i<nProtons.size();i++){
             nucleusCharges(i) = nProtons(i);
             nucleusPositions(i) = corePos(i);
-            Primitive S1A(0.1543289673,0,0,0,407.7975514,corePos(i));
-            Primitive S1B(0.5353281423,0,0,0,74.28083305, corePos(i));
-            Primitive S1C(0.4446345422,0,0,0,20.10329229, corePos(i));
+            Primitive S1A(turboNormalization(407.7975514,0,0,0)*0.1543289673,0,0,0,407.7975514,corePos(i));
+            Primitive S1B(turboNormalization(74.28083305,0,0,0)*0.5353281423,0,0,0,74.28083305, corePos(i));
+            Primitive S1C(turboNormalization(20.10329229,0,0,0)*0.4446345422,0,0,0,20.10329229, corePos(i));
 
-            Primitive S2A(-0.09996722919,0,0,0,23.19365606,corePos(i));
-            Primitive S2B(0.39951282610,0,0,0,5.389706871, corePos(i));
-            Primitive S2C(0.70011546890,0,0,0,1.752899952, corePos(i));
+            Primitive S2A(turboNormalization(23.19365606,0,0,0)*-0.09996722919,0,0,0,23.19365606,corePos(i));
+            Primitive S2B(turboNormalization(5.389706871,0,0,0)*0.39951282610,0,0,0,5.389706871, corePos(i));
+            Primitive S2C(turboNormalization(1.752899952,0,0,0)*0.70011546890,0,0,0,1.752899952, corePos(i));
 
-            Primitive S3A(-2196203690,0,0,0,1.4787406220,corePos(i));
-            Primitive S3B(0.2255954336,0,0,0,0.4125648801, corePos(i));
-            Primitive S3C(0.9003984260,0,0,0,1.752899952, corePos(i));
+            Primitive S3A(turboNormalization(1.4787406220,0,0,0)*-0.2196203690,0,0,0,1.4787406220,corePos(i));
+            Primitive S3B(turboNormalization(0.4125648801,0,0,0)*0.2255954336,0,0,0,0.4125648801, corePos(i));
+            Primitive S3C(turboNormalization(1.752899952,0,0,0)*0.9003984260,0,0,0,1.752899952, corePos(i));
 
-            Primitive P1A(0.1559162750,1,0,0,23.19365606, corePos(i));
-            Primitive P1B(0.6076837186,1,0,0,5.389706871, corePos(i));
-            Primitive P1C(0.3919573931,1,0,0,1.752899952, corePos(i));
+            Primitive P1A(turboNormalization(23.19365606,1,0,0)*0.1559162750,1,0,0,23.19365606, corePos(i));
+            Primitive P1B(turboNormalization(5.389706871,1,0,0)*0.6076837186,1,0,0,5.389706871, corePos(i));
+            Primitive P1C(turboNormalization(1.752899952,1,0,0)*0.3919573931,1,0,0,1.752899952, corePos(i));
 
-            Primitive P2A(0.01058760429,0,1,0,1.4787406220, corePos(i));
-            Primitive P2B(0.59516700530,0,1,0,0.4125648801, corePos(i));
-            Primitive P2C(0.46200101200,0,1,0,0.1614750979, corePos(i));
+            Primitive P2A(turboNormalization(1.4787406220,0,1,0)*0.01058760429,0,1,0,1.4787406220, corePos(i));
+            Primitive P2B(turboNormalization(0.4125648801,0,1,0)*0.59516700530,0,1,0,0.4125648801, corePos(i));
+            Primitive P2C(turboNormalization(0.1614750979,0,1,0)*0.46200101200,0,1,0,0.1614750979, corePos(i));
 
             Primitive S1[3] = {S1A,S1B,S1C};
             Primitive S2[3] = {S2A,S2B,S2C};
@@ -460,17 +460,18 @@ void basis::init_STO_3G(string configuration, double nProtons){
         set_size(Nstates);
         Nprimitives = 3;
 
-        Primitive S1A(0.15432897,0,0,0,30.1678710,{0,0,0});
-        Primitive S1B(0.53532814,0,0,0,5.4951153, {0,0,0});
-        Primitive S1C(0.44463454,0,0,0,1.4871927, {0,0,0});
+        Primitive S1A(turboNormalization(30.1678710,0,0,0)*0.15432897,0,0,0,30.1678710,{0,0,0});
+        Primitive S1B(turboNormalization(5.4951153,0,0,0)*0.53532814,0,0,0,5.4951153, {0,0,0});
+        Primitive S1C(turboNormalization(1.4871927,0,0,0)*0.44463454,0,0,0,1.4871927, {0,0,0});
 
-        Primitive S2A(0.09996723,0,0,0,1.3148331,{0,0,0});
-        Primitive S2B(0.39951283,0,0,0,0.3055389, {0,0,0});
-        Primitive S2C(0.70011547,0,0,0,0.0993707, {0,0,0});
 
-        Primitive P1A(0.15591627,1,0,0,1.3148331,{0,0,0});
-        Primitive P1B(0.60768372,1,0,0,0.3055389,{0,0,0});
-        Primitive P1C(0.39195739,1,0,0,0.0993707,{0,0,0});
+        Primitive S2A(turboNormalization(1.3148331,0,0,0)*-0.09996723,0,0,0,1.3148331,{0,0,0});
+        Primitive S2B(turboNormalization(0.3055389,0,0,0)*0.39951283,0,0,0,0.3055389, {0,0,0});
+        Primitive S2C(turboNormalization(0.0993707,0,0,0)*0.70011547,0,0,0,0.0993707, {0,0,0});
+
+        Primitive P1A(turboNormalization(1.3148331,1,0,0)*0.15591627,1,0,0,1.3148331,{0,0,0});
+        Primitive P1B(turboNormalization(0.3055389,0,1,0)*0.60768372,0,1,0,0.3055389,{0,0,0});
+        Primitive P1C(turboNormalization(0.0993707,0,0,1)*0.39195739,0,0,1,0.0993707,{0,0,0});
 
         Primitive S1[3] = {S1A,S1B,S1C};
         Primitive S2[3] = {S2A,S2B,S2C};
@@ -494,6 +495,7 @@ void basis::init_STO_3G(string configuration, double nProtons){
         //Primitive S1A(0.15432897,0,0,0,6.36242139,{0,0,0});
         //Primitive S1B(0.53532814,0,0,0,1.15892300,{0,0,0});
         //Primitive S1C(0.44463454,0,0,0,0.31364979,{0,0,0});
+        cout << turboNormalization(6.36242139,0,0,0)*0.15432897 << endl;
         Primitive S1A(0.44063,0,0,0,6.36242139,{0,0,0});
         Primitive S1B(0.426158,0,0,0,1.15892300,{0,0,0});
         Primitive S1C(0.132815,0,0,0,0.31364979,{0,0,0});
@@ -523,7 +525,6 @@ double basis::nnInteraction(){
 }
 
 void basis::init_integrals(){
-    cout << Nstates << endl;
     //Set up and solve all intergals for the current gaussian basis
     BoysFunction boys(3);
     //initializing 4 dummy primitives used in the iteration below
@@ -541,13 +542,10 @@ void basis::init_integrals(){
                     integrator AB (A,B, boys);
                     S(p,q) += AB.overlap();
                     h(p,q) += AB.kinetic();
-                    cout << A.weight() <<" " << B.weight() <<" " <<AB.kinetic() << endl;
                     for(int n = 0; n < nucleusCharges.size(); n++){
                         //add relevant interaction for each nucleus
                         AB.setupRtuv(nucleusPositions(n));
-                        cout << i << j << " " << nucleusCharges(n)*AB.pNuclei()<<endl;
                         h(p,q) -= nucleusCharges(n)*AB.pNuclei();
-                        //nuclearPotential(p,q) += AB.pNuclei();
                     }
                     for(int r=0; r<Nstates; r++){
                         for(int s=0; s<Nstates; s++){
@@ -566,7 +564,7 @@ void basis::init_integrals(){
     }
 }
 double basis::factorial(double n){
-    double result = 0;
+    double result = 1;
     for(int i = 1; i<(int) n +1; i++){
         result *= i;
     }

@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     dist = (double) argv[4];
     *****************************************************************************************************************/
 
-    double nProtons  = 2; //number of protons
+    double nProtons  = 2;   //number of protons
     int nElectrons= 2;      //number of electrons
     basis BS;               //initialize basis object
 
@@ -44,31 +44,16 @@ int main(int argc, char* argv[]) {
     //-2.807, -14.35188 (fra dragly)
     //BS.init_HTO4(nProtons); //set up hydrogenlike basis
 
-    //minor testing below
-    /*
-    Primitive S1A(0.44063,0,0,0,6.36242139,{0,0,0});
-    Primitive S1B(0.426158,0,0,0,1.15892300,{0,0,0});
-    vec3 nucleiPos = {0,0,0};
-    BoysFunction boys(3);
-    integrator AB(S1A,S1A, boys);
-    AB.setupRtuv(nucleiPos);
-    cout << AB.kinetic() << endl;
-    cout << AB.pNuclei() << endl;
-    cout << nProtons*AB.pNuclei() << endl;
-    */
-
-
-
 
     //Enable the two lines below for STO-3G:Be basis
     //For Helium using STO_3G; uncoupled: -1.9317, coupled: 1.0557
     BS.init_STO_3G("He", nProtons); //initialize the STO-3G basis for the Beryllium atom
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlapmatrix, single-particle interaction and two-particle interaction
 
-    //BS.turboCorrection();
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
-    cout << "Ground state energy:" << E << endl;        //print out approximated ground state energy
+    cout << setprecision(10) << "Ground state energy:" << E << endl;        //print out approximated ground state energy
+
 
     return 0;
 } // End: function output()

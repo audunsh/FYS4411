@@ -32,23 +32,23 @@ double hartreefocksolver::solve(){
     setupP();
     iterations = 0;
     setupF();
-    coupledMatrix.print();
-    printMatrices();
-    cout << "---";
-    Bs.h.print();
+    //coupledMatrix.print();
+    //printMatrices();
+    //cout << "---";
+    //Bs.h.print();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
         energyPrev = energyCalc();
 
         setupF();
-        cout << energyCalc() << endl;
+        //cout << energyCalc() << endl;
         diagonalizeF();
         normalizeC();
         updateP();
 
         iterations += 1;
     }
-    printMatrices();
+    //printMatrices();
     return energyCalc();
 }
 
@@ -65,7 +65,8 @@ void hartreefocksolver::setupCoupledMatrix(){
         for (int q = 0; q<n; q++){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
-                    coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
+                    //coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
+                    coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
                 }
             }
         }
