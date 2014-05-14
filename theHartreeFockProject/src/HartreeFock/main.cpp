@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     *****************************************************************************************************************/
 
     double nProtons  = 4;   //number of protons
-    int nElectrons= 2;      //number of electrons
+    int nElectrons= 4;      //number of electrons
     basis BS;               //initialize basis object
 
     //Enable line below to init hydrogenlike orbit (precomputed), remember to disable gaussian orbits in line 49-
@@ -48,6 +48,8 @@ int main(int argc, char* argv[]) {
     BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom (ion 2+ in current config)
     //BS.init_molecule("O", {8}, {0,0,0});
     //BS.init_H2({0,0,0},{0,.589,0}); //insert parameter dist here (calculation is however still of for molecules)
+    //BS.init_H2({0,0,0},{0,1.4,0}); //insert parameter dist here (calculation is however still of for molecules)
+
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
 
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals

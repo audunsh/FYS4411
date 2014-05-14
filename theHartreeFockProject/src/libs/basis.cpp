@@ -515,7 +515,7 @@ double basis::nnInteraction(){
     vec3 Rnn;
     double r;
     for(int i=0; i<nucleusCharges.size()-1; i++){
-        for(int j=i+1; j<nucleusCharges.size(); ++j){
+        for(int j=i+1; j<nucleusCharges.size(); j++){
             Rnn = nucleusPositions(i)-nucleusPositions(j);
             r = sqrt(Rnn(0)*Rnn(0)+Rnn(1)*Rnn(1)+Rnn(2)*Rnn(2));
             //cout << i << " " << j << ": " << r << endl;
