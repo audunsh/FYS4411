@@ -582,7 +582,7 @@ double basis::evaluateContracted(int n, vec3 r){
     Primitive A(0,0,0,0,0,{0,0,0});
     for (int i = 0; i < Nprimitives; i++) {
         A = basisSts[n].getPrimitive(i);
-        result += A.weight()*pow(r(0), A.xExponent())*pow(r(1), A.yExponent())*pow(r(2), A.zExponent())*exp(A.exponent()*R);
+        result += A.weight()*pow(r(0), A.xExponent())*pow(r(1), A.yExponent())*pow(r(2), A.zExponent())*exp(-A.exponent()*R);
     }
     return result;
 }
