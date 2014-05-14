@@ -17,6 +17,9 @@ using namespace std;
 using namespace arma;
 
 int main(int argc, char* argv[]) {
+    //NOTE: Had some trouble with git (messed up merge, sorry) so I some changes might have been revertet.
+    //Just update it as you like, only make sure the changes in createDensityMap remains the same as in this commit.
+
     // argc = lenght of argv[];
     // argv = [__name__, arg1,arg2,arg3,...arg_argc]
     /**************************************************************************************************************
