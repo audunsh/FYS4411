@@ -41,7 +41,7 @@ double hartreefocksolver::solve(){
         energyPrev = energyCalc();
 
         setupF();
-        //cout << energyCalc() << endl;
+        //cout << Bs.evaluateContracted(0,{0,0,0}) << endl;
         diagonalizeF();
         normalizeC();
         updateP();

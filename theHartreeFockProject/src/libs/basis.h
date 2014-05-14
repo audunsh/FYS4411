@@ -43,6 +43,7 @@ public:
     //Correction due to normalization factor from the Turbomole format
     double factorial(double n);
     double turboNormalization(double x, double i, double j ,double k);
+    double evaluateContracted(int n, vec3 r);
 
 
 private:

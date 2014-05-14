@@ -576,6 +576,16 @@ double basis::turboNormalization(double x, double i, double j, double k){
     return pow(2*x/pi,0.75)*sqrt(pow(8*x,i+j+k)*factorial(i)*factorial(j)*factorial(k)/(factorial(2*i)*factorial(2*j)*factorial(2*k)));
 }
 
+double basis::evaluateContracted(int n, vec3 r){
+    double result = 0;
+    double R = r(0)*r(0) + r(1)*r(1) + r(2) * r(2);
+    Primitive A(0,0,0,0,0,{0,0,0});
+    for (int i = 0; i < Nprimitives; i++) {
+        A = basisSts[n].getPrimitive(i);
+        result += A.weight()*pow(r(0), A.xExponent())*pow(r(1), A.yExponent())*pow(r(2), A.zExponent())*exp(A.exponent()*R);
+    }
+    return result;
+}
 
 void basis::set_size(int N){
     Nstates = N;
