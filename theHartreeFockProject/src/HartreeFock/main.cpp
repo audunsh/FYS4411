@@ -17,6 +17,8 @@ using namespace std;
 using namespace arma;
 
 int main(int argc, char* argv[]) {
+    // argc = lenght of argv[];
+    // argv = [__name__, arg1,arg2,arg3,...arg_argc]
     /**************************************************************************************************************
     // my thought is to make a python program that calls theHartreeFockProject with values Z,N,Ns and a distance,
     // this distance is the absoulute distance between two cores. We run the python program for different distances,
@@ -33,9 +35,25 @@ int main(int argc, char* argv[]) {
     Ns = (int) argv[3];
     dist = (double) argv[4];
     *****************************************************************************************************************/
+    // predefined values, can be set using terminal: ./HartreeFock nProtons nElectrons CoreDist
+    double nProtons  = 2;    // number of protons
+    int nElectrons   = 2;    // number of electrons
+    double CoreDist  = 1.4;  // Distance between particles 1 and 2.
 
-    double nProtons  = 4;   //number of protons
-    int nElectrons= 4;      //number of electrons
+    cout << "argc= " << argc << endl;
+
+    if (argc == 4) {
+        cout << argv[1] << endl;
+        cout << *argv[1] << endl;
+        nProtons = (double) *argv[1];
+        nElectrons = (int) *argv[2];
+        CoreDist = (double) *argv[3];
+        cout << "nProtons = " << nProtons << " nElectrons= " << nElectrons << " CoreDist= " << CoreDist << endl;
+    }
+    nElectrons = 2;
+    nProtons = 2;
+
+
     basis BS;               //initialize basis object
 
     //Enable line below to init hydrogenlike orbit (precomputed), remember to disable gaussian orbits in line 49-
@@ -45,7 +63,7 @@ int main(int argc, char* argv[]) {
     //-2.807, -14.35188 (fra dragly)
 
     //Enable the two lines below for STO-3G:Be basis
-    BS.init_STO_3G("Be", nProtons); //initialize the STO-3G basis for the Beryllium atom (ion 2+ in current config)
+    BS.init_STO_3G("He", nProtons); //initialize the STO-3G basis for the Beryllium atom (ion 2+ in current config)
     //BS.init_molecule("O", {8}, {0,0,0});
     //BS.init_H2({0,0,0},{0,.589,0}); //insert parameter dist here (calculation is however still of for molecules)
     //BS.init_H2({0,0,0},{0,1.4,0}); //insert parameter dist here (calculation is however still of for molecules)
@@ -56,5 +74,5 @@ int main(int argc, char* argv[]) {
     double E = object.solve();                          //solve for the given basis
     cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
 
-    return 0;
+    return (int) E*1000;
 } // End: function output()

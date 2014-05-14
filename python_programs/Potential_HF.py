@@ -32,7 +32,8 @@ for i in range(len(R)):
     R[i] = (1+i)*0.1   # just changing the x-position
     
     #E[i] = os.system("path/to/exec.exe %var1 %var2 %var3" % (var1, var2, var3))
-    E[i] = os.system("~/goran/CompPhys/FYS4411 - CompPhys2/build-theHartreeFockProject-Desktop-Release/src/HartreeFock/HartreeFock %g %g %g %f" % (Z,N,Ns,R[:,0]))
+    E[i] = os.system("~/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/src/HartreeFock/HartreeFock %g %g %f" % (Z,N,R[i,0]))
+    
     
 #----------------------------------------------------------------------------
 # The plotting:
@@ -40,9 +41,9 @@ for i in range(len(R)):
 import matplotlib.pyplot as plt    
 
 h = plt.figure()
-plt.plot(E,R,'b-*')
+plt.plot(R,E,'b-*')
 plt.title('Potential distribution for Z=%g N=%g Ns=%g' % (Z,N,Ns))
 plt.legend('E(R)')
-plt.xlabel('R [dimentionality, Å, nm?]')
-plt.ylabel('Potential [dimentionality, eV ?]')
+plt.xlabel('R [a.u.]')
+plt.ylabel('Potential [a.u]')
 plt.show(True)
