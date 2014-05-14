@@ -79,10 +79,10 @@ int main(int argc, char* argv[]) {
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
 
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
-    object.createDensityMap();
+
     double E = object.solve();                          //solve for the given basis
     cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
-
+    object.createDensityMap();
     return (int) E*1000;
 
 } // End: function output()

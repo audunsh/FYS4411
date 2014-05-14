@@ -77,7 +77,8 @@ void hartreefocksolver::createDensityMap(){
             }
         }
     }
-    //densityMap.save("testmap");
+    densityMap.print();
+    densityMap.save("testmap2", raw_ascii);
 
 }
 
