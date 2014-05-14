@@ -52,6 +52,16 @@ double hartreefocksolver::solve(){
     return energyCalc();
 }
 
+double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
+    double result = 0;
+    for(int p=0;p<nStates;p++){
+        for(int q=0;q<nStates;q++){
+            result += P(p,q)*Bs.evaluateContracted(p, r)*Bs.evaluateContracted(q,r);
+        }
+    }
+    return result;
+}
+
 void hartreefocksolver::setupCoupledMatrix(){
     //import particle-particle interaction integrals
     int n = Bs.Nstates;

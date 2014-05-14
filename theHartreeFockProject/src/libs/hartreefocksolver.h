@@ -26,6 +26,7 @@ public:
     void setupCoupledMatrix_unused();
     double calcEnergy2();
     double energyCalc();
+    double evaluateProbabilityDensity(vec3 r);
 
 private:
     basis Bs;
