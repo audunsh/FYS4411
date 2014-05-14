@@ -165,8 +165,8 @@ void basis::init_H2(vec3 corePos1, vec3 corePos2){
     nucleusCharges.set_size(2);
     nucleusPositions(0) = corePos1;
     nucleusPositions(1) = corePos2;
-    nucleusCharges(0) = 2;
-    nucleusCharges(1) = 2;
+    nucleusCharges(0) = 1;
+    nucleusCharges(1) = 1;
     add_atom_STO3G("H", corePos1);
     add_atom_STO3G("H", corePos2);
     set_size(Nstates);
