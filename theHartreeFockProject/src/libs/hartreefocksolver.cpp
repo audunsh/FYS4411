@@ -41,7 +41,7 @@ double hartreefocksolver::solve(){
         energyPrev = energyCalc();
 
         setupF();
-        //cout << energyCalc() << endl;
+        //cout << evaluateProbabilityDensity({0,0,0}) << endl;
         diagonalizeF();
         normalizeC();
         updateP();
@@ -50,6 +50,16 @@ double hartreefocksolver::solve(){
     }
     //printMatrices();
     return energyCalc();
+}
+
+double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
+    double result = 0;
+    for(int p=0;p<nStates;p++){
+        for(int q=0;q<nStates;q++){
+            result += P(p,q)*Bs.evaluateContracted(p, r)*Bs.evaluateContracted(q,r);
+        }
+    }
+    return result;
 }
 
 void hartreefocksolver::setupCoupledMatrix(){
