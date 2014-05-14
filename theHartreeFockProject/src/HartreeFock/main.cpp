@@ -40,18 +40,12 @@ int main(int argc, char* argv[]) {
     int nElectrons   = 2;    // number of electrons
     double CoreDist  = 1.4;  // Distance between particles 1 and 2.
 
-    cout << "argc= " << argc << endl;
-
     if (argc == 4) {
-        cout << argv[1] << endl;
-        cout << *argv[1] << endl;
-        nProtons = (double) *argv[1];
-        nElectrons = (int) *argv[2];
-        CoreDist = (double) *argv[3];
+        nProtons = atof(argv[1]);
+        nElectrons = (int) atof(argv[2]);
+        CoreDist = atof(argv[3]);
         cout << "nProtons = " << nProtons << " nElectrons= " << nElectrons << " CoreDist= " << CoreDist << endl;
     }
-    nElectrons = 2;
-    nProtons = 2;
 
     basis BS;               //initialize basis object
 
@@ -70,8 +64,8 @@ int main(int argc, char* argv[]) {
     BS.init_STO_3G("He", nProtons); //initialize the STO-3G basis for the Beryllium atom (ion 2+ in current config)
 
     //BS.init_molecule("O", {8}, {0,0,0});
-    BS.init_Be2({0,0,0},{0,1.4,0}); //insert parameter dist here (calculation is however still off for molecules)
-    //BS.init_H2({0,0,0},{0,1.4,0}); //insert parameter dist here (calculation is however still off for molecules)
+    //BS.init_Be2({0,0,0},{0,CoreDist,0}); //insert parameter dist here (calculation is however still off for molecules)
+    BS.init_H2({0,0,0},{0,CoreDist,0}); //insert parameter dist here (calculation is however still off for molecules)
 
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
 

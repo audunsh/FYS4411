@@ -7,7 +7,14 @@ BoysFunction::BoysFunction(){
 BoysFunction::BoysFunction(int angMomMax){
     m_nMax = 4*angMomMax;
     m_F = zeros <vec> (4*angMomMax+1);
-    m_Ftabulated.load("boys_tabulated.dat");
+    string filename;
+    filename = "boys_tabulated.dat";
+    ifstream myfile;
+    myfile.open(filename.c_str());
+    if (!myfile.is_open()) {
+        cout << "Failed to open: " << filename << endl;
+    }
+    m_Ftabulated.load(filename);
 }
 
 double BoysFunction::returnValue(int n){

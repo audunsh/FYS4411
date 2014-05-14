@@ -2,8 +2,11 @@
 #define BOYSFUNCTION_H
 
 #include <armadillo>
+#include <string>
+#include <fstream>
 
 using namespace arma;
+using namespace std;
 
 class BoysFunction
 {
