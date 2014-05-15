@@ -46,7 +46,7 @@ class cubed():
 #Rayim(a.cube[0,:,:], "tesmap3.png")
 
 N = 1000 #dimensions of plot
-a = loadtxt("slice6.dat")
+a = loadtxt("slice6.dataset")
 img = zeros((N,N), dtype = float)
 #img = a.resize(1000,1000)
 
