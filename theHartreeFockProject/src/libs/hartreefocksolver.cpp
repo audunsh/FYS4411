@@ -49,6 +49,7 @@ double hartreefocksolver::solve(){
         iterations += 1;
     }
     //printMatrices();
+    //createDensityMap();
     return energyCalc();
 }
 
@@ -60,6 +61,25 @@ double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
         }
     }
     return result;
+}
+
+void hartreefocksolver::createDensityMap(){
+    int dim=20;
+    double dx = 0.1;
+    double dV = dx*dx*dx;
+    densityMap.zeros(dim*2,dim*2,dim*2);
+    vec3 R;
+    for(int i=-dim;i<dim;i++){
+        for(int j=-dim;j<dim;j++){
+            for(int k=-dim;k<dim;k++){
+                R = {(double) i*dx,(double) j*dx, (double) k*dx};
+                densityMap(i+dim,j+dim,k+dim) = evaluateProbabilityDensity(R)*dV;
+            }
+        }
+    }
+    densityMap.print();
+    densityMap.save("testmap2", raw_ascii);
+
 }
 
 void hartreefocksolver::setupCoupledMatrix(){

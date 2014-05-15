@@ -578,11 +578,15 @@ double basis::turboNormalization(double x, double i, double j, double k){
 
 double basis::evaluateContracted(int n, vec3 r){
     double result = 0;
-    double R = r(0)*r(0) + r(1)*r(1) + r(2) * r(2);
+    //double R = r(0)*r(0) + r(1)*r(1) + r(2) * r(2);
+    double dist = 0;
     Primitive A(0,0,0,0,0,{0,0,0});
     for (int i = 0; i < Nprimitives; i++) {
         A = basisSts[n].getPrimitive(i);
-        result += A.weight()*pow(r(0), A.xExponent())*pow(r(1), A.yExponent())*pow(r(2), A.zExponent())*exp(-A.exponent()*R);
+        //vec3 Apos = A.nucleusPosition(1);
+        vec3 dist = r-A.nucleusPosition(); //distance from nucleic center
+        double dist2 = dist(0)*dist(0) + dist(1)*dist(1) + dist(2) * dist(2);
+        result += A.weight()*pow(dist(0), A.xExponent())*pow(dist(1), A.yExponent())*pow(dist(2), A.zExponent())*exp(-A.exponent()*dist2);
     }
     return result;
 }

@@ -27,11 +27,14 @@ public:
     double calcEnergy2();
     double energyCalc();
     double evaluateProbabilityDensity(vec3 r);
+    void createDensityMap();
 
 private:
     basis Bs;
 
     field<mat> coupledMatrix;
+
+    cube densityMap;
 
     mat V;      //Transformation matrix
     mat P;      //Density matrix
