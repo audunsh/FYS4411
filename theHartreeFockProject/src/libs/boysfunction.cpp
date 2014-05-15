@@ -8,8 +8,8 @@ BoysFunction::BoysFunction(int angMomMax){
     m_nMax = 4*angMomMax;
     m_F = zeros <vec> (4*angMomMax+1);
     string filename;
-    filename = "boys_tabulated.dat";
-    ifstream myfile;
+    filename = "/home/goranbs/goran/CompPhys/FYS4411 - CompPhys2/build-theHartreeFockProject-Desktop-Debug/src/HartreeFock/boys_tabulated.dat";
+//    ifstream myfile;
 //    myfile.open(filename.c_str());
 //    if (!myfile.is_open()) {
 //        cout << "Failed to open: " << filename << endl;

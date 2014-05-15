@@ -41,13 +41,13 @@ int main(int argc, char* argv[]) {
     // predefined values, can be set using terminal: ./HartreeFock nProtons nElectrons CoreDist
     double nProtons  = 2;    // number of protons
     int nElectrons   = 2;    // number of electrons
-    double CoreDist  = 1.4;  // Distance between particles 1 and 2.
+    double CoreDist  = 2.3;  // Distance between particles 1 and 2.
 
     if (argc == 4) {
         nProtons = atof(argv[1]);
         nElectrons = (int) atof(argv[2]);
         CoreDist = atof(argv[3]);
-        cout << "nProtons = " << nProtons << " nElectrons= " << nElectrons << " CoreDist= " << CoreDist << endl;
+        //cout << "nProtons = " << nProtons << " nElectrons= " << nElectrons << " CoreDist= " << CoreDist << endl;
     }
 
     basis BS;               //initialize basis object
@@ -77,8 +77,9 @@ int main(int argc, char* argv[]) {
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
     double E = object.solve();                          //solve for the given basis
-    cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
+    //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
     //object.createDensityMap();
+    cout << E << endl;
     return (int) E*1000;
 
 } // End: function output()
