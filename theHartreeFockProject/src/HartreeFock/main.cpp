@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 
     double E = object.solve();                          //solve for the given basis
     cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
-    object.createDensityMap();
+    //object.createDensityMap();
     return (int) E*1000;
 
 } // End: function output()

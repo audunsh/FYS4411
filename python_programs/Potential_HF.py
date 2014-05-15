@@ -16,7 +16,8 @@ And the number of single particle states;        Ns
 
 The default is to use a STO-3G basis.
 """
-import sys, os, subprocess
+import os
+import subprocess as sub
 import numpy as np
 
 n = 100             # number of Hartree-Fock calculations (# of core distances R)
@@ -32,8 +33,17 @@ for i in range(len(R)):
     R[i] = (1+i)*0.1   # just changing the x-position
     
     #E[i] = os.system("path/to/exec.exe %var1 %var2 %var3" % (var1, var2, var3))
-    E[i] = os.system("LD_LIBRARY_PATH="~/goran/CompPhys/FYS4411 - CompPhys2/build-theHartreeFockProject-Desktop-Release/src/libs/" ~/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/src/HartreeFock/HartreeFock %g %g %f" % (Z,N,R[i,0]))
-    
+    #E[i] = os.system("LD_LIBRARY_PATH="~/goran/CompPhys/FYS4411 - CompPhys2/build-theHartreeFockProject-Desktop-Release/src/libs/" ~/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/src/HartreeFock/HartreeFock %g %g %f" % (Z,N,R[i,0]))
+#    returnval = os.popen('python ~/goran/teaching/FYS-MEK1110-mechanics/TrappingAtoms.py',"r")
+#    while 1:
+#        line = returnval.readline()
+#        if not line: break
+#        print line
+    returnval = os.popen('LD_LIBRARY_PATH="/home/goranbs/goran/CompPhys/FYS4411 - CompPhys2/build-theHartreeFockProject-Desktop-Release/src/libs/" ~/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/src/HartreeFock/HartreeFock %g %g %f' % (Z,N,R[i,0]),"r")
+    while 1:
+        line = returnval.readline()
+        if not line: break
+        print line
     
 #----------------------------------------------------------------------------
 # The plotting:

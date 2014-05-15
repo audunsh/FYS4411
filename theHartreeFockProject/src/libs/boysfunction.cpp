@@ -10,10 +10,10 @@ BoysFunction::BoysFunction(int angMomMax){
     string filename;
     filename = "boys_tabulated.dat";
     ifstream myfile;
-    myfile.open(filename.c_str());
-    if (!myfile.is_open()) {
-        cout << "Failed to open: " << filename << endl;
-    }
+//    myfile.open(filename.c_str());
+//    if (!myfile.is_open()) {
+//        cout << "Failed to open: " << filename << endl;
+//    }
     m_Ftabulated.load(filename);
 }
 
