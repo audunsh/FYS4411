@@ -27,7 +27,7 @@ public:
     double calcEnergy2();
     double energyCalc();
     double evaluateProbabilityDensity(vec3 r);
-    void createDensityMap();
+    void createDensityMap(string filename);
 
 private:
     basis Bs;

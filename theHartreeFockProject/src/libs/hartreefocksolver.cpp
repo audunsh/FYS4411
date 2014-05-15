@@ -63,9 +63,9 @@ double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
     return result;
 }
 
-void hartreefocksolver::createDensityMap(){
-    int dim=1000;
-    double dx = 0.004;
+void hartreefocksolver::createDensityMap(string filename){
+    int dim=256;
+    double dx = 0.032;
     double dV = dx*dx*dx;
     densityMap.zeros(dim,dim,dim);
     mat densitySlice;
@@ -84,8 +84,8 @@ void hartreefocksolver::createDensityMap(){
     }
     //densityMap.print();
     //densityMap.save("testmap2", raw_ascii);
-    densitySlice.print();
-    densitySlice.save("slice6.dat", raw_ascii);
+    //densitySlice.print();
+    densitySlice.save(filename, raw_ascii);
 
 }
 

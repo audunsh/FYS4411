@@ -46,7 +46,7 @@ class cubed():
 #Rayim(a.cube[0,:,:], "tesmap3.png")
 
 N = 1000 #dimensions of plot
-a = loadtxt("slice6.dataset")
+a = loadtxt("Be2_STO3G.dataset")
 img = zeros((N,N), dtype = float)
 #img = a.resize(1000,1000)
 
@@ -57,7 +57,7 @@ for i in range(N):
 #normalizing
 img *= 256/img.max()
 
-Rayim(img, "slice6.png")
+Rayim(img, "Be2_STO3G.png")
 
 #print sqrt(size(a))
 
