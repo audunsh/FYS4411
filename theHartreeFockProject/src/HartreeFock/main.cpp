@@ -41,11 +41,11 @@ int main(int argc, char* argv[]) {
     // predefined values, can be set using terminal: ./HartreeFock nProtons nElectrons CoreDist
     double nProtons  = 2;    // number of protons
     int nElectrons   = 2;    // number of electrons
-    double CoreDist  = 2.3;  // Distance between particles 1 and 2.
+    double CoreDist  = 1.4;  // Distance between particles 1 and 2.
 
     if (argc == 4) {
-        nProtons = atof(argv[1]);
-        nElectrons = (int) atof(argv[2]);
+        nProtons = atoi(argv[1]);
+        nElectrons = atoi(argv[2]);
         CoreDist = atof(argv[3]);
         //cout << "nProtons = " << nProtons << " nElectrons= " << nElectrons << " CoreDist= " << CoreDist << endl;
     }
@@ -80,6 +80,6 @@ int main(int argc, char* argv[]) {
     //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
     //object.createDensityMap();
     cout << E << endl;
-    return (int) E*1000;
+    return 0;
 
 } // End: function output()
