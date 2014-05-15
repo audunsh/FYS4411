@@ -27,6 +27,7 @@ public:
 
     void init_H2(vec3 corePos1, vec3 corePos2);
     void init_Be2(vec3 corePos1, vec3 corePos2);
+    void init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3);
 
     void add_atom_STO3G(string configuration, vec3 corePos);
     //void init_Be2(vec3 corePos1, vec3 corePos2);

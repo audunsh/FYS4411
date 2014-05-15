@@ -172,6 +172,22 @@ void basis::init_H2(vec3 corePos1, vec3 corePos2){
     set_size(Nstates);
 }
 
+void basis::init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3){
+    Nstates = 0;
+    Nprimitives = 3;
+    nucleusPositions.set_size(3);
+    nucleusCharges.set_size(3);
+    nucleusPositions(0) = corePos1;
+    nucleusPositions(1) = corePos2;
+    nucleusPositions(2) = corePos3;
+    nucleusCharges(0) = 1;
+    nucleusCharges(1) = 1;
+    nucleusCharges(2) = 8;
+    add_atom_STO3G("H", corePos1);
+    add_atom_STO3G("H", corePos2);
+    add_atom_STO3G("O", corePos3);
+    set_size(Nstates);
+}
 
 
 

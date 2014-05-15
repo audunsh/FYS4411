@@ -79,10 +79,34 @@ int main(int argc, char* argv[]) {
 
         //BS.init_Be2({0,0,0},{0,CoreDist,0}); //insert parameter dist here (calculation is however still off for molecules)
         //BS.init_H2({0,0,0},{0,CoreDist,0}); //insert parameter dist here (calculation is however still off for molecules)
-        string filename = "";
+
+        //string filename = "";
         BS.init_Be2({2,1.3,0},{2,2.7,0}); //insert parameter dist here (calculation is however still off for molecules)
         BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
         hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+        E = object.solve();                          //solve for the given basis
+        cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;
+        /*
+        int N = 1;
+        double dist;
+        mat energies;
+        energies.zeros(N,N);
+        hartreefocksolver object (BS, 10,8);
+        vec3 corePosH1, corePosH2, corePosO;
+
+        for(int i=0; i<N;i++){
+            for(int j=0; j<N;j++){
+                corePosH1 = {0,0,0};
+                corePosH1 = {0,0,0};
+                corePosO = {0,0,0};
+                BS.init_H2O(corePosH1, corePosH2, corePosO);
+                BS.init_integrals();
+                hartreefocksolver object(BS, 10,8);
+                energies(i,j) = object.solve();
+            }
+        }
+        */
+
         /*
         for(int i=0; i<10;i++){
 
