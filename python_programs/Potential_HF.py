@@ -70,7 +70,7 @@ import matplotlib.pyplot as plt
 
 h = plt.figure()
 plt.plot(R,E,'b-*')
-plt.title('Potential distribution for the Hydrogen atom)
+plt.title('Potential distribution for the Hydrogen atom')
 plt.legend('E(R)')
 plt.xlabel('R [a.u.]')
 plt.ylabel('Potential [a.u]')
