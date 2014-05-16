@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
 
 
 
-        int N = 10;
+        int N = 100;
         double dist;
         mat energies;
         energies.zeros(N,N);
@@ -95,13 +95,15 @@ int main(int argc, char* argv[]) {
 
         double halfDist = 0;
         double ODist = 0;
-        double d_halfDist = 0.03;
-        double d_ODist = 0.03;
+        double d_halfDist = 0.01;
+        double d_ODist = 0.01;
         for(int i=0; i<N;i++){
             for(int j=0; j<N;j++){
                 object.reset(BS,10,8);
-                halfDist = (i+1)*d_halfDist/2.0;
-                ODist = (j+1)*d_ODist;
+                halfDist = (j+1)*d_halfDist/2.0;
+                ODist = halfDist*sin(0.660796);
+                cout << halfDist << " " << ODist << endl;
+                //ODist = (i+1)*d_ODist;
                 corePosH1 = {1-halfDist,1,0};
                 corePosH1 = {1+halfDist,1,0};
                 corePosO = {1,1+ODist,0};
@@ -109,9 +111,10 @@ int main(int argc, char* argv[]) {
                 BS.init_integrals();
                 hartreefocksolver object(BS, 10,8);
                 energies(i,j) = object.solve();
+                cout << "series:" << i << " -->  At angle:" << 2*asin(halfDist/sqrt(ODist*ODist + halfDist*halfDist)) << " the energy converges at " << energies(i,j) << endl;
             }
         }
-        energies.print();
+        energies.save("angles_20_001.dataset", raw_ascii);
         double E = energies(0,0);
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
 
