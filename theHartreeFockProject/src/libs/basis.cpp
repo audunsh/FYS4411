@@ -173,6 +173,7 @@ void basis::init_H2(vec3 corePos1, vec3 corePos2){
 }
 
 void basis::init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3){
+    basisSts.clear();
     Nstates = 0;
     Nprimitives = 3;
     nucleusPositions.set_size(3);
@@ -188,8 +189,6 @@ void basis::init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3){
     add_atom_STO3G("O", corePos3);
     set_size(Nstates);
 }
-
-
 
 void basis::add_atom_STO3G(string configuration, vec3 corePos){
     //add new atom to the basis
@@ -581,6 +580,7 @@ void basis::init_integrals(){
         }
     }
 }
+
 double basis::factorial(double n){
     double result = 1;
     for(int i = 1; i<(int) n +1; i++){
@@ -588,6 +588,7 @@ double basis::factorial(double n){
     }
     return result;
 }
+
 double basis::turboNormalization(double x, double i, double j, double k){
     return pow(2*x/pi,0.75)*sqrt(pow(8*x,i+j+k)*factorial(i)*factorial(j)*factorial(k)/(factorial(2*i)*factorial(2*j)*factorial(2*k)));
 }

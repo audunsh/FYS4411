@@ -94,34 +94,62 @@ int main(int argc, char* argv[]) {
         vec3 molecularCenter = {1,1,0};
 
         double halfDist = 0;
-        //double halfDist0 = 2.89*sin(1.82)-0.5;
-        double halfDist0 = 1.00;
+        double halfDist0 = 1.0;  //1*sin(0.91);//-0.5;
+        //double halfDist0 = 1.00;
         double d_halfDist = 0.01;
 
         double ODist = 0;
-        //double ODist0 = 1.89*cos(1.82)-0.5;
-        double ODist0 = 0.50;
+        double ODist0 = 0.0;//1*cos(0.91);//-0.5;
+        //double ODist0 = 0.50;
         double d_ODist = 0.01;
+
+
+        vec3 dB1, dB2, dB3;
 
         for(int i=0; i<N;i++){
             for(int j=0; j<N;j++){
-                object.reset(BS,10,8);
-                halfDist = j*d_halfDist + halfDist0;
-                ODist =    i*d_ODist + ODist0;//halfDist*sin(0.660796);
+
+                halfDist = i*d_halfDist + halfDist0;
+                ODist =    j*d_ODist    + ODist0;    //halfDist*sin(0.660796);
+
+                //halfDist = j*d_ODist   *sin(0.91)+halfDist0;
+                //ODist =    j*d_ODist   *cos(0.91)+ODist0;    //halfDist*sin(0.660796);
 
                 //ODist = (i+1)*d_ODist;
                 corePosH1 = {0,-halfDist,0};
                 corePosH2 = {0, halfDist,0};
                 corePosO =  {ODist,0,0};
-                BS.init_H2O(corePosH1+molecularCenter, corePosH2+molecularCenter, corePosO+molecularCenter);
+
+                dB1 = corePosH1 + molecularCenter;
+                dB2 = corePosH2 + molecularCenter;
+                dB3 = corePosO  + molecularCenter;
+                cout << "       " << halfDist << " " << ODist << endl;
+                //dB1.print();
+                //cout << endl;
+                //dB2.print();
+                //cout << endl;
+                //dB3.print();
+                //cout << endl;
+                cout << "              r:" << sqrt(halfDist*halfDist + ODist*ODist) << endl;
+
+
+                BS.init_H2O(dB1,dB2,dB3);
                 BS.init_integrals();
-                hartreefocksolver object(BS, 10,8);
+                //cout << BS.evaluateContracted(0+j, {0,0,0}) << endl;
+                //cout << BS.evaluateContracted(1+j, {0,0,0}) << endl;
+                //cout << BS.evaluateContracted(2+j, {0,0,0}) << endl;
+
+
+                object.reset(BS,10,8);
+                //hartreefocksolver object(BS, 10,8);
                 energies(i,j) = object.solve();
                 cout << "series:" << i << " -->  At angle:" << setprecision(10) << 2*acos(ODist/sqrt(ODist*ODist + halfDist*halfDist)) << " the energy converges at " << energies(i,j) << endl;
-                cout << "       " << halfDist << " " << ODist << endl;
+                //cout << "       " << halfDist << " " << ODist << endl;
+                cout << "-------------------" << endl;
             }
         }
-        energies.save("angles_21_001.dataset", raw_ascii);
+        energies.print();
+        energies.save("angles_26_001.dataset", raw_ascii);
         double E = energies(0,0);
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
 
