@@ -94,27 +94,34 @@ int main(int argc, char* argv[]) {
         vec3 molecularCenter = {1,1,0};
 
         double halfDist = 0;
-        double ODist = 0;
+        //double halfDist0 = 2.89*sin(1.82)-0.5;
+        double halfDist0 = 1.00;
         double d_halfDist = 0.01;
+
+        double ODist = 0;
+        //double ODist0 = 1.89*cos(1.82)-0.5;
+        double ODist0 = 0.50;
         double d_ODist = 0.01;
+
         for(int i=0; i<N;i++){
             for(int j=0; j<N;j++){
                 object.reset(BS,10,8);
-                halfDist = (j+1)*d_halfDist/2.0;
-                ODist = halfDist*sin(0.660796);
-                cout << halfDist << " " << ODist << endl;
+                halfDist = j*d_halfDist + halfDist0;
+                ODist =    i*d_ODist + ODist0;//halfDist*sin(0.660796);
+
                 //ODist = (i+1)*d_ODist;
-                corePosH1 = {1-halfDist,1,0};
-                corePosH1 = {1+halfDist,1,0};
-                corePosO = {1,1+ODist,0};
-                BS.init_H2O(corePosH1, corePosH2, corePosO);
+                corePosH1 = {0,-halfDist,0};
+                corePosH2 = {0, halfDist,0};
+                corePosO =  {ODist,0,0};
+                BS.init_H2O(corePosH1+molecularCenter, corePosH2+molecularCenter, corePosO+molecularCenter);
                 BS.init_integrals();
                 hartreefocksolver object(BS, 10,8);
                 energies(i,j) = object.solve();
-                cout << "series:" << i << " -->  At angle:" << 2*asin(halfDist/sqrt(ODist*ODist + halfDist*halfDist)) << " the energy converges at " << energies(i,j) << endl;
+                cout << "series:" << i << " -->  At angle:" << setprecision(10) << 2*acos(ODist/sqrt(ODist*ODist + halfDist*halfDist)) << " the energy converges at " << energies(i,j) << endl;
+                cout << "       " << halfDist << " " << ODist << endl;
             }
         }
-        energies.save("angles_20_001.dataset", raw_ascii);
+        energies.save("angles_21_001.dataset", raw_ascii);
         double E = energies(0,0);
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
 
