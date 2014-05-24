@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
 
 
 
-        int N = 100;
+        int N = 50;
         double dist;
         mat energies;
         energies.zeros(N,N);
@@ -94,14 +94,14 @@ int main(int argc, char* argv[]) {
         vec3 molecularCenter = {1,1,0};
 
         double halfDist = 0;
-        double halfDist0 = 1.0;  //1*sin(0.91);//-0.5;
+        double halfDist0 = 0.05;  //1*sin(0.91);//-0.5;
         //double halfDist0 = 1.00;
-        double d_halfDist = 0.01;
+        double d_halfDist = 0.2;
 
         double ODist = 0;
-        double ODist0 = 0.0;//1*cos(0.91);//-0.5;
+        double ODist0 = 0.05;//1*cos(0.91);//-0.5;
         //double ODist0 = 0.50;
-        double d_ODist = 0.01;
+        double d_ODist = 0.2;
 
 
         vec3 dB1, dB2, dB3;
@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) {
             }
         }
         energies.print();
-        energies.save("angles_26_001.dataset", raw_ascii);
+        energies.save("angles_28_001.dataset", raw_ascii);
         double E = energies(0,0);
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
 
