@@ -54,14 +54,14 @@ int main(int argc, char* argv[]) {
         double E = object.solve();                          //solve for the given basis
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
     }
-    if(true){
+    if(false){
         //Calculate O2 Ground state
         basis BS;               //initialize basis object
         int N = 33;  //Grid to calculate is NxN
         mat energies;
         energies.zeros(N,N);
-        int nElectrons = 8;
-        double nProtons = 8;
+        int nElectrons = 16;
+        double nProtons = 16;
         hartreefocksolver object (BS, nElectrons,nProtons);
         vec3 corePosH1, corePosH2;
         vec3 molecularCenter = {0,0,0};
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
                 x = i*dx + x0;
                 y = j*dy + y0;
 
-                corePosH1 = {1.525,1.525,0};
+                corePosH1 = {.05,.05,0};
                 corePosH2 = {x,y,0};
 
                 dB1 = corePosH1 + molecularCenter;
@@ -91,6 +91,7 @@ int main(int argc, char* argv[]) {
 
                 BS.init_O2(dB1,dB2);
                 BS.init_integrals();
+
 
                 object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
 
@@ -106,23 +107,26 @@ int main(int argc, char* argv[]) {
     }
 
 
-    if(false){
+    if(true){
         //Perform a lowest eigenenergy fit of a H2Be molecule
         basis BS;               //initialize basis object
         int N = 40;
         mat energies;
+
+        int nElectrons = 10;
+        double nProtons = 10;
         energies.zeros(N,N);
-        hartreefocksolver object (BS, 6,6);
+        hartreefocksolver object (BS, nElectrons,nProtons);
         vec3 corePosH1, corePosH2, corePosO;
         vec3 molecularCenter = {0,0,0};
 
 
         double x = 0;
-        double x0 = 0.1;
+        double x0 = 0.0;
         double dx = 0.1;
 
         double y = 0;
-        double y0 = 0.1;
+        double y0 = 1.5;
         double dy = 0.1;
 
         vec3 dB1, dB2, dB3;
@@ -132,8 +136,8 @@ int main(int argc, char* argv[]) {
                 x = i*dx + x0;
                 y = j*dy + y0;
 
-                corePosH1 = {0.05,0.05,0};
-                corePosH2 = {0.05,3.05,0};
+                corePosH1 = {0.00,0.00,0};
+                corePosH2 = {3.00,0.00,0};
                 corePosO =  {x,y,0};
 
                 dB1 = corePosH1 + molecularCenter;
@@ -145,7 +149,7 @@ int main(int argc, char* argv[]) {
                 BS.init_integrals();
 
                 //object.reset(BS,6,6);
-                object = hartreefocksolver(BS,10,10); //reinitializing class
+                object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
                 energies(i,j) = object.solve();
                 cout << "series: [ " << i << " | " << j << " ]  " << " At angle:" << setprecision(10) << 2*acos(y/sqrt(y*y + x*x)) << " the energy converges at " << energies(i,j) << " at a absolute distance r = " << sqrt(x*x+y*y) << ". (x,y) = " << "(" << x << "," << y << ")" << endl;
             }
