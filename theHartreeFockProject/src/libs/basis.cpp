@@ -157,7 +157,6 @@ void basis::init_Be2(vec3 corePos1, vec3 corePos2){
     add_atom_STO3G("Be", corePos1);
     add_atom_STO3G("Be", corePos2);
     set_size(Nstates);
-
 }
 
 void basis::init_H2(vec3 corePos1, vec3 corePos2){
@@ -175,7 +174,7 @@ void basis::init_H2(vec3 corePos1, vec3 corePos2){
 }
 
 void basis::init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3){
-    basisSts.clear();
+    //basisSts.clear();
     Nstates = 0;
     Nprimitives = 3;
     nucleusPositions.set_size(3);
@@ -193,7 +192,7 @@ void basis::init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3){
 }
 
 void basis::init_H2Be(vec3 corePos1, vec3 corePos2, vec3 corePos3){
-    basisSts.clear();
+    //basisSts.clear();
     Nstates = 0;
     Nprimitives = 3;
     nucleusPositions.set_size(3);
@@ -207,6 +206,22 @@ void basis::init_H2Be(vec3 corePos1, vec3 corePos2, vec3 corePos3){
     add_atom_STO3G("H", corePos1);
     add_atom_STO3G("H", corePos2);
     add_atom_STO3G("Be", corePos3);
+    set_size(Nstates);
+}
+
+
+void basis::init_O2(vec3 corePos1, vec3 corePos2){
+    //basisSts.clear();
+    Nstates = 0;
+    Nprimitives = 3;
+    nucleusPositions.set_size(2);
+    nucleusCharges.set_size(2);
+    nucleusPositions(0) = corePos1;
+    nucleusPositions(1) = corePos2;
+    nucleusCharges(0) = 8;
+    nucleusCharges(1) = 8;
+    add_atom_STO3G("O", corePos1);
+    add_atom_STO3G("O", corePos2);
     set_size(Nstates);
 }
 
@@ -278,15 +293,15 @@ void basis::add_atom_STO3G(string configuration, vec3 corePos){
         Primitive S2B(turboNormalization(1.1695961,0,0,0)*0.39951283,0,0,0,1.1695961, corePos);
         Primitive S2C(turboNormalization(0.3803890,0,0,0)*0.70011547,0,0,0,0.3803890, corePos);
 
-        Primitive P1A(turboNormalization(5.0331513,1,0,0)*0.15591627,1,0,0,5.0331513, corePos);
-        Primitive P1B(turboNormalization(1.1695961,1,0,0)*0.60768372,1,0,0,1.1695961, corePos);
-        Primitive P1C(turboNormalization(0.3803890,1,0,0)*0.39195739,1,0,0,0.3803890, corePos);
+        Primitive P1A(turboNormalization(5.0331513,0,0,1)*0.15591627,0,0,1,5.0331513, corePos);
+        Primitive P1B(turboNormalization(1.1695961,0,0,1)*0.60768372,0,0,1,1.1695961, corePos);
+        Primitive P1C(turboNormalization(0.3803890,0,0,1)*0.39195739,0,0,1,0.3803890, corePos);
 
         Primitive S1[3] = {S1A,S1B,S1C};
         Primitive S2[3] = {S2A,S2B,S2C};
         Primitive P1[3] = {P1A,P1B,P1C};
 
-        contracted C1 (3,S1);
+        contracted C1(3,S1);
         contracted C2(3,S2);
         contracted C3(3,P1);
 
@@ -556,8 +571,8 @@ void basis::init_STO_3G(string configuration, double nProtons){
         Primitive S2C(turboNormalization(0.3803890,0,0,0)  *0.70011547,0,0,0,0.3803890, {0,0,0});
 
         Primitive P1A(turboNormalization(5.0331513,1,0,0)  *0.15591627,1,0,0,5.0331513, {0,0,0});
-        Primitive P1B(turboNormalization(1.1695961,0,1,0)  *0.60768372,0,1,0,1.1695961, {0,0,0});
-        Primitive P1C(turboNormalization(0.3803890,0,0,1)  *0.39195739,0,0,1,0.3803890, {0,0,0});
+        Primitive P1B(turboNormalization(1.1695961,1,0,0)  *0.60768372,1,0,0,1.1695961, {0,0,0});
+        Primitive P1C(turboNormalization(0.3803890,1,0,0)  *0.39195739,1,0,0,0.3803890, {0,0,0});
 
         Primitive S1[3] = {S1A,S1B,S1C};
         Primitive S2[3] = {S2A,S2B,S2C};
