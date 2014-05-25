@@ -521,7 +521,7 @@ void basis::init_STO_3G(string configuration, double nProtons){
 
     if(configuration == "Be"){
         //basisSet[3];
-        Nstates = 3;
+        Nstates = 5;
         set_size(Nstates);
         Nprimitives = 3;
 
@@ -535,20 +535,34 @@ void basis::init_STO_3G(string configuration, double nProtons){
         Primitive S2C(turboNormalization(0.0993707,0,0,0)*0.70011547,0,0,0,0.0993707, {0,0,0});
 
         Primitive P1A(turboNormalization(1.3148331,1,0,0)*0.15591627,1,0,0,1.3148331,{0,0,0});
-        Primitive P1B(turboNormalization(0.3055389,0,1,0)*0.60768372,0,1,0,0.3055389,{0,0,0});
-        Primitive P1C(turboNormalization(0.0993707,0,0,1)*0.39195739,0,0,1,0.0993707,{0,0,0});
+        Primitive P1B(turboNormalization(0.3055389,1,0,0)*0.60768372,1,0,0,0.3055389,{0,0,0});
+        Primitive P1C(turboNormalization(0.0993707,1,0,0)*0.39195739,1,0,0,0.0993707,{0,0,0});
+
+        Primitive P2A(turboNormalization(1.3148331,0,1,0)*0.15591627,0,1,0,1.3148331,{0,0,0});
+        Primitive P2B(turboNormalization(0.3055389,0,1,0)*0.60768372,0,1,0,0.3055389,{0,0,0});
+        Primitive P2C(turboNormalization(0.0993707,0,1,0)*0.39195739,0,1,0,0.0993707,{0,0,0});
+
+        Primitive P3A(turboNormalization(1.3148331,0,0,1)*0.15591627,0,0,1,1.3148331,{0,0,0});
+        Primitive P3B(turboNormalization(0.3055389,0,0,1)*0.60768372,0,0,1,0.3055389,{0,0,0});
+        Primitive P3C(turboNormalization(0.0993707,0,0,1)*0.39195739,0,0,1,0.0993707,{0,0,0});
 
         Primitive S1[3] = {S1A,S1B,S1C};
         Primitive S2[3] = {S2A,S2B,S2C};
         Primitive P1[3] = {P1A,P1B,P1C};
+        Primitive P2[3] = {P2A,P2B,P2C};
+        Primitive P3[3] = {P3A,P3B,P3C};
 
         contracted C1 (3,S1);
         contracted C2(3,S2);
         contracted C3(3,P1);
+        contracted C4(3,P2);
+        contracted C5(3,P3);
 
         basisSts.push_back(C1);
         basisSts.push_back(C2);
         basisSts.push_back(C3);
+        basisSts.push_back(C4);
+        basisSts.push_back(C5);
     }
 
     if(configuration == "He"){

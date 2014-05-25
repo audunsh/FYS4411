@@ -55,16 +55,14 @@ double hartreefocksolver::solve(){
     setupP();
     iterations = 0;
     setupF();
-    //coupledMatrix.print();
+
     //printMatrices();
-    //cout << "---";
-    //Bs.h.print();
+
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
         energyPrev = energyCalc();
 
         setupF();
-        //cout << evaluateProbabilityDensity({0,0,0}) << endl;
         diagonalizeF();
         normalizeC();
         updateP();

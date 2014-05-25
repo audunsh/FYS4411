@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
         BS.init_STO_3G("Be", nProtons);
         BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
         hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+
         double E = object.solve();                          //solve for the given basis
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
     }
@@ -122,11 +123,11 @@ int main(int argc, char* argv[]) {
 
 
         double x = 0;
-        double x0 = 0.0;
+        double x0 = 1.43;
         double dx = 0.1;
 
         double y = 0;
-        double y0 = 1.5;
+        double y0 = 1.0;
         double dy = 0.1;
 
         vec3 dB1, dB2, dB3;
@@ -137,7 +138,7 @@ int main(int argc, char* argv[]) {
                 y = j*dy + y0;
 
                 corePosH1 = {0.00,0.00,0};
-                corePosH2 = {3.00,0.00,0};
+                corePosH2 = {2.86,0.00,0};
                 corePosO =  {x,y,0};
 
                 dB1 = corePosH1 + molecularCenter;
