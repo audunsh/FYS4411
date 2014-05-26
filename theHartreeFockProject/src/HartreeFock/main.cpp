@@ -44,12 +44,14 @@ int main(int argc, char* argv[]) {
     }
 
     //Some sample calculations
-    if(false){
+    if(true){
         basis BS;
-        int nElectrons = 4;
-        double nProtons = 4;
-        BS.init_STO_3G("Be", nProtons);
+        int nElectrons = 10;
+        double nProtons = 10;
+        //BS.init_STO_3G("Be", nProtons);
+        BS.init_Ne({0,0,0});
         BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
+        BS.printAllContracted();
         hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
         double E = object.solve();                          //solve for the given basis
@@ -72,8 +74,8 @@ int main(int argc, char* argv[]) {
         double dx = 0.1;
 
         double y = 0;
-        double y0 = 0;
-        double dy = 0.1;
+        double y0 = 1;
+        double dy = 0.3;
 
         vec3 dB1, dB2;
 
@@ -82,7 +84,7 @@ int main(int argc, char* argv[]) {
                 x = i*dx + x0;
                 y = j*dy + y0;
 
-                corePosH1 = {.05,.05,0};
+                corePosH1 = {0,.01,0};
                 corePosH2 = {x,y,0};
 
                 dB1 = corePosH1 + molecularCenter;
@@ -90,7 +92,7 @@ int main(int argc, char* argv[]) {
 
                 BS = basis(); //reinitializing class
 
-                BS.init_O2(dB1,dB2);
+                BS.init_O2(dB1, dB2);
                 BS.init_integrals();
 
 
@@ -102,16 +104,16 @@ int main(int argc, char* argv[]) {
                 cout << "series: [ " << i << " | " << j << " ]  " <<   " Energy convergence occurs at " << energies(i,j) << " (a.u.). Distance: " << sqrt(x*x+y*y) << endl;
             }
         }
-        energies.save("H2_006.dataset", raw_ascii);
+        energies.save("Be2_100.dataset", raw_ascii);
         cout << "Calculation complete, file saved to disk." << endl;
 
     }
 
 
-    if(true){
+    if(false){
         //Perform a lowest eigenenergy fit of a H2Be molecule
         basis BS;               //initialize basis object
-        int N = 40;
+        int N = 50;
         mat energies;
 
         int nElectrons = 10;
@@ -121,14 +123,13 @@ int main(int argc, char* argv[]) {
         vec3 corePosH1, corePosH2, corePosO;
         vec3 molecularCenter = {0,0,0};
 
-
         double x = 0;
-        double x0 = 1.43;
-        double dx = 0.1;
+        double x0 = 1.0;
+        double dx = 0.05;
 
         double y = 0;
-        double y0 = 1.0;
-        double dy = 0.1;
+        double y0 = 0;
+        double dy = 0.05;
 
         vec3 dB1, dB2, dB3;
 
@@ -137,9 +138,9 @@ int main(int argc, char* argv[]) {
                 x = i*dx + x0;
                 y = j*dy + y0;
 
-                corePosH1 = {0.00,0.00,0};
-                corePosH2 = {2.86,0.00,0};
-                corePosO =  {x,y,0};
+                corePosH1 = {-x,0.00,0};
+                corePosH2 = {x,0.00,0};
+                corePosO =  {0,y,0};
 
                 dB1 = corePosH1 + molecularCenter;
                 dB2 = corePosH2 + molecularCenter;
@@ -157,7 +158,7 @@ int main(int argc, char* argv[]) {
             cout << " " << endl;
         }
         //energies.print();
-        energies.save("H2_O_007_coreCharge0.dataset", raw_ascii);
+        energies.save("H2O_100.dataset", raw_ascii);
         cout << "Calculation complete, file saved to disk." << endl;
         //double E = energies(0,0);
         //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy

@@ -24,12 +24,17 @@ public:
     void init_STO_3G(string configuration, double nProtons);                       //initialize STO-3G basis set for given configuration
     void init_HTO4(double nProtons);                                //initialize hydrogen type basis with 4 orbitals
     void init_molecule(string configuration, vec nProtons, field<vec> corePos);
+    void printAllContracted();
 
     void init_H2(vec3 corePos1, vec3 corePos2);
     void init_Be2(vec3 corePos1, vec3 corePos2);
     void init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3);
     void init_H2Be(vec3 corePos1, vec3 corePos2, vec3 corePos3);
     void init_O2(vec3 corePos1, vec3 corePos2);
+    void init_O(vec3 corePos1);
+    void init_Ne(vec3 corePos1);
+    void init_He(vec3 corePos1);
+    void init_Be(vec3 corePos1);
 
     void add_atom_STO3G(string configuration, vec3 corePos);
     //void init_Be2(vec3 corePos1, vec3 corePos2);
@@ -44,6 +49,7 @@ public:
     double nnInteraction(); //nucleon-nucleon contribution to energy
 
     //Correction due to normalization factor from the Turbomole format
+    Primitive turbomolePrimitive(double weight, double exponent, int i, int j, int k, vec3 corePos);
     double factorial(double n);
     double turboNormalization(double x, double i, double j ,double k);
     double evaluateContracted(int n, vec3 r);
