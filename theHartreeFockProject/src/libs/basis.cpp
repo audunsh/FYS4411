@@ -110,7 +110,7 @@ double basis::h0(int i, int j){
 }
 
 double basis::state(int p, int q, int r, int s, double D, double Ex){
-    //Explicid spin implementation using direct and exchange term
+    //Explicit spin implementation using direct and exchange term
     double S = 0;
     int s1 = 0; int s2 = 0;int s3 = 0;int s4 = 0;
     s1 = p%2;
@@ -789,7 +789,7 @@ void basis::init_integrals(){
                     for(int n = 0; n < nucleusCharges.size(); n++){
                         //add relevant interaction for each nucleus
                         AB.setupRtuv(nucleusPositions(n));
-                        //cout << nucleusCharges(n)*AB.pNuclei() << endl;
+                        //cout << nucleusCharges(n)<<endl;//*AB.pNuclei() << endl;
                         h(p,q) -= nucleusCharges(n)*AB.pNuclei();
                     }
                     for(int r=0; r<Nstates; r++){
@@ -799,6 +799,7 @@ void basis::init_integrals(){
                                     C = basisSts[r].getPrimitive(k);
                                     D = basisSts[s].getPrimitive(l);
                                     v(p,r)(q,s) += AB.pp(C,D);
+                                    //v(p,q)(r,s) += AB.pp(C,D); //Changed today
                                 }
                             }
                         }
@@ -818,7 +819,7 @@ double basis::factorial(double n){
 }
 
 double basis::turboNormalization(double x, double i, double j, double k){
-    return pow(2*x/pi,0.75)*sqrt(pow(8*x,i+j+k)*factorial(i)*factorial(j)*factorial(k)/(factorial(2*i)*factorial(2*j)*factorial(2*k)));
+    return pow((2*x/pi),0.75)*sqrt(pow(8*x,i+j+k)*factorial(i)*factorial(j)*factorial(k)/(factorial(2*i)*factorial(2*j)*factorial(2*k)));
 }
 
 double basis::evaluateContracted(int n, vec3 r){
