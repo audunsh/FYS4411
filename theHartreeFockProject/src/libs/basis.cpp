@@ -171,6 +171,20 @@ void basis::init_H2(vec3 corePos1, vec3 corePos2){
     set_size(Nstates);
 }
 
+void basis::init_He2(vec3 corePos1, vec3 corePos2){
+    Nstates = 0;
+    Nprimitives = 3;
+    nucleusPositions.set_size(2);
+    nucleusCharges.set_size(2);
+    nucleusPositions(0) = corePos1;
+    nucleusPositions(1) = corePos2;
+    nucleusCharges(0) = 2;
+    nucleusCharges(1) = 2;
+    add_atom_STO3G("He", corePos1);
+    add_atom_STO3G("He", corePos2);
+    set_size(Nstates);
+}
+
 void basis::init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3){
     //basisSts.clear();
     Nstates = 0;
@@ -230,7 +244,7 @@ void basis::init_O(vec3 corePos1){
     nucleusPositions.set_size(1);
     nucleusCharges.set_size(1);
     nucleusPositions(0) = corePos1;
-    nucleusCharges(0) = 8;
+    nucleusCharges(0) = 8.0;
     add_atom_STO3G("O", corePos1);
     set_size(Nstates);
 }
@@ -254,7 +268,7 @@ void basis::init_He(vec3 corePos1){
     nucleusPositions.set_size(1);
     nucleusCharges.set_size(1);
     nucleusPositions(0) = corePos1;
-    nucleusCharges(0) = 2;
+    nucleusCharges(0) = 2.0;
     add_atom_STO3G("He", corePos1);
     set_size(Nstates);
 }
@@ -266,15 +280,16 @@ void basis::init_Be(vec3 corePos1){
     nucleusPositions.set_size(1);
     nucleusCharges.set_size(1);
     nucleusPositions(0) = corePos1;
-    nucleusCharges(0) = 4;
+    nucleusCharges(0) = 4.0;
     add_atom_STO3G("Be", corePos1);
     set_size(Nstates);
 }
 
 
-Primitive basis::turbomolePrimitive(double weight, double exponent, int i, int j, int k, vec3 corePos){
+Primitive basis::turbomolePrimitive(double weight, double exponent, double i, double j, double k, vec3 corePos){
     //return Primitive(turboNormalization(exponent,i,j,k)*weight,i,j,k,exponent,corePos);
     return Primitive(turboNormalization(exponent,i,j,k)*weight,i,j,k,exponent,corePos);
+
 }
 
 void basis::add_atom_STO3G(string configuration, vec3 corePos){
@@ -477,6 +492,8 @@ void basis::add_atom_STO3G(string configuration, vec3 corePos){
         Primitive P1A(turboNormalization(23.19365606,1,0,0)*0.1559162750,1,0,0,23.19365606, corePos);
         Primitive P1B(turboNormalization(5.389706871,1,0,0)*0.6076837186,1,0,0,5.389706871, corePos);
         Primitive P1C(turboNormalization(1.752899952,1,0,0)*0.3919573931,1,0,0,1.752899952, corePos);
+
+
 
         Primitive P2A(turboNormalization(1.4787406220,0,1,0)*0.01058760429,0,1,0,1.4787406220, corePos);
         Primitive P2B(turboNormalization(0.4125648801,0,1,0)*0.59516700530,0,1,0,0.4125648801, corePos);
@@ -763,6 +780,7 @@ double basis::nnInteraction(){
             r = sqrt(Rnn(0)*Rnn(0)+Rnn(1)*Rnn(1)+Rnn(2)*Rnn(2));
             //cout << i << " " << j << ": " << r << endl;
             result += nucleusCharges(i)*nucleusCharges(j)/r;
+
         }
     }
     return result;
@@ -798,8 +816,10 @@ void basis::init_integrals(){
                                 for(int l=0;l<Nprimitives;l++){
                                     C = basisSts[r].getPrimitive(k);
                                     D = basisSts[s].getPrimitive(l);
-                                    //v(p,r)(q,s) += AB.pp(C,D);
-                                    v(p,r)(q,s) += AB.pp(C,D); //Changed 26/5 2014
+                                    //v(p,q)(r,s) += AB.pp(C,D);
+                                    //v(p,r)(q,s) += AB.pp(C,D); //Changed 26/5 2014
+                                    v(p,q)(r,s) += AB.pp(C,D); //Changed 27/5 2014
+                                    //cout << v(p,r)(q,s) << endl;
                                 }
                             }
                         }
@@ -811,8 +831,8 @@ void basis::init_integrals(){
 }
 
 double basis::factorial(double n){
-    double result = 1;
-    for(int i = 1; i<(int) n +1; i++){
+    double result = 1.0;
+    for(double i = 1; i< n +1; i++){
         result *= i;
     }
     return result;
@@ -1143,5 +1163,27 @@ void basis::init_HTO4(double nProtons){
     v(3,3)( 3,1 )= 21252608*sqrt(2)*Z/35595703125;
     v(3,3)( 3,2 )= 413631006610176000*sqrt(3.0)*Z/249430673908303812379.0;
     v(3,3)(3,3)= 19541*Z/524288;
+
+
+    flip_index();
+}
+
+void basis::flip_index(){
+    field<mat> vn(Nstates, Nstates);
+    for (int p = 0; p < Nstates; ++p) {
+        for (int q = 0; q < Nstates; ++q) {
+            vn(p,q) = zeros<mat>(Nstates,Nstates); // fill V with 3x3 mx elements
+        }
+    }
+    for (int p = 0; p < Nstates; ++p) {
+        for (int q = 0; q < Nstates; ++q) {
+            for(int r=0;r<Nstates;++r){
+                for(int s=0;s<Nstates;++s){
+                    vn(p,r)(q,s) = v(p,q)(r,s);
+                }
+            }
+        }
+    }
+    v = vn;
 }
 

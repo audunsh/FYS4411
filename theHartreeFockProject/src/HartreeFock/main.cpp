@@ -46,11 +46,11 @@ int main(int argc, char* argv[]) {
     //Some sample calculations
     if(true){
         basis BS;
-        int nElectrons = 2;
-        double nProtons = 2;
-        //BS.init_STO_3G("Be", nProtons);
-        BS.init_He({0,0,0});
+        int nElectrons = 8;
+        double nProtons =8;
+        BS.init_O({0,0,0});
         BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
+        //BS.init_HTO4(nProtons);
         BS.printAllContracted();
         hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
@@ -106,6 +106,51 @@ int main(int argc, char* argv[]) {
         }
         energies.save("Be2_100.dataset", raw_ascii);
         cout << "Calculation complete, file saved to disk." << endl;
+
+    }
+
+    if(false){
+        //Perform a sweep along a given axis, save array to disk
+
+        basis BS;               //initialize basis object
+        int N = 2;             //Number of calculations
+        vec energies;
+        energies.zeros(N);
+        int nElectrons = 4;
+        double nProtons = 4;
+
+        hartreefocksolver object (BS, nElectrons,nProtons);
+        vec3 corePosH1, corePosH2;
+        vec3 molecularCenter = {0,0,0};
+
+        double x = 0;
+        double x0 = 5.5;
+        double dx = 0.1;
+        vec3 dB1, dB2;
+
+        for(int i=0; i<N;i++){
+            x = i*dx + x0;
+
+            corePosH1 = {0,0,0};
+            corePosH2 = {x,0,0};
+
+            dB1 = corePosH1 + molecularCenter;
+            dB2 = corePosH2 + molecularCenter;
+
+            BS = basis(); //reinitializing class
+
+            BS.init_He2(dB1, dB2);
+            BS.init_integrals();
+
+            object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
+
+            energies(i) = object.solve();
+            cout << "series: [ " << i << " ]  " <<   " Energy convergence occurs at " << energies(i) << " (a.u.). Distance: " << x << endl;
+
+        }
+        //energies.save("Sweep_He2_101.dataset", raw_ascii);
+        cout << "Calculation complete, file saved to disk." << endl;
+
 
     }
 

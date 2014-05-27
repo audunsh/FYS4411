@@ -22,6 +22,7 @@ hartreefocksolver::hartreefocksolver(basis BS, int N, int Z){
     epsilon_prev.zeros(nStates);  //eigenvalues from previous diagonalization
 
     setupCoupledMatrix();  //import particle-particle interaction integrals
+    //setupCoupledMatrix_unused();  //import particle-particle interaction integrals
     setupP();              //set up initial density matrix
     s_diag.zeros(nStates);
 }
@@ -51,11 +52,12 @@ void hartreefocksolver::reset(basis BS, int N, int Z){
 
 double hartreefocksolver::solve(){
     //carefully following the steps laid out on pages 74-77 in Thijssen
+
     setupUnitMatrices();
     setupP();
     iterations = 0;
-    setupF();
 
+    setupF();
     //printMatrices();
 
     while(convergenceCriteria()){
@@ -63,12 +65,14 @@ double hartreefocksolver::solve(){
         energyPrev = energyCalc();
 
         setupF();
+
         diagonalizeF();
         normalizeC();
         updateP();
 
         iterations += 1;
     }
+    cout << "Converged in " << iterations << " iterations." << endl;
     //printMatrices();
     //createDensityMap();
     return energyCalc();
@@ -123,8 +127,8 @@ void hartreefocksolver::setupCoupledMatrix(){
         for (int q = 0; q<n; q++){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
-                    coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s); //alt (1) "Strange" (ALT 1)
-                    //coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s); //alt (1) "Strange" (CHANGED TODAY)
+                    //coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s); //alt (1) "Strange" (ALT 1), working
+                    coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange" (CHANGED TODAY)
 
                 }
             }
@@ -139,7 +143,8 @@ void hartreefocksolver::setupF(){
             F(p,q) = Bs.h(p,q);
             for(int r=0;r<nStates;r++){
                 for(int s=0;s<nStates;s++){
-                    F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(s,r);  //Alt. 1 "Thijssen"
+                    //F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(s,r);  //Alt. 1 "Thijssen"
+                    F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(r,s);  //Alt. 2 27/5 2014
                 }
             }
         }
@@ -156,10 +161,10 @@ double hartreefocksolver::energy(){
     double e0 = 0;
     for(int p = 0; p<nStates;p++){
         for(int q = 0; q<nStates; q++){
-            e0 += P(p,q)*Bs.h(p,q);
+            e0 += P(p,q)*Bs.h(p,q); //inserted a factor of 2
             for(int r = 0; r<nStates;r++){
                 for(int s = 0; s<nStates; s++){
-                    e0 += 0.25*coupledMatrixTilde(p,q,r,s)*P(p,q)*P(r,s);
+                    e0 += 0.25*coupledMatrixTilde(p,q,r,s)*P(p,q)*P(s,r);
                 }
             }
         }
@@ -170,7 +175,8 @@ double hartreefocksolver::energy(){
 double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
     //return direct and exchange term, weigthed to include spin
     //return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,s)(r,q);
-    return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q); //CHANGED TODAY
+    //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q); //WORKING, FAMILY A
+    return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q); //CHANGED 27/5
 }
 
 void hartreefocksolver::setupUnitMatrices(){
@@ -189,6 +195,7 @@ void hartreefocksolver::diagonalizeF(){
     Fprime = V.t()*F*V;
     eig_sym(epsilon, Cprime, Fprime);
     C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
+    //C = V*Cprime;
 }
 
 void hartreefocksolver::normalizeC(){
@@ -202,13 +209,14 @@ void hartreefocksolver::normalizeC(){
 
 void hartreefocksolver::updateP(){
     //construct new density matrix
-    P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
+    //P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
+    P = 2*C*C.t();
 }
 
 bool hartreefocksolver::convergenceCriteria(){
     //Evaluate convergence conditions
     bool condition = true;
-    if(iterations>1000){
+    if(iterations>5000){
         condition = false;
     }
     if(abs(energyPrev-energy())<tolerance){
@@ -264,6 +272,18 @@ void hartreefocksolver::printMatrices(){
     P.print();
     cout << " " << endl;
     cout << "----------------------" << endl;
+
+    cout << "Coupled matrix" << endl;
+    coupledMatrix.print();
+    cout << " " << endl;
+    cout << "----------------------" << endl;
+
+    cout << "Overlap" << endl;
+    Bs.S.print();
+    cout << " " << endl;
+    cout << "----------------------" << endl;
+
+
 
 }
 
