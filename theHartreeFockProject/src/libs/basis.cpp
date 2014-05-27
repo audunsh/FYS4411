@@ -798,8 +798,8 @@ void basis::init_integrals(){
                                 for(int l=0;l<Nprimitives;l++){
                                     C = basisSts[r].getPrimitive(k);
                                     D = basisSts[s].getPrimitive(l);
-                                    v(p,r)(q,s) += AB.pp(C,D);
-                                    //v(p,q)(r,s) += AB.pp(C,D); //Changed today
+                                    //v(p,r)(q,s) += AB.pp(C,D);
+                                    v(p,r)(q,s) += AB.pp(C,D); //Changed 26/5 2014
                                 }
                             }
                         }
