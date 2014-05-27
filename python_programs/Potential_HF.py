@@ -20,10 +20,12 @@ import os
 import subprocess as sub
 import numpy as np
 
+# Default values:
 n = 100             # number of Hartree-Fock calculations (# of core distances R)
 Z = 2               # number of protons in core
 N = 2               # number of electrons orbiting a core
 Ns = 6              # number of single particle states
+
 #----------------------------------------------------------------------------
 
 if (Z == 1):
@@ -132,7 +134,7 @@ plt.legend('F(r)')
 plt.xlabel('r [a.u.]')
 plt.ylabel('Force [units?]')
 if (saveplot == True):
-    name2 = 'force_%s_png' % atom
+    name2 = 'force_%s_.png' % atom
     plt.savefig(name2, format='png')
     
 plt.show(showplot)
