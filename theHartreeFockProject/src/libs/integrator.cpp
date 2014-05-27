@@ -44,6 +44,7 @@ integrator::integrator(Primitive &pA, Primitive &pB, BoysFunction &boysf){
 void integrator::setupEij(){
     Eij.set_size(3);
     int I,J,T;
+
     for(int coord=0;coord<3;coord++){
         I = pAijk(coord);
         J = pBijk(coord);
@@ -51,6 +52,8 @@ void integrator::setupEij(){
         Eij(coord).set_size(I+5,J+5,T+6); //not sure about these values (could be lower)
         Eij(coord).zeros();
         Eij(coord) (1,1,1) = exp(-(a*b/p)*(Xab(coord)*Xab(coord)));
+        //Eij(coord) (1,1,1) = exp(-(a*b/p)*Xab2);
+        //cout << exp(-(a*b/p)*Xab2) << endl;
         for(int i=1;i<I+4;i++){
             for(int t=1;t<T+5; t++){
                 Eij(coord) (i+1,1,t) = Eij(coord) (i,1,t-1)/(2*p) + Xpa(coord)*Eij(coord) (i,1,t) + t* Eij (coord) (i,1,t+1);
@@ -75,6 +78,7 @@ void integrator::setupEcd(){
         T = pCijk(coord)+pDijk(coord);
         Ecd(coord).set_size(I+5,J+5,T+6); //not sure about these values (could be lower)
         Ecd(coord).zeros();
+        //Ecd(coord) (1,1,1) = exp(-(c*d/q)*(Xcd(0)*Xcd(0)+Xcd(1)*Xcd(1)+Xcd(2)*Xcd(2)));
         Ecd(coord) (1,1,1) = exp(-(c*d/q)*(Xcd(coord)*Xcd(coord)));
         for(int i=1;i<I+4;i++){
             for(int t=1;t<T+5; t++){
@@ -117,13 +121,13 @@ void integrator::setupRtuv(vec3 &nucleiPos){
     }
     for(int t=1;t<T+2;t++){
         for(int n=0;n<N+1;n++){
-            Rtuv(n) (t+1,1,1) = t*Rtuv(n+1) (t-1,1,1) + Rpc(0) * Rtuv(n+1) (t,1,1);
+            Rtuv(n) (t+1,1,1) = (t-1)*Rtuv(n+1) (t-1,1,1) + Rpc(0) * Rtuv(n+1) (t,1,1);
         }
     }
     for(int u=1;u<U+2;u++){
         for(int t=1;t<T+2;t++){
             for(int n=0;n<N+1;n++){
-                Rtuv(n) (t,u+1,1) = u*Rtuv(n+1) (t,u-1,1) + Rpc(1) * Rtuv(n+1) (t,u,1);
+                Rtuv(n) (t,u+1,1) = (u-1)*Rtuv(n+1) (t,u-1,1) + Rpc(1) * Rtuv(n+1) (t,u,1);
             }
         }
     }
@@ -131,7 +135,7 @@ void integrator::setupRtuv(vec3 &nucleiPos){
         for(int u=1;u<U+2;u++){
             for(int t=1;t<T+2;t++){
                 for(int n=0;n<N+1;n++){
-                    Rtuv(n) (t,u,v+1) = v*Rtuv(n+1) (t,u,v-1) + Rpc(2) * Rtuv(n+1) (t,u,v);
+                    Rtuv(n) (t,u,v+1) = (v-1)*Rtuv(n+1) (t,u,v-1) + Rpc(2) * Rtuv(n+1) (t,u,v);
                 }
             }
         }
@@ -208,13 +212,21 @@ double integrator::kinetic(){
     //The kinetic integral <pA|T|pB>
     S = sqrt(pi/p);
     for(int coord=0;coord<3;coord++){
+        int i = pAijk(coord);
+        int j = pBijk(coord);
+        //double Sij_2 = Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)+1+2);
         Sijk(coord) = S*Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)+1, 1);
         Tijk(coord) = 4*b*b*S *Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)+3, 1) - 2*b*(2*pBijk(coord)+1)*S*Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)+1, 1);
         if(-1<pBijk(coord)-2){
             Tijk(coord) += pBijk(coord)*(pBijk(coord)-1)*S*Eij(coord) ((int) pAijk(coord)+1, (int) pBijk(coord)-1, 1);
+            //cout << "AA" << endl;
         }
+        //cout << Sijk(coord) << endl;
+        //cout << Tijk(coord) << endl;
     }
+
     return -.5*wA*wB*(Tijk(0)*Sijk(1)*Sijk(2) + Tijk(1)*Sijk(2)*Sijk(0)+Tijk(2)*Sijk(0)*Sijk(1));
+    //return -.5*wA*wB*(Tijk(0) + Tijk(1)+Tijk(2));
 }
 
 double integrator::pNuclei(){

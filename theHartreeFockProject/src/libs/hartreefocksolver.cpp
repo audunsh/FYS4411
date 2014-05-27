@@ -58,11 +58,10 @@ double hartreefocksolver::solve(){
     iterations = 0;
 
     setupF();
-    //printMatrices();
-
+    printMatrices();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
-        energyPrev = energyCalc();
+        energyPrev = energy();
 
         setupF();
 
@@ -71,11 +70,12 @@ double hartreefocksolver::solve(){
         updateP();
 
         iterations += 1;
+        //cout << energy() << endl;
     }
     cout << "Converged in " << iterations << " iterations." << endl;
-    //printMatrices();
+    printMatrices();
     //createDensityMap();
-    return energyCalc();
+    return energy();
 }
 
 double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
@@ -161,7 +161,7 @@ double hartreefocksolver::energy(){
     double e0 = 0;
     for(int p = 0; p<nStates;p++){
         for(int q = 0; q<nStates; q++){
-            e0 += P(p,q)*Bs.h(p,q); //inserted a factor of 2
+            e0 += P(p,q)*Bs.h(p,q);
             for(int r = 0; r<nStates;r++){
                 for(int s = 0; s<nStates; s++){
                     e0 += 0.25*coupledMatrixTilde(p,q,r,s)*P(p,q)*P(s,r);
@@ -210,7 +210,9 @@ void hartreefocksolver::normalizeC(){
 void hartreefocksolver::updateP(){
     //construct new density matrix
     //P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
-    P = 2*C*C.t();
+    //P =C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
+    //P = C*C.t();
+    P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 -1)*C.cols(0, nElectrons/2.0 -1).t();
 }
 
 bool hartreefocksolver::convergenceCriteria(){
@@ -272,6 +274,12 @@ void hartreefocksolver::printMatrices(){
     P.print();
     cout << " " << endl;
     cout << "----------------------" << endl;
+
+    cout << "H matrix" << endl;
+    Bs.h.print();
+    cout << " " << endl;
+    cout << "----------------------" << endl;
+
 
     cout << "Coupled matrix" << endl;
     coupledMatrix.print();

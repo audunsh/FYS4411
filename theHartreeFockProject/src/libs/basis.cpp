@@ -807,7 +807,7 @@ void basis::init_integrals(){
                     for(int n = 0; n < nucleusCharges.size(); n++){
                         //add relevant interaction for each nucleus
                         AB.setupRtuv(nucleusPositions(n));
-                        //cout << nucleusCharges(n)<<endl;//*AB.pNuclei() << endl;
+                        //cout << nucleusCharges(n)*AB.pNuclei() << endl;
                         h(p,q) -= nucleusCharges(n)*AB.pNuclei();
                     }
                     for(int r=0; r<Nstates; r++){
