@@ -20,6 +20,7 @@ TEST(H2_STO3G){
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
+    cout << "H2:" << E << endl;
     //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
     bool B = false;
     double margin = 0.1;
@@ -35,11 +36,13 @@ TEST(He_STO3G){
     basis BS;
     int nElectrons = 2;
     double nProtons = 2;
-    BS.init_STO_3G("He", nProtons);
+    //BS.init_STO_3G("He", nProtons);
+    BS.init_He({0,0,0});
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
     hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
     //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
+
     bool B = false;
     double margin = 0.1;
     double target = -2.904;
