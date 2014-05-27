@@ -55,16 +55,14 @@ double hartreefocksolver::solve(){
     setupP();
     iterations = 0;
     setupF();
-    //coupledMatrix.print();
+
     //printMatrices();
-    //cout << "---";
-    //Bs.h.print();
+
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
         energyPrev = energyCalc();
 
         setupF();
-        //cout << evaluateProbabilityDensity({0,0,0}) << endl;
         diagonalizeF();
         normalizeC();
         updateP();
@@ -125,8 +123,9 @@ void hartreefocksolver::setupCoupledMatrix(){
         for (int q = 0; q<n; q++){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
-                    //coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
-                    coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange"
+                    coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange" (ALT 1)
+                    //coupledMatrix(p, q)(r, s) = Bs.v(p, q)(r, s); //alt (1) "Strange" (CHANGED TODAY)
+
                 }
             }
         }
@@ -171,6 +170,7 @@ double hartreefocksolver::energy(){
 double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
     //return direct and exchange term, weigthed to include spin
     return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,s)(r,q);
+    //return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,q)(s,r); //CHANGED TODAY
 }
 
 void hartreefocksolver::setupUnitMatrices(){

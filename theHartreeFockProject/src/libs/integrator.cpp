@@ -102,6 +102,7 @@ void integrator::setupRtuv(vec3 &nucleiPos){
     vec Aa = {T,U,V};
 
     N = T+U+V;
+    Rtuv = field<cube>(); //This is temporarily inserted to debug the integrator
     Rtuv.set_size(N+2);
 
     Rpc = P - nucleiPos;
@@ -154,6 +155,7 @@ void integrator::setupRtau(){
     //vec Aa = {T,U,V,Tau,Ny,Phi};
 
     N = T+U+V+Tau+Ny+Phi;
+    Rtau = field<cube>(); //This is temporarily inserted to debug the integrator
     Rtau.set_size(N+2);
 
     Rpq2 = Rpq(0)*Rpq(0)+Rpq(1)*Rpq(1)+Rpq(2)*Rpq(2);

@@ -17,28 +17,13 @@ using namespace std;
 using namespace arma;
 
 int main(int argc, char* argv[]) {
-    //NOTE: Had some trouble with git (messed up merge, sorry) so I some changes might have been revertet.
-    //Just update it as you like, only make sure the changes in createDensityMap remains the same as in this commit.
-
-    // argc = lenght of argv[];
-    // argv = [__name__, arg1,arg2,arg3,...arg_argc]
     /**************************************************************************************************************
-    // my thought is to make a python program that calls theHartreeFockProject with values Z,N,Ns and a distance,
-    // this distance is the absoulute distance between two cores. We run the python program for different distances,
-    // and makes a plot of the potential distribution we get from this :-)
-
-    // such a python program is added in the new folder python_programs.
-
-    int Z,N,Ns;
-    double dist;
-    //test
-
-    Z = (int) argv[1];
-    N = (int) argv[2];
-    Ns = (int) argv[3];
-    dist = (double) argv[4];
-    *****************************************************************************************************************/
-    // predefined values, can be set using terminal: ./HartreeFock nProtons nElectrons CoreDist
+     * Hartree-Fock solver with support for gaussian basis sets.
+     * Written in C++ by Audun Skau Hansen & Goran Brekke Svaland
+     * Spring, 2014
+     *
+     * Library Armadillo is required for compilation.
+     **************************************************************************************************************/
     double nProtons  = 2;    // number of protons
     int nElectrons   = 2;    // number of electrons
     double CoreDist  = 1.4;  // Distance between particles 1 and 2.
@@ -57,87 +42,130 @@ int main(int argc, char* argv[]) {
         E = object.solve();                          //solve for the given basis
         cout << E << endl;
     }
-    else{
+
+    //Some sample calculations
+    if(true){
+        basis BS;
+        int nElectrons = 4;
+        double nProtons = 4;
+        //BS.init_STO_3G("Be", nProtons);
+        BS.init_Be({0,0,0});
+        BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
+        BS.printAllContracted();
+        hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+
+        double E = object.solve();                          //solve for the given basis
+        cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
+    }
+    if(false){
+        //Calculate O2 Ground state
         basis BS;               //initialize basis object
-        //BS.add_atom_STO3G();
-
-        //Enable line below to init hydrogenlike orbit (precomputed), remember to disable gaussian orbits in line 49-
-        //BS.init_HTO4(nProtons); //set up hydrogenlike basis
-
-        //From the first part of the project, we obtained He: -2.8315, Be:-14.5055 using 3 of the orbits from the basis below
-        //-2.807, -14.35188 (fra dragly)
-
-        //Enable the two lines below for STO-3G:Be basis
-
-        //BS.init_STO_3G("He", nProtons); //initialize the STO-3G basis for the Beryllium atom (ion 2+ in current config)
-
-        //BS.init_molecule("O", {8}, {0,0,0});
-
-        //BS.init_Be2({0,0,0},{0,CoreDist,0}); //insert parameter dist here (calculation is however still off for molecules)
-        //BS.init_H2({0,0,0},{0,CoreDist,0}); //insert parameter dist here (calculation is however still off for molecules)
-
-        //string filename = "";
-        //BS.init_Be2({2,1.3,0},{2,2.7,0}); //insert parameter dist here (calculation is however still off for molecules)
-        //BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
-        //hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
-        //E = object.solve();                          //solve for the given basis
-        //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;
-
-
-
-        int N = 100;
-        double dist;
+        int N = 33;  //Grid to calculate is NxN
         mat energies;
         energies.zeros(N,N);
-        hartreefocksolver object (BS, 10,8);
-        vec3 corePosH1, corePosH2, corePosO;
-        vec3 molecularCenter = {1,1,0};
+        int nElectrons = 16;
+        double nProtons = 16;
+        hartreefocksolver object (BS, nElectrons,nProtons);
+        vec3 corePosH1, corePosH2;
+        vec3 molecularCenter = {0,0,0};
 
-        double halfDist = 0;
-        double ODist = 0;
-        double d_halfDist = 0.01;
-        double d_ODist = 0.01;
+        double x = 0;
+        double x0 = 0;
+        double dx = 0.1;
+
+        double y = 0;
+        double y0 = 1;
+        double dy = 0.3;
+
+        vec3 dB1, dB2;
+
         for(int i=0; i<N;i++){
             for(int j=0; j<N;j++){
-                object.reset(BS,10,8);
-                halfDist = (j+1)*d_halfDist/2.0;
-                ODist = halfDist*sin(0.660796);
-                cout << halfDist << " " << ODist << endl;
-                //ODist = (i+1)*d_ODist;
-                corePosH1 = {1-halfDist,1,0};
-                corePosH1 = {1+halfDist,1,0};
-                corePosO = {1,1+ODist,0};
-                BS.init_H2O(corePosH1, corePosH2, corePosO);
+                x = i*dx + x0;
+                y = j*dy + y0;
+
+                corePosH1 = {0,.01,0};
+                corePosH2 = {x,y,0};
+
+                dB1 = corePosH1 + molecularCenter;
+                dB2 = corePosH2 + molecularCenter;
+
+                BS = basis(); //reinitializing class
+
+                BS.init_O2(dB1, dB2);
                 BS.init_integrals();
-                hartreefocksolver object(BS, 10,8);
+
+
+                object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
+
+
+
                 energies(i,j) = object.solve();
-                cout << "series:" << i << " -->  At angle:" << 2*asin(halfDist/sqrt(ODist*ODist + halfDist*halfDist)) << " the energy converges at " << energies(i,j) << endl;
+                cout << "series: [ " << i << " | " << j << " ]  " <<   " Energy convergence occurs at " << energies(i,j) << " (a.u.). Distance: " << sqrt(x*x+y*y) << endl;
             }
         }
-        energies.save("angles_20_001.dataset", raw_ascii);
-        double E = energies(0,0);
-        cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
-
-
-
-        /*
-        for(int i=0; i<10;i++){
-
-            BS.init_Be2({2,1.3,0},{2,2.7,0}); //insert parameter dist here (calculation is however still off for molecules)
-            BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
-
-            hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
-
-            E = object.solve();                          //solve for the given basis
-            cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
-            string filename = "Be2_STO3G.dataset";
-            //object.createDensityMap(filename);
-            filename = "Be2_STO3G_";
-            filename += to_string(1);
-            filename += ".dataset";
-        */
+        energies.save("Be2_100.dataset", raw_ascii);
+        cout << "Calculation complete, file saved to disk." << endl;
 
     }
+
+
+    if(false){
+        //Perform a lowest eigenenergy fit of a H2Be molecule
+        basis BS;               //initialize basis object
+        int N = 50;
+        mat energies;
+
+        int nElectrons = 10;
+        double nProtons = 10;
+        energies.zeros(N,N);
+        hartreefocksolver object (BS, nElectrons,nProtons);
+        vec3 corePosH1, corePosH2, corePosO;
+        vec3 molecularCenter = {0,0,0};
+
+        double x = 0;
+        double x0 = 1.0;
+        double dx = 0.05;
+
+        double y = 0;
+        double y0 = 0;
+        double dy = 0.05;
+
+        vec3 dB1, dB2, dB3;
+
+        for(int i=0; i<N;i++){
+            for(int j=0; j<N;j++){
+                x = i*dx + x0;
+                y = j*dy + y0;
+
+                corePosH1 = {-x,0.00,0};
+                corePosH2 = {x,0.00,0};
+                corePosO =  {0,y,0};
+
+                dB1 = corePosH1 + molecularCenter;
+                dB2 = corePosH2 + molecularCenter;
+                dB3 = corePosO  + molecularCenter;
+
+                BS = basis();
+                BS.init_H2O(dB1,dB2,dB3);
+                BS.init_integrals();
+
+                //object.reset(BS,6,6);
+                object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
+                energies(i,j) = object.solve();
+                cout << "series: [ " << i << " | " << j << " ]  " << " At angle:" << setprecision(10) << 2*acos(y/sqrt(y*y + x*x)) << " the energy converges at " << energies(i,j) << " at a absolute distance r = " << sqrt(x*x+y*y) << ". (x,y) = " << "(" << x << "," << y << ")" << endl;
+            }
+            cout << " " << endl;
+        }
+        //energies.print();
+        energies.save("H2O_100.dataset", raw_ascii);
+        cout << "Calculation complete, file saved to disk." << endl;
+        //double E = energies(0,0);
+        //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
+    }
+
+
+
 
     return 0;
 

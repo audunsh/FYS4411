@@ -11,10 +11,108 @@
 
 double pi = 4*atan(1);
 
+TEST(H2_STO3G){
+    //Test H2 hydrogen molecule to given precision using STO-3G basis
+    basis BS;
+    int nElectrons = 2;
+    double nProtons = 2;
+    BS.init_H2({2,1.3,0},{2,2.7,0}); //insert parameter dist here (calculation is however still off for molecules)
+    BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
+    hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    double E = object.solve();                          //solve for the given basis
+    //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
+    bool B = false;
+    double margin = 0.1;
+    double target = -1.175;
+    if(abs(E-target)<=margin){
+        B = true;
+    }
+    CHECK(B);
+}
+
+TEST(He_STO3G){
+    //Test Helium atom to given precision using STO-3G basis
+    basis BS;
+    int nElectrons = 2;
+    double nProtons = 2;
+    BS.init_STO_3G("He", nProtons);
+    BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
+    hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    double E = object.solve();                          //solve for the given basis
+    //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
+    bool B = false;
+    double margin = 0.1;
+    double target = -2.904;
+    if(abs(E-target)<=margin){
+        B = true;
+    }
+    CHECK(B);
+}
+
+/*
+TEST(O_STO3G){
+    //Test Helium atom to given precision using STO-3G basis
+    basis BS;
+    int nElectrons = 8;
+    double nProtons = 8;
+    BS.init_STO_3G("O", nProtons);
+    BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
+    hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    double E = object.solve();                          //solve for the given basis
+    //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
+    bool B = false;
+    double margin = 0.1;
+    double target = -2.904;
+    if(abs(E-target)<=margin){
+        B = true;
+    }
+    CHECK(B);
+}
+
+*/
+
+TEST(Be_Hydrogenlike){
+    //Test Beryllium atom using hydrogenlike basis (provided as a table)
+    basis BS;
+    int nElectrons = 4;
+    double nProtons = 4;
+    BS.init_HTO4(nProtons);
+    hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    double E = object.solve();                          //solve for the given basis
+    //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
+    bool B = false;
+    double margin = 0.2;
+    double target = -14.67;
+    if(abs(E-target)<=margin){
+        B = true;
+    }
+    CHECK(B);
+}
+
+TEST(He_Hydrogenlike){
+    //Test Helium atom using hydrogenlike basis (provided as a table)
+    basis BS;
+    int nElectrons = 2;
+    double nProtons = 2;
+    BS.init_HTO4(nProtons);
+    hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    double E = object.solve();                          //solve for the given basis
+    //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
+    bool B = false;
+    double margin = 0.2;
+    double target = -2.904;
+    if(abs(E-target)<=margin){
+        B = true;
+    }
+    CHECK(B);
+}
+
+
+
 TEST(HFSolve){
 
     // Test HFSolve using the known value of the groundstate energy of Beryllium
-    // as a controll.
+    // as a control.
 
 
 
