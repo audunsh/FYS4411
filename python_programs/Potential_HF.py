@@ -64,14 +64,29 @@ for i in range(len(R)):
         
            
 #----------------------------------------------------------------------------
-# The plotting:
-    
+
+dx = R[1]-R[0]
+F = np.zeros((n,1))
+for i in range(n-1):
+    F[i] = (E[i+1] - E[i])/dx
+
+lenF = len(F)
+
+# The plotting:    
 import matplotlib.pyplot as plt    
 
 h = plt.figure()
 plt.plot(R,E,'b-*')
 plt.title('Potential distribution for the Hydrogen atom')
-plt.legend('E(R)')
-plt.xlabel('R [a.u.]')
+plt.legend('E(r)')
+plt.xlabel('r [a.u.]')
 plt.ylabel('Potential [a.u]')
+
+hh = plt.figure()
+plt.plot(R[0:lenF],F[0:lenF],'r-d')
+plt.title('Force on Hydrogen Atom from another')
+plt.legend('F(r))')
+plt.xlabel('r [a.u.]')
+plt.ylabel('Force [units?]')
+
 plt.show(True)
