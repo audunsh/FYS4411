@@ -20,11 +20,27 @@ import os
 import subprocess as sub
 import numpy as np
 
+# Default values:
 n = 100             # number of Hartree-Fock calculations (# of core distances R)
 Z = 2               # number of protons in core
 N = 2               # number of electrons orbiting a core
 Ns = 6              # number of single particle states
+
 #----------------------------------------------------------------------------
+
+if (Z == 1):
+    atom = 'H'
+elif (Z == 2):
+    atom = 'He'
+elif (Z == 4):
+    atom = 'Be'
+elif (Z == 8):
+    atom = 'O'
+elif (Z == 10):
+    atom = 'Ne'
+else:
+    atom = 'not-specified'
+
 
 current_path =  os.path.realpath("Potential_HF.py")
 path_to_Release = os.path.abspath(os.path.join(current_path, "..", "..", "build-theHartreeFockProject-Desktop-Release"))
@@ -44,6 +60,7 @@ for i in range(len(R)):
 #    returnval = os.popen('LD_LIBRARY_PATH="/home/goranbs/goran/CompPhys/FYS4411 - CompPhys2/build-theHartreeFockProject-Desktop-Release/src/libs/" ~/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Release/src/HartreeFock/HartreeFock %g %g %f' % (Z,N,R[i,0]),"r")
 #    returnval = os.popen('LD_LIBRARY_PATH="/home/goranbs/goran/CompPhys/FYS4411 - CompPhys2/build-theHartreeFockProject-Desktop-Debug/src/libs/" /home/goranbs/goran/CompPhys/FYS4411\ -\ CompPhys2/build-theHartreeFockProject-Desktop-Debug/src/HartreeFock/HartreeFock %g %g %f' % (Z,N,R[i,0]),"r")    
     
+    # args = [#protons, #electrons, #distance from atom]
     args = ["%d" % Z , "%d" % N , "%f" % R[i,0]]
     #print("args = ", args)
     
@@ -64,14 +81,60 @@ for i in range(len(R)):
         
            
 #----------------------------------------------------------------------------
-# The plotting:
-    
+
+dx = R[1]-R[0]
+F = np.zeros((n,1))
+for i in range(n-1):
+    F[i] = (E[i+1] - E[i])/dx
+
+lenF = len(F)
+
+##############################################################################
+# The plotting:    
 import matplotlib.pyplot as plt    
+
+#---------------------------------------------------------------------------
+ShowPlot = raw_input('Show plots? (yes/no): ')
+showplot = False
+saveplot = False
+if (ShowPlot == 'yes' or ShowPlot == 'Yes' or ShowPlot == 'Y' or ShowPlot == 'y' or ShowPlot == 'true' or ShowPlot == 'True'):
+    showplot = True
+    print '----------------------------------------------------------------'
+    print 'Show plot = True'
+    print '----------------------------------------------------------------'
+else:
+    'Plots are not showed'
+    
+SavePlot = raw_input('Save plots? (yes/no): ')
+if (SavePlot == 'yes' or SavePlot == 'Yes' or SavePlot == 'y' or SavePlot == 'Y' or SavePlot == 'true' or SavePlot == 'True'):
+    saveplot = True
+    print 'Saving plots...'
+    print '----------------------------------------------------------------'
+else:
+    print 'Plots are not saved'
+    #---------------------------------------------------------------------------
 
 h = plt.figure()
 plt.plot(R,E,'b-*')
-plt.title('Potential distribution for the Hydrogen atom')
-plt.legend('E(R)')
-plt.xlabel('R [a.u.]')
+plt.hold(True)
+plt.plot(R,np.zeros(np.size(R)),'r-')
+plt.title('Potential distribution for the %s atom. Z=%g, N=%g' % (atom,Z,N))
+plt.legend(('E(r)','0'))
+plt.xlabel('r [a.u.]')
 plt.ylabel('Potential [a.u]')
-plt.show(True)
+if (saveplot == True):
+    name1 = 'potential_%s_.png' % atom
+    plt.savefig(name1, format='png')
+    
+
+hh = plt.figure()
+plt.plot(R[0:lenF],F[0:lenF],'r-d')
+plt.title('Force on %s atom from another. Z=%g, N=%g' % (atom,Z,N))
+plt.legend('F(r)')
+plt.xlabel('r [a.u.]')
+plt.ylabel('Force [units?]')
+if (saveplot == True):
+    name2 = 'force_%s_.png' % atom
+    plt.savefig(name2, format='png')
+    
+plt.show(showplot)
