@@ -58,7 +58,7 @@ double hartreefocksolver::solve(){
     iterations = 0;
 
     setupF();
-    printMatrices();
+    //printMatrices();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
         energyPrev = energy();
@@ -73,7 +73,7 @@ double hartreefocksolver::solve(){
         //cout << energy() << endl;
     }
     cout << "Converged in " << iterations << " iterations." << endl;
-    printMatrices();
+    //printMatrices();
     //createDensityMap();
     return energy();
 }

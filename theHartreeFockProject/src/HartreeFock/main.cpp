@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
         cout << Nucl << " " << Kine << " " << Nucl+Kine << endl;
 
     }
-    if(true){
+    if(false){
         basis BS;
         int nElectrons = 8;
         double nProtons =8;
@@ -200,14 +200,14 @@ int main(int argc, char* argv[]) {
     }
 
 
-    if(false){
+    if(true){
         //Perform a lowest eigenenergy fit of a H2Be molecule
         basis BS;               //initialize basis object
-        int N = 50;
+        int N = 100;
         mat energies;
 
-        int nElectrons = 10;
-        double nProtons = 10;
+        int nElectrons = 8;
+        double nProtons = 8;
         energies.zeros(N,N);
         hartreefocksolver object (BS, nElectrons,nProtons);
         vec3 corePosH1, corePosH2, corePosO;
@@ -215,11 +215,11 @@ int main(int argc, char* argv[]) {
 
         double x = 0;
         double x0 = 1.0;
-        double dx = 0.05;
+        double dx = 0.025;
 
         double y = 0;
         double y0 = 0;
-        double dy = 0.05;
+        double dy = 0.025;
 
         vec3 dB1, dB2, dB3;
 
@@ -248,7 +248,7 @@ int main(int argc, char* argv[]) {
             cout << " " << endl;
         }
         //energies.print();
-        energies.save("H2O_100.dataset", raw_ascii);
+        energies.save("H2O_200.dataset", raw_ascii);
         cout << "Calculation complete, file saved to disk." << endl;
         //double E = energies(0,0);
         //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
