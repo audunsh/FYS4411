@@ -102,6 +102,26 @@ int main(int argc, char* argv[]) {
         double E = object.solve();                          //solve for the given basis
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
     }
+
+    if(false){
+        //create density plot of H2O
+        double xCenter = 6.0;
+        double yCenter = 3.2;
+
+        basis BS;
+        int nElectrons = 10;
+        double nProtons =10;
+        BS.init_H2O({xCenter-1.7,yCenter,0},{xCenter+1.7,yCenter,0},{xCenter,yCenter+0.95,0});
+        BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
+        //BS.init_HTO4(nProtons);
+        //BS.printAllContracted();
+        hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+
+        double E = object.solve();                          //solve for the given basis
+        object.createDensityMap("H2O_density_map4.dataset");
+        cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
+    }
+
     if(false){
         //Calculate O2 Ground state
         basis BS;               //initialize basis object
@@ -201,12 +221,12 @@ int main(int argc, char* argv[]) {
 
 
     if(true){
-        //Perform a lowest eigenenergy fit of a H2Be molecule
+        //Perform a lowest eigenenergy fit of a H2O molecule
         basis BS;               //initialize basis object
-        int N = 100;
+        int N = 130;
         mat energies;
 
-        int nElectrons = 8;
+        int nElectrons = 10;
         double nProtons = 8;
         energies.zeros(N,N);
         hartreefocksolver object (BS, nElectrons,nProtons);
@@ -214,12 +234,12 @@ int main(int argc, char* argv[]) {
         vec3 molecularCenter = {0,0,0};
 
         double x = 0;
-        double x0 = 1.0;
-        double dx = 0.025;
+        double x0 = 0.5;
+        double dx = 0.01;
 
         double y = 0;
-        double y0 = 0;
-        double dy = 0.025;
+        double y0 = 0.0;
+        double dy = 0.01;
 
         vec3 dB1, dB2, dB3;
 
@@ -228,9 +248,9 @@ int main(int argc, char* argv[]) {
                 x = i*dx + x0;
                 y = j*dy + y0;
 
-                corePosH1 = {-x,0.00,0};
-                corePosH2 = {x,0.00,0};
-                corePosO =  {0,y,0};
+                corePosH1 = {0,-x,0};
+                corePosH2 = {0,x,0};
+                corePosO =  {y,0,0};
 
                 dB1 = corePosH1 + molecularCenter;
                 dB2 = corePosH2 + molecularCenter;
@@ -248,7 +268,7 @@ int main(int argc, char* argv[]) {
             cout << " " << endl;
         }
         //energies.print();
-        energies.save("H2O_200.dataset", raw_ascii);
+        energies.save("H2O_206.dataset", raw_ascii);
         cout << "Calculation complete, file saved to disk." << endl;
         //double E = energies(0,0);
         //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy

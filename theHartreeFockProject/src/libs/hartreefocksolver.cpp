@@ -61,7 +61,7 @@ double hartreefocksolver::solve(){
     //printMatrices();
     while(convergenceCriteria()){
         epsilon_prev = epsilon;
-        energyPrev = energy();
+        energyPrev = energyCalc();
 
         setupF();
 
@@ -75,7 +75,7 @@ double hartreefocksolver::solve(){
     cout << "Converged in " << iterations << " iterations." << endl;
     //printMatrices();
     //createDensityMap();
-    return energy();
+    return energyCalc();
 }
 
 double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
@@ -89,8 +89,8 @@ double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
 }
 
 void hartreefocksolver::createDensityMap(string filename){
-    int dim=256;
-    double dx = 0.032;
+    int dim=1000;
+    double dx = 0.01;
     double dV = dx*dx*dx;
     densityMap.zeros(dim,dim,dim);
     mat densitySlice;
@@ -108,7 +108,7 @@ void hartreefocksolver::createDensityMap(string filename){
         }
     }
     //densityMap.print();
-    //densityMap.save("testmap2", raw_ascii);
+    //densityMap.save("testmap3", raw_ascii);
     //densitySlice.print();
     densitySlice.save(filename, raw_ascii);
 
