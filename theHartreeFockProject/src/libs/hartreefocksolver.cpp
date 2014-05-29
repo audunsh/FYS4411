@@ -72,7 +72,7 @@ double hartreefocksolver::solve(){
         iterations += 1;
         //cout << energy() << endl;
     }
-    cout << "Converged in " << iterations << " iterations." << endl;
+    //cout << "Converged in " << iterations << " iterations." << endl;
     //printMatrices();
     //createDensityMap();
     return energyCalc();
