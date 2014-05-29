@@ -27,22 +27,99 @@ int main(int argc, char* argv[]) {
     double nProtons  = 2;    // number of protons
     int nElectrons   = 2;    // number of electrons
     double CoreDist  = 1.4;  // Distance between particles 1 and 2.
+    string atomType;         // Example of atomType: Helium.
+    int val = 1;
     double E = 0.0;
-    if (argc == 4) {
+    //cout << argc << endl;
+    //cout << argv[0] << argv[1] << argv[2] << argv[3] << argv[4] << endl;
+    if (argc == 5) {
         nProtons = atoi(argv[1]);
         nElectrons = atoi(argv[2]);
         CoreDist = atof(argv[3]);
+        atomType = (argv[4]);
         //cout << "nProtons = " << nProtons << " nElectrons= " << nElectrons << " CoreDist= " << CoreDist << endl;
         basis BS;               //initialize basis object
+        //cout << "atomType = " << atomType << endl;
 
-        BS.init_H2({0,0,0},{CoreDist,0,0}); //insert parameter dist here (calculation is however still off for molecules)
-        BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
-        hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+        if (atomType == "H"){
+           BS.init_H2({0,0,0},{CoreDist,0,0}); //insert parameter dist here (calculation is however still off for molecules)
+        }
+        else if (atomType == "He") {
+            BS.init_He2({0,0,0},{CoreDist,0,0});
+        }
+        else if (atomType == "Be"){
+            BS.init_Be2({0,0,0},{CoreDist,0,0});
+        }
+        else if (atomType == "O"){
+            BS.init_O2({0,0,0},{CoreDist,0,0});
+        }
+        else{
+            cout << "We have currently not " << atomType << " in our system" << endl;
+            cout << "sys.exit..." << endl;
+            val = 0;
+        }
 
-        E = object.solve();                          //solve for the given basis
-        cout << E << endl;
+        if (val == 1){
+            BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
+            hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+
+<<<<<<< HEAD
+=======
+            E = object.solve();                          //solve for the given basis
+            cout << E << endl;
+            //cout << atomType << endl;
+        }
     }
+    else{
+        cout << "False!!!" << endl;
+    }
+    //Some sample calculations
+    if(false){
+        //some simple integral tests
+        Primitive primitiveA(1.67545, 1, 0, 0, 5.03315,{0,0,0});
+        Primitive primitiveB(1.05357, 1, 0, 0, 1.1696,{0,0,0});
+        Primitive primitiveC(0.166903, 1, 0, 0, 0.380389,{0,0,0});
+        //-1.9610 (Auduns feil)
+        //-6.4507 (Milads rett)
 
+        BoysFunction boys(1);
+        integrator AB1(primitiveA, primitiveB, boys);
+        integrator AB2(primitiveB, primitiveA, boys);
+        integrator AB3(primitiveA, primitiveC, boys);
+        integrator AB4(primitiveC, primitiveA, boys);
+        integrator AB5(primitiveB, primitiveC, boys);
+        integrator AB6(primitiveC, primitiveB, boys);
+        integrator AB7(primitiveB, primitiveB, boys);
+        integrator AB8(primitiveA, primitiveA, boys);
+        integrator AB9(primitiveC, primitiveC, boys);
+
+        vec3 corePos = {0,0,0};
+        AB1.setupRtuv(corePos);
+        AB2.setupRtuv(corePos);
+        AB3.setupRtuv(corePos);
+        AB4.setupRtuv(corePos);
+        AB5.setupRtuv(corePos);
+        AB6.setupRtuv(corePos);
+        AB7.setupRtuv(corePos);
+        AB8.setupRtuv(corePos);
+        AB9.setupRtuv(corePos);
+        cout << -8*AB1.pNuclei()+AB1.kinetic() << endl;
+        cout << -8*AB2.pNuclei()+AB2.kinetic() << endl;
+        cout << -8*AB3.pNuclei()+AB3.kinetic() << endl;
+        cout << -8*AB4.pNuclei()+AB4.kinetic() << endl;
+        cout << -8*AB5.pNuclei()+AB5.kinetic() << endl;
+        cout << -8*AB6.pNuclei()+AB6.kinetic() << endl;
+        cout << -8*AB7.pNuclei()+AB7.kinetic() << endl;
+        cout << -8*AB8.pNuclei()+AB8.kinetic() << endl;
+        cout << -8*AB9.pNuclei()+AB9.kinetic() << endl;
+        //double Nucl = -8*(AB1.pNuclei()+AB2.pNuclei()+AB3.pNuclei()+AB4.pNuclei()+AB5.pNuclei()+AB6.pNuclei()+AB7.pNuclei()+AB8.pNuclei()+AB9.pNuclei());
+        //double Kine = AB1.kinetic() + AB2.kinetic() + AB3.kinetic()+AB4.kinetic()+AB5.kinetic()+AB6.kinetic()+AB7.kinetic()+AB8.kinetic()+AB9.kinetic();
+        double Nucl = -8*(AB1.pNuclei()+AB2.pNuclei()+AB3.pNuclei()+AB4.pNuclei()+AB5.pNuclei()+AB6.pNuclei()+AB7.pNuclei()+AB8.pNuclei()+AB9.pNuclei());
+        double Kine = AB1.kinetic() + AB2.kinetic() + AB3.kinetic()+AB4.kinetic()+AB5.kinetic()+AB6.kinetic()+AB7.kinetic()+AB8.kinetic()+AB9.kinetic();
+        cout << Nucl << " " << Kine << " " << Nucl+Kine << endl;
+
+    }
+>>>>>>> 0140c08f5b85ee0f9ff1445c21da289d46294147
     if(false){
         basis BS;
         int nElectrons = 8;
@@ -174,10 +251,10 @@ int main(int argc, char* argv[]) {
     }
 
 
-    if(true){
+    if(false){
         //Perform a lowest eigenenergy fit of a H2O molecule
         basis BS;               //initialize basis object
-        int N = 130;
+        int N = 25;
         mat energies;
 
         int nElectrons = 10;
@@ -188,12 +265,12 @@ int main(int argc, char* argv[]) {
         vec3 molecularCenter = {0,0,0};
 
         double x = 0;
-        double x0 = 0.5;
-        double dx = 0.01;
+        double x0 = 1.3;
+        double dx = 0.02;
 
         double y = 0;
-        double y0 = 0.0;
-        double dy = 0.01;
+        double y0 = 0.8;
+        double dy = 0.02;
 
         vec3 dB1, dB2, dB3;
 
@@ -202,9 +279,9 @@ int main(int argc, char* argv[]) {
                 x = i*dx + x0;
                 y = j*dy + y0;
 
-                corePosH1 = {0,-x,0};
-                corePosH2 = {0,x,0};
-                corePosO =  {y,0,0};
+                corePosH1 = {-x,0,0};
+                corePosH2 = {x,0,0};
+                corePosO =  {0,y,0};
 
                 dB1 = corePosH1 + molecularCenter;
                 dB2 = corePosH2 + molecularCenter;
@@ -222,7 +299,7 @@ int main(int argc, char* argv[]) {
             cout << " " << endl;
         }
         //energies.print();
-        energies.save("H2O_206.dataset", raw_ascii);
+        energies.save("H2O_208.dataset", raw_ascii);
         cout << "Calculation complete, file saved to disk." << endl;
         //double E = energies(0,0);
         //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
