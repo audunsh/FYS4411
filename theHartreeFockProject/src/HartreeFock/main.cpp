@@ -43,52 +43,6 @@ int main(int argc, char* argv[]) {
         cout << E << endl;
     }
 
-    //Some sample calculations
-    if(false){
-        //some simple integral tests
-        Primitive primitiveA(1.67545, 1, 0, 0, 5.03315,{0,0,0});
-        Primitive primitiveB(1.05357, 1, 0, 0, 1.1696,{0,0,0});
-        Primitive primitiveC(0.166903, 1, 0, 0, 0.380389,{0,0,0});
-        //-1.9610 (Auduns feil)
-        //-6.4507 (Milads rett)
-
-        BoysFunction boys(1);
-        integrator AB1(primitiveA, primitiveB, boys);
-        integrator AB2(primitiveB, primitiveA, boys);
-        integrator AB3(primitiveA, primitiveC, boys);
-        integrator AB4(primitiveC, primitiveA, boys);
-        integrator AB5(primitiveB, primitiveC, boys);
-        integrator AB6(primitiveC, primitiveB, boys);
-        integrator AB7(primitiveB, primitiveB, boys);
-        integrator AB8(primitiveA, primitiveA, boys);
-        integrator AB9(primitiveC, primitiveC, boys);
-
-        vec3 corePos = {0,0,0};
-        AB1.setupRtuv(corePos);
-        AB2.setupRtuv(corePos);
-        AB3.setupRtuv(corePos);
-        AB4.setupRtuv(corePos);
-        AB5.setupRtuv(corePos);
-        AB6.setupRtuv(corePos);
-        AB7.setupRtuv(corePos);
-        AB8.setupRtuv(corePos);
-        AB9.setupRtuv(corePos);
-        cout << -8*AB1.pNuclei()+AB1.kinetic() << endl;
-        cout << -8*AB2.pNuclei()+AB2.kinetic() << endl;
-        cout << -8*AB3.pNuclei()+AB3.kinetic() << endl;
-        cout << -8*AB4.pNuclei()+AB4.kinetic() << endl;
-        cout << -8*AB5.pNuclei()+AB5.kinetic() << endl;
-        cout << -8*AB6.pNuclei()+AB6.kinetic() << endl;
-        cout << -8*AB7.pNuclei()+AB7.kinetic() << endl;
-        cout << -8*AB8.pNuclei()+AB8.kinetic() << endl;
-        cout << -8*AB9.pNuclei()+AB9.kinetic() << endl;
-        //double Nucl = -8*(AB1.pNuclei()+AB2.pNuclei()+AB3.pNuclei()+AB4.pNuclei()+AB5.pNuclei()+AB6.pNuclei()+AB7.pNuclei()+AB8.pNuclei()+AB9.pNuclei());
-        //double Kine = AB1.kinetic() + AB2.kinetic() + AB3.kinetic()+AB4.kinetic()+AB5.kinetic()+AB6.kinetic()+AB7.kinetic()+AB8.kinetic()+AB9.kinetic();
-        double Nucl = -8*(AB1.pNuclei()+AB2.pNuclei()+AB3.pNuclei()+AB4.pNuclei()+AB5.pNuclei()+AB6.pNuclei()+AB7.pNuclei()+AB8.pNuclei()+AB9.pNuclei());
-        double Kine = AB1.kinetic() + AB2.kinetic() + AB3.kinetic()+AB4.kinetic()+AB5.kinetic()+AB6.kinetic()+AB7.kinetic()+AB8.kinetic()+AB9.kinetic();
-        cout << Nucl << " " << Kine << " " << Nucl+Kine << endl;
-
-    }
     if(false){
         basis BS;
         int nElectrons = 8;
@@ -227,7 +181,7 @@ int main(int argc, char* argv[]) {
         mat energies;
 
         int nElectrons = 10;
-        double nProtons = 8;
+        double nProtons = 10;
         energies.zeros(N,N);
         hartreefocksolver object (BS, nElectrons,nProtons);
         vec3 corePosH1, corePosH2, corePosO;
