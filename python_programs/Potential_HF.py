@@ -22,8 +22,8 @@ import numpy as np
 
 # Default values:
 n = 100             # number of Hartree-Fock calculations (# of core distances R)
-Z = 8               # number of protons in core
-N = 8               # number of electrons orbiting a core
+Z = 16              # total number of protons in system core(s)
+N = 16              # total number of electrons orbiting in the system
 Ns = 6              # number of single particle states
 
 val1 = 0
@@ -33,21 +33,21 @@ x_list = [2,3,8,10,12,14,16,18]
 Atom = 'some_atom'
 #----------------------------------------------------------------------------
 
-if (Z == 1):
+if (Z == 2):
     atom = 'H'
-    Atom = 'Hydrogene'
-elif (Z == 2):
-    atom = 'He'
-    Atom = 'Helium'
+    Atom = 'two Hydrogene atoms'
 elif (Z == 4):
-    atom = 'Be'
-    Atom = 'Beryllium'
+    atom = 'He'
+    Atom = 'Two Helium atoms'
 elif (Z == 8):
+    atom = 'Be'
+    Atom = 'Two Beryllium atoms'
+elif (Z == 16):
     atom = 'O'
-    Atom = 'Oxygene'
-elif (Z == 10):
+    Atom = 'Two Oxygene atoms'
+elif (Z == 20):
     atom = 'Ne'
-    Atom = 'Neon'
+    Atom = 'Two Neon atoms'
 else:
     atom = 'not-specified'
     Atom = 'not-specified'
@@ -69,13 +69,15 @@ R = np.zeros((n,1))
 E = np.zeros((n,1))
 
 for i in range(len(R)):
-    R[i] = (1+i)*0.1   # just changing the x-position
+    R[i] = (1+i)*0.05   # just changing the x-position
     
     print i
     # args = [#protons, #electrons, #distance from atom]
     args = ["%d" % Z , "%d" % N , "%f" % R[i,0], atom]
     #print("args = ", args)
     En = sub.check_output(["./HartreeFock", args[0], args[1], args[2], args[3]], cwd=path_to_HartreeFock)
+    #En = sub.check_output(["./HartreeFock", '2', '2', args[2], args[3]], cwd=path_to_HartreeFock)
+
     #print En
     E[i] = float(En)    
            

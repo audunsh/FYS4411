@@ -63,8 +63,6 @@ int main(int argc, char* argv[]) {
             BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
             hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
-<<<<<<< HEAD
-=======
             E = object.solve();                          //solve for the given basis
             cout << E << endl;
             //cout << atomType << endl;
@@ -119,7 +117,7 @@ int main(int argc, char* argv[]) {
         cout << Nucl << " " << Kine << " " << Nucl+Kine << endl;
 
     }
->>>>>>> 0140c08f5b85ee0f9ff1445c21da289d46294147
+
     if(false){
         basis BS;
         int nElectrons = 8;
