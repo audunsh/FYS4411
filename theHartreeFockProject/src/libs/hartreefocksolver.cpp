@@ -127,7 +127,7 @@ void hartreefocksolver::setupCoupledMatrix(){
         for (int q = 0; q<n; q++){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
-                    //coupledMatrix(p, r)(q, s) = Bs.v(p, r)(q, s); //alt (1) "Strange" (ALT 1), working
+                    //(p, r)(q, s) = Bs.v(p, r)(q, s); //alt (1) "Strange" (ALT 1), working
                     coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange" (CHANGED TODAY)
 
                 }
