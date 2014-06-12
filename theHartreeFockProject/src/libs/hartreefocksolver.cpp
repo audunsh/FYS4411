@@ -75,6 +75,7 @@ double hartreefocksolver::solve(){
     //cout << "Converged in " << iterations << " iterations." << endl;
     //printMatrices();
     //createDensityMap();
+    //return iterations;
     return energyCalc();
 }
 
@@ -187,7 +188,8 @@ void hartreefocksolver::setupUnitMatrices(){
 
 void hartreefocksolver::setupP(){
     //setup density matrix, make a first guess
-    P.zeros(); //we don't have any reason to do this any other ways yet.
+    //P.zeros(); //we don't have any reason to do this any other ways yet.
+    P.eye();
 }
 
 void hartreefocksolver::diagonalizeF(){

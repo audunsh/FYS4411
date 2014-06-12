@@ -59,7 +59,7 @@ private:
 
     double energyPrev = 10e10;
     double tolerance = 10e-10;
-    double dampingFactor = 0.5;
+    double dampingFactor = 0.95;
 };
 
 #endif // HARTREEFOCKSOLVER_H

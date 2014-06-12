@@ -21,12 +21,12 @@ import subprocess as sub
 import numpy as np
 
 # Default values:
-n = 200             # number of Hartree-Fock calculations (# of core distances R)
-Z = 4               # total number of protons in system core(s)
-N = 4               # total number of electrons orbiting in the system
+n = 400             # number of Hartree-Fock calculations (# of core distances R)
+Z = 16               # total number of protons in system core(s)
+N = 16               # total number of electrons orbiting in the system
 Ns = 6              # number of single particle states
 dr = 0.01           # distance step, for every iteration.
-R_start = 0.29      # From what distance between the atoms should we begin? R_start = R_start + dr!
+R_start = 1.1       # From what distance between the atoms should we begin? R_start = R_start + dr!
 FontSize = 14       # Font size
 FontType = 'sans-serif'
 
@@ -78,7 +78,7 @@ index = 0
 # finding the minimum value:
 
 for i in range(len(R)):
-    R[i] = R_start + (1+i)*0.01   # just changing the x-position
+    R[i] = R_start + (1+i)*dr   # just changing the x-position
     
     print i
     # args = [#protons, #electrons, #distance from atom]
@@ -111,6 +111,7 @@ print '----------------------------------------------------------------'
 print 'min energy values:'
 print E_min
 print min(E)
+print 'Bond length=%.4f' % R[index]
 print Reached_min_value
 print '----------------------------------------------------------------'
 ##############################################################################
@@ -150,7 +151,7 @@ plt.plot(R,E,'b-*')
 plt.hold(True)
 plt.plot(R,np.zeros(np.size(R)),'r-')
 plt.plot(R[index],E[index],'y-d')
-plt.title('Potential of the %s system. Z=%g, N=%g. Um = %.3f' % (Atom,Z,N,E_min))
+plt.title('Potential of the %s system. Um = %.3f, bond length = %.3f' % (Atom,E_min,R[index]))
 plt.legend(('E(r)','0','Um'))
 plt.xlabel(('r [a.u.]'),fontsize=FontSize)
 plt.ylabel('Potential [a.u]')
@@ -161,7 +162,7 @@ if (saveplot == True):
 
 hh = plt.figure()
 plt.plot(R[0:lenF-1],F[0:lenF-1],'r-d')
-plt.title('Force on %s atom from another. Z=%g, N=%g' % (atom,Z,N))
+plt.title('Force on %s atom from another. Um = %.3f, bond length = %.3f' % (Atom,E_min,R[index]))
 plt.legend(('F(r)'))
 plt.xlabel(('r [a.u.]'))
 plt.ylabel('Force [a.u.]')
