@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
         }
     }
     else{
-        cout << "False!!!" << endl;
+        cout << "No system arguments, performing predefined computations." << endl;
     }
     //Some sample calculations
     if(false){
