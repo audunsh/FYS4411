@@ -30,18 +30,22 @@ public:
     void createDensityMap(string filename);
     void reset(basis BS, int N, int Z);
 
-private:
+    //Trying to make some objects availabe to external classes, rammifications unknown
+    mat C;      //Coefficient matric
+    field<mat> coupledMatrix;
+    mat F;      //Fock matrix
+    int nElectrons; //number of electrons
+    int nStates;    //number of states
     basis Bs;
 
-    field<mat> coupledMatrix;
-
+private:
     cube densityMap;
 
     mat V;      //Transformation matrix
     mat P;      //Density matrix
     mat P_prev; //previous density matrix
-    mat F;      //Fock matrix
-    mat C;      //Coefficient matric
+
+
     mat Fprime; //transformed Fock matrix
     mat Cprime; //transformed Coefficient matric
 
@@ -52,8 +56,7 @@ private:
     vec epsilon_prev; //eigenvalues from previous diagonalization
     vec s_diag;       //diagonalized S matrix
 
-    int nElectrons; //number of electrons
-    int nStates;    //number of states
+
     int nProtons;   //number of protons, can be removed
     int iterations; //number of iterations (counter)
 

@@ -10,6 +10,7 @@
 #include <hfsolve.h>
 #include <contracted.h>
 #include <hartreefocksolver.h>
+#include <ccsolve.h>
 
 double pi = 4*atan(1);
 
@@ -151,6 +152,28 @@ int main(int argc, char* argv[]) {
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
     }
 
+    if(true){
+        //Calculate H2 Ground state energy
+        basis BS;
+        int nElectrons = 2;
+        int nProtons = 2;
+
+        vec3 corePosH1 = {0,0,0};
+        vec3 corePosH2 = {0,0,1.4};
+        BS.init_O2(corePosH1, corePosH2);
+        BS.nucleusCharges(0) = 1;
+        BS.nucleusCharges(1) = 1;
+        BS.nucleusCharges.print();
+        BS.init_integrals();
+        hartreefocksolver object (BS, nElectrons, nProtons);
+        double energy = object.solve();
+        cout << "Hartree-Fock energy:" << energy << endl;
+        ccsolve ccobject (object, nElectrons);
+
+
+
+
+    }
     if(false){
         //Calculate O2 Ground state
         basis BS;               //initialize basis object

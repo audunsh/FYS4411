@@ -56,12 +56,15 @@ public:
     double turboNormalization(double x, double i, double j ,double k);
     double evaluateContracted(int n, vec3 r);
 
+    //Need to access this externally, temporarily
+    vec nucleusCharges;
+
 
 private:
     contracted basisSet[]; //use one of these...
     vector<contracted> basisSts; //use one of these...
     field<vec3> nucleusPositions;
-    vec nucleusCharges;
+
     int nNucelons;
     int Nprimitives;
     double pi = 4*atan(1);

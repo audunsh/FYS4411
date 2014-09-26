@@ -36,7 +36,10 @@ void hartreefocksolver::reset(basis BS, int N, int Z){
     nProtons = Z;                //set number of protons, may be removed
 
     //initializing all matrices and vectors
-    C.zeros(nStates,nElectrons/2);//set initial C equal to the unit matrix
+    //C.zeros(nStates,nElectrons/2);//set initial C equal to the unit matrix
+    C.zeros(nStates,nStates); // Alternating between these two, alteration made to implement CoupledCluster extension of code
+
+
     F.zeros(nStates,nStates);     //initialize Fock matrix
     P.zeros(nStates,nStates);     //initialize Density matrix
     U.zeros(nStates,nStates);     //initialize Unitary matrix
@@ -196,14 +199,20 @@ void hartreefocksolver::diagonalizeF(){
     //diagonalize the Fock matrix
     Fprime = V.t()*F*V;
     eig_sym(epsilon, Cprime, Fprime);
-    C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
-    //C = V*Cprime;
+    //C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
+    C = V*Cprime; //alternating between these two to implement coupled cluster calculations (need virtual orbitals)
 }
 
 void hartreefocksolver::normalizeC(){
     //Normalize the coefficient matrix
     double norm;
-    for(int i = 0; i<nElectrons/2;i++){
+    //for(int i = 0; i<nElectrons/2;i++){
+    //    norm = dot(C.col(i),Bs.S*C.col(i));
+    //    C.col(i) = C.col(i)/sqrt(norm);
+    //}
+
+    //Again, alternating the above with the following, as a preparation for the coupled cluster calculations:
+    for(int i = 0; i<nStates;i++){
         norm = dot(C.col(i),Bs.S*C.col(i));
         C.col(i) = C.col(i)/sqrt(norm);
     }
