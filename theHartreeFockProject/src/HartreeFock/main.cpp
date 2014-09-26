@@ -165,11 +165,12 @@ int main(int argc, char* argv[]) {
         //BS.nucleusCharges(1) = 1;
         //BS.nucleusCharges.print();
         BS.init_integrals();
-        BS.h.print();
+        //BS.h.print();
         hartreefocksolver object (BS, nElectrons, nProtons);
         double energy = object.solve();
         cout << "Hartree-Fock energy:" << energy << endl;
         ccsolve ccobject (object, nElectrons);
+        cout << "Program complete." << endl;
 
 
 

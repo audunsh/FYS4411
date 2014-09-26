@@ -16,11 +16,15 @@ public:
     void SetupT2();
     void CCD();
     void initT2();
+    void expandC();
+    void ExpandMinimizedBasis();
     bool unconverged(double tolerance);
     double CCDQ(int a, int b, int i, int j);
     double CCDL(int a, int b, int i, int j);
     double GetCoupledElement(int a, int b, int c, int d);
     double GetUncoupledElement(int a, int b);
+    double energy();
+    double equalfunc(int a, int b);
     //Variables
     int nElectrons;
     int nStates;
@@ -28,8 +32,10 @@ public:
 
 private:
     field<mat> vmin; //The coupled minimized matrix elements
+    field<mat> temp_mo; //quarter sized molecular orbital elements
     mat fmin; //The uncoupled minimized matrix elements
     hartreefocksolver hfobject;
+    mat Cm;
 
     //amplitude tensors
     mat t1;
