@@ -16,6 +16,9 @@ public:
     void SetupT2();
     void CCD();
     void initT2();
+    bool unconverged(double tolerance);
+    double CCDQ(int a, int b, int i, int j);
+    double CCDL(int a, int b, int i, int j);
     double GetCoupledElement(int a, int b, int c, int d);
     double GetUncoupledElement(int a, int b);
     //Variables
@@ -31,6 +34,9 @@ private:
     //amplitude tensors
     mat t1;
     field<mat> t2;
+
+    mat t1new;
+    field<mat> t2new;
 
 };
 

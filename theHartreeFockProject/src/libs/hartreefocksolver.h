@@ -37,6 +37,7 @@ public:
     int nElectrons; //number of electrons
     int nStates;    //number of states
     basis Bs;
+    vec epsilon;      //eigenvalues from current diagonalization
 
 private:
     cube densityMap;
@@ -52,7 +53,7 @@ private:
     mat G;      //Coulomb and exchange contribution matrix
     mat U;      //unitary matrix
 
-    vec epsilon;      //eigenvalues from current diagonalization
+
     vec epsilon_prev; //eigenvalues from previous diagonalization
     vec s_diag;       //diagonalized S matrix
 
