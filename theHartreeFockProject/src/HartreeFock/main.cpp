@@ -160,6 +160,8 @@ int main(int argc, char* argv[]) {
 
         vec3 corePosH1 = {0,0,0};
         vec3 corePosH2 = {0,0,1.4};
+        //BS.init_H2(corePosH1, corePosH2);
+
         BS.init_H2(corePosH1, corePosH2);
         //BS.nucleusCharges(0) = 1;
         //BS.nucleusCharges(1) = 1;
