@@ -10,7 +10,7 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
     /*
      * This class should be initialized with a hartreefocksolver object containing an energy-minimized basis for the Coupled-Cluster (CC) solver.
      * The CC Solver will then perform the following operations
-     * 1. Set up a new basis from atomic to molecular orbitals (Done, but do I need also the f_i^a elements
+     * 1. Set up a new basis from atomic to molecular orbitals
      * 2. Initialize the cluster amplitudes with a given initial value (Begin with CCD only)
      * 3. Solve the amplitude equations
      * 4. Return the CC-energy
@@ -34,6 +34,59 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
     //hfobject.Bs.h.print();
 }
 
+
+
+double ccsolve::GetUncoupledElement(int a, int b){
+    double sm = 0;
+    if(a==b){
+        sm = hfobject.epsilon(a/2);
+    }
+    return sm;
+}
+
+double ccsolve::GetCoupledElement(int a, int b, int c, int d){
+    //this needs to be
+    double sm = 0.0;
+    for(int i=0; i<nStates; i++){
+        for(int j=0; j<nStates; j++){
+            for(int k=0; k<nStates; k++){
+                for(int l=0; l<nStates; l++){
+
+                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i,j)(k,l);
+                    sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
+                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
+                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
+
+                }
+            }
+        }
+    }
+    return sm;
+}
+
+void ccsolve::SetupMinimizedBasis(){
+    cout << "Setting up the minimized basis." << endl;
+    vmin.set_size(nStates,nStates);
+    fmin.set_size(nStates,nStates);
+    for(int a=0; a<nStates; a++){
+        for(int b=0; b<nStates; b++){
+
+            fmin(a,b) = GetUncoupledElement(a,b);
+            vmin(a,b) = zeros<mat>(nStates,nStates);
+
+            for(int c=0; c<nStates; c++){
+                for(int d=0; d<nStates; d++){
+
+                    //vmin(a,b)(c,d) = GetCoupledElement(a,b,c,d);
+                    vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
+                }
+            }
+        }
+    }
+    cout << "Finished setting up the minimized basis." << endl;
+    //coupledMatrixMinimized.print();
+}
+
 void ccsolve::ExpandMinimizedBasis(){
 
     nStates*= 2;
@@ -44,17 +97,23 @@ void ccsolve::ExpandMinimizedBasis(){
     double val1 = 0.0;
     double val2 = 0.0;
     for(int a = 0; a<nStates; a++){
-        for(int b = 0; b<nStates; b++){
-            fmin(a,b) = GetUncoupledElement(a,b);
-            vmin(a,b) = zeros(nStates,nStates);
-            for(int i = 0; i<nStates; i++){
+        for(int i = 0; i<nStates; i++){
+            fmin(a,i) = GetUncoupledElement(a,i);
+            vmin(a,i) = zeros(nStates,nStates);
+            for(int b = 0; b<nStates; b++){
                 for(int j=0; j<nStates; j++){
 
                     val1 = equalfunc(a%2,b%2) * equalfunc(i%2,j%2) * temp_mo(a/2,b/2)(i/2,j/2);
-                    val2 = equalfunc(a%2,j%2) * equalfunc(i%2,b%2) * temp_mo(a/2,j/2)(i/2,b/2);
-                    cout << val1 << " " << val2 << endl;
+                    val2 = equalfunc(a%2,j%2) * equalfunc(i%2,b%2) * temp_mo(a/2,j/2)(i/2,b/2); //Originals
+
+                    //val1 = equalfunc(a%2,b%2) * equalfunc(i%2,j%2) * temp_mo(a/2,b/2)(i/2,j/2);
+                    //val2 = equalfunc(a%2,b%2) * equalfunc(i%2,j%2) * temp_mo(a/2,b/2)(j/2,i/2); //Trials
+
+                    //cout << val1 - val2 << ":" << a << ":" << b << ":" << i << ":" << j << endl;
                     //cout << "Expanding the minimized basis." << endl;
-                    vmin(a,b)(i,j) = val1 -val2;
+                    vmin(a,i)(b,j) = val1 -val2; //original
+
+                    //vmin(a,b)(i,j) = hfobject.coupledMatrixTilde(a,b,i,j)*hfobject.P(a/2,b/2)*hfobject.P(j/2,i/2);
                     //cout << "Expanding the minimized basis." << endl;
                 }
             }
@@ -77,9 +136,9 @@ void ccsolve::expandC(){
 
 void ccsolve::initT2(){
     for(int a=nElectrons; a<nStates; a++){
-        for(int b=a+1; b<nStates; b++){
+        for(int b=nElectrons; b<nStates; b++){
             for(int i=0;i<nElectrons;i++){
-                for(int j=i+1;j<nElectrons;j++){
+                for(int j=0;j<nElectrons;j++){
                     t2new(a,b)(i,j) = vmin(a,b)(i,j)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                 }
             }
@@ -178,15 +237,17 @@ double ccsolve::CCDL(int a, int b, int i, int j){
 }
 
 void ccsolve::CCD(){
+    eprev = 0.0;
     //Set up and solve the CCD-equation
     cout << "Performing CCD calculation." << endl;
     initT2(); //Set up initial guess following S-B, p.289
 
     cout << "Entering iterative scheme." << endl;
     //t2new.print();
-    while(unconverged(.00001)){
+    while(unconverged(.00000001)){
         cout <<"Current energy: " << energy() << endl;
         t2 = t2new;
+        eprev = energy();
         //t2.print();
         double outfactored = 0.0;
         for(int a = nElectrons; a<nStates; a++){
@@ -227,8 +288,9 @@ double ccsolve::equalfunc(int a, int b){
 }
 
 bool ccsolve::unconverged(double tolerance){
-    double diff = 0.0;
+    //double diff = 0.0;
     bool condition = true;
+    /*
     for(int p = 0; p<nStates; p++){
         for(int q = 0; q<nStates; q++){
             for(int r = 0; r<nStates; r++){
@@ -240,7 +302,9 @@ bool ccsolve::unconverged(double tolerance){
     }
     if(diff<tolerance){condition = false;}
     if(diff!=diff){condition = false;}
-    cout << "Difference in t2: " <<  diff << endl;
+    */
+    if(abs(energy()-eprev)<tolerance){condition = false;}
+    //cout << "Difference in t2: " <<  diff << endl;
     return condition;
 }
 
@@ -267,57 +331,6 @@ void ccsolve::SetupT2(){
     cout << "Successfully initialized t2 amplitudes." << endl;
 }
 
-double ccsolve::GetCoupledElement(int a, int b, int c, int d){
-    //this needs to be
-    double sm = 0.0;
-    for(int i=0; i<nStates; i++){
-        for(int j=0; j<nStates; j++){
-            for(int k=0; k<nStates; k++){
-                for(int l=0; l<nStates; l++){
 
-                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i,j)(k,l);
-                    sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
 
-                }
-            }
-        }
-    }
-    return sm;
-}
 
-double ccsolve::GetUncoupledElement(int a, int b){
-    double sm = 0.0;
-    for(int i=0; i<nStates; i++){
-        for(int j=0; j<nStates; j++){
-            sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.Bs.h(i,j);
-        }
-    }
-    sm = 0.0;
-    if(a==b){
-        sm = hfobject.epsilon(a/2);
-    }
-    //return hfobject.Bs.h(a,b);
-    return sm;
-}
-
-void ccsolve::SetupMinimizedBasis(){
-    cout << "Setting up the minimized basis." << endl;
-    vmin.set_size(nStates,nStates);
-    fmin.set_size(nStates,nStates);
-    for(int a=0; a<nStates; a++){
-        for(int b=0; b<nStates; b++){
-
-            fmin(a,b) = GetUncoupledElement(a,b);
-            vmin(a,b) = zeros<mat>(nStates,nStates);
-
-            for(int c=0; c<nStates; c++){
-                for(int d=0; d<nStates; d++){
-
-                    vmin(a,b)(c,d) = GetCoupledElement(a,b,c,d);
-                }
-            }
-        }
-    }
-    cout << "Finished setting up the minimized basis." << endl;
-    //coupledMatrixMinimized.print();
-}

@@ -131,7 +131,6 @@ void hartreefocksolver::setupCoupledMatrix(){
         for (int q = 0; q<n; q++){
             for (int r = 0; r<n; r++){
                 for (int s = 0; s<n; s++){
-                    //(p, r)(q, s) = Bs.v(p, r)(q, s); //alt (1) "Strange" (ALT 1), working
                     coupledMatrix(p, r)(q, s) = Bs.v(p, q)(r, s); //alt (1) "Strange" (CHANGED TODAY)
 
                 }
@@ -147,7 +146,6 @@ void hartreefocksolver::setupF(){
             F(p,q) = Bs.h(p,q);
             for(int r=0;r<nStates;r++){
                 for(int s=0;s<nStates;s++){
-                    //F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(s,r);  //Alt. 1 "Thijssen"
                     F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(r,s);  //Alt. 2 27/5 2014
                 }
             }
@@ -178,9 +176,8 @@ double hartreefocksolver::energy(){
 
 double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
     //return direct and exchange term, weigthed to include spin
-    //return 2*coupledMatrix(p,q)(r,s) - coupledMatrix(p,s)(r,q);
-    //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q); //WORKING, FAMILY A
-    return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q); //CHANGED 27/5
+    //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q); //CHANGED 27/5
+    return 2*Bs.v(p,q)(r,s) - Bs.v(p,s)(r,q); //CHANGED 28/9
 }
 
 void hartreefocksolver::setupUnitMatrices(){

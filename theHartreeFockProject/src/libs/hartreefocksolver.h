@@ -31,19 +31,20 @@ public:
     void reset(basis BS, int N, int Z);
 
     //Trying to make some objects availabe to external classes, rammifications unknown
-    mat C;      //Coefficient matric
+    mat C;          //Coefficient matric
     field<mat> coupledMatrix;
-    mat F;      //Fock matrix
+    mat F;          //Fock matrix
     int nElectrons; //number of electrons
     int nStates;    //number of states
     basis Bs;
-    vec epsilon;      //eigenvalues from current diagonalization
+    vec epsilon;    //eigenvalues from current diagonalization
+    mat P;          //Density matrix
 
 private:
     cube densityMap;
 
     mat V;      //Transformation matrix
-    mat P;      //Density matrix
+
     mat P_prev; //previous density matrix
 
 

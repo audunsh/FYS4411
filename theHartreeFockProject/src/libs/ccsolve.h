@@ -43,6 +43,7 @@ private:
 
     mat t1new;
     field<mat> t2new;
+    double eprev;
 
 };
 
