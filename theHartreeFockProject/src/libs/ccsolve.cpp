@@ -146,6 +146,86 @@ void ccsolve::initT2(){
     }
 }
 
+double ccsolve::CCSD_Single(int i, int a){
+    double S1 = 0;
+    double S2a = 0;
+    double S2b = 0;
+    double S2c = 0;
+    double S3a = 0;
+    double S3b = 0;
+    double S3c = 0;
+    double S4a = 0;
+    double S4b = 0;
+    double S4c = 0;
+    double S5a = 0;
+    double S5b = 0;
+    double S5c = 0;
+    double S6 = 0;
+    int k, l, c, d;
+
+    S1 += fmin(a,i);
+
+    for(k=0;k<nElectrons;k++){
+        for(c=nElectrons;c<nStates;c++){
+            S2a+=fmin(k,c)*t2(a,c)(i,k);
+            for(d=nElectrons;d<nStates;d++){
+                S2b+=vmin(a,k)(c,d)*t2(c,d)(i,k);
+            }
+        }
+    }
+
+
+    for(k=0;k<nElectrons;k++){
+        for(l=0;l<nElectrons;l++){
+            for(c=nElectrons;c<nStates;c++){
+                S2c-=vmin(k,l)(i,c)*t2(a,c)(k,l);
+            }
+        }
+    }
+
+    for(c=nElectrons;c<nStates;c++){
+        S3a+=fmin(a,c)*t1(c,i);
+    }
+
+
+    for(k=0;k<nElectrons;k++){
+        S3b-=fmin(k,i)*t1(a,k);
+        for(c=nElectrons;c<nStates;c++){
+            S3c += vmin(a,k)(i,c)*t1(c,k);
+        }
+    }
+
+    for(k=0;k<nElectrons;k++){
+        for(l=0;l<nElectrons;l++){
+            for(c=nElectrons;c<nStates;c++){
+                S5c-=vmin(k,l)(i,c)*t1(a,k)*t1(c,l);
+                for(d=nElectrons;d<nStates;d++){
+                    S4a-=vmin(k,l)(c,d)*t1(c,i)*t2(a,d)(k,l);
+                    S4b-=vmin(k,l)(c,d)*t1(a,k)*t2(c,d)(i,l);
+                    S4c+=vmin(k,l)(c,d)*t1(c,k)*t2(d,a)(l,i);
+                    S6-=vmin(k,l)(c,d)*t1(c,i)*t1(a,k)*t1(d,l);
+                }
+            }
+        }
+    }
+
+    for(k=0;k<nElectrons;k++){
+        for(c=nElectrons;c<nStates;c++){
+            S5a -= fmin(k,c)*t1(c,i)*t1(a,k);
+            for(d=nElectrons; d<nStates; d++){
+                S5b += vmin(a,k)(c,d)*t1(c,i)*t1(d,k);
+            }
+        }
+    }
+
+    return S1+S2a+.5*S2b+.5*S2c+S3a+S3b+S3c+.5*S4a+.5*S4b+S4c+S5a+S5b+S5c+S6;
+}
+
+double ccsolve::CCSD_Double(int i, int j, int a, int b){
+    int k,l,c,d;
+    return 0;
+}
+
 double ccsolve::CCDQ(int a, int b, int i, int j){
     double Qa = 0;
     double Qb = 0;

@@ -25,6 +25,9 @@ public:
     double GetUncoupledElement(int a, int b);
     double energy();
     double equalfunc(int a, int b);
+    double CCSD_Single(int i, int a);
+    double CCSD_Double(int i, int j, int a, int b);
+
     //Variables
     int nElectrons;
     int nStates;
