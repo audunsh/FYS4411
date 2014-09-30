@@ -582,7 +582,9 @@ bool ccsolve::unconverged(double tolerance){
     if(diff<tolerance){condition = false;}
     if(diff!=diff){condition = false;}
     */
-    if(abs(energy()-eprev)<tolerance){condition = false;}
+    if(abs(energy()-eprev)<tolerance){
+        cout << "Converged at " << abs(energy()-eprev) << endl;
+        condition = false;}
     //cout << "Difference in t2: " <<  diff << endl;
     return condition;
 }
