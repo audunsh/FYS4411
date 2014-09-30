@@ -52,10 +52,11 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
             for(int k=0; k<nStates; k++){
                 for(int l=0; l<nStates; l++){
 
-                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i,j)(k,l);
-                    sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
-                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
+
                     //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
+                    sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i/2,j/2)(k/2,l/2);
+
+
 
                 }
             }
@@ -146,6 +147,14 @@ void ccsolve::initT2(){
     }
 }
 
+void ccsolve::initT1(){
+    for(int a=nElectrons; a<nStates; a++){
+        for(int i=0; i<nElectrons; i++){
+            t1new(a,i) = 1.0;//fmin(a,i)/(fmin(i,i) - fmin(a,a));
+        }
+    }
+}
+
 double ccsolve::CCSD_Single(int i, int a){
     double S1 = 0;
     double S2a = 0;
@@ -218,12 +227,182 @@ double ccsolve::CCSD_Single(int i, int a){
         }
     }
 
-    return S1+S2a+.5*S2b+.5*S2c+S3a+S3b+S3c+.5*S4a+.5*S4b+S4c+S5a+S5b+S5c+S6;
+    return S1+S2a+.5*S2b+.5*S2c+   0*S3a+0*S3b  +S3c+.5*S4a+.5*S4b+S4c+S5a+S5b+S5c+S6;
 }
 
 double ccsolve::CCSD_Double(int i, int j, int a, int b){
     int k,l,c,d;
-    return 0;
+    int nE = nElectrons;
+    int nS = nStates;
+    double D4a = 0;
+    double D4b = 0;
+
+    double D5a = 0;
+    double D5b = 0;
+    double D5c = 0;
+    double D5d = 0;
+    double D5e = 0;
+    double D5f = 0;
+    double D5g = 0;
+    double D5h = 0;
+
+    double D6a = 0;
+    double D6b = 0;
+    double D6c = 0;
+
+    double D7a = 0;
+    double D7b = 0;
+    double D7c = 0;
+    double D7d = 0;
+    double D7e = 0;
+
+    double D8a = 0;
+    double D8b = 0;
+
+    double D9  = 0;
+
+
+    for(c=nE;c<nS;c++){
+        D4a += vmin(a,b)(c,j)*t1(c,i) - vmin(a,b)(c,i)*t1(c,j);
+    }
+
+    for(k=0;k<nE;k++){
+        D4b += -vmin(k,b)(i,j)*t1(a,k) + vmin(k,b)(i,j)*t1(b,k);
+    }
+
+    for(k=0;k<nE;k++){
+        for(c=nE;c<nS;c++){
+            D5a += -fmin(k,c)*t1(c,i)*t2(a,b)(k,j) + fmin(k,c)*t1(c,j)*t2(a,b)(k,i);
+            D5b += -fmin(k,c)*t1(a,k)*t2(c,b)(i,j) + fmin(k,c)*t1(b,k)*t2(c,a)(i,j);
+            for(d=nE;d<nS;d++){
+                D5c += vmin(a,k)(c,d)*t1(c,i)*t2(d,b)(k,j);
+                D5c -= vmin(a,k)(c,d)*t1(c,j)*t2(d,b)(k,i);
+                D5c -= vmin(b,k)(c,d)*t1(c,i)*t2(d,a)(k,j);
+                D5c += vmin(b,k)(c,d)*t1(c,j)*t2(d,a)(k,i);
+            }
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(l=0;l<nE;l++){
+            for(c=nE;c<nS;c++){
+                D5d -= vmin(k,l)(i,c)*t1(a,k)*t2(c,b)(l,j);
+                D5d += vmin(k,l)(j,c)*t1(a,k)*t2(c,b)(l,i);
+                D5d += vmin(k,l)(i,c)*t1(b,k)*t2(c,a)(l,j);
+                D5d -= vmin(k,l)(j,c)*t1(b,k)*t2(c,a)(l,i);
+            }
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(c=nE;c<nS;c++){
+            for(d=nE;d<nS;d++){
+                D5e -= vmin(k,b)(c,d)*t1(a,k)*t2(c,d)(i,j);
+                D5e -= vmin(k,a)(c,d)*t1(b,k)*t2(c,d)(i,j);
+            }
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(l=0;l<nE;l++){
+            for(c=nE;c<nS;c++){
+                D5f += vmin(k,l)(c,j)*t1(c,i)*t2(a,b)(k,l);
+                D5f -= vmin(k,l)(c,i)*t1(c,j)*t2(a,b)(k,l);
+            }
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(c=nE;c<nS;c++){
+            for(d=nE;d<nS;d++){
+                D5g += vmin(k,a)(c,d)*t1(c,k)*t2(d,b)(i,j);
+                D5g -= vmin(k,b)(c,d)*t1(c,k)*t2(d,a)(i,j);
+            }
+        }
+    }
+
+
+    for(k=0;k<nE;k++){
+        for(l=0;l<nE;l++){
+            for(c=nE;c<nS;c++){
+                D5h += vmin(k,l)(c,i)*t1(c,k)*t2(a,b)(l,j);
+                D5h -= vmin(k,l)(c,j)*t1(c,k)*t2(a,b)(l,i);
+            }
+        }
+    }
+
+    for(c=nE;c<nS;c++){
+        for(d=nE;d<nS;d++){
+            D6a += vmin(a,b)(c,d)*t1(c,i)*t1(d,j);
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(l=0;l<nE;l++){
+            D6b += vmin(k,l)(i,j)*t1(a,k)*t1(b,l);
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(c=nE;c<nS;c++){
+            D6c -= vmin(k,b)(c,j)*t1(c,i)*t1(a,k);
+            D6c += vmin(k,b)(c,i)*t1(c,j)*t1(a,k);
+            D6c += vmin(k,a)(c,j)*t1(c,i)*t1(b,k);
+            D6c -= vmin(k,a)(c,i)*t1(c,j)*t1(b,k);
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(l=0;l<nE;l++){
+            for(c=nE;c<nS;c++){
+                for(d=nE; d<nS;d++){
+                    D7a += vmin(k,l)(c,d)*t1(c,i)*t1(d,j)*t2(a,b)(k,l);
+                    D7b += vmin(k,l)(c,d)*t1(a,k)*t1(b,l)*t2(c,d)(i,j);
+
+                    D7c -= vmin(k,l)(c,d)*t1(c,i)*t1(a,l)*t2(d,b)(l,j);
+                    D7c += vmin(k,l)(c,d)*t1(c,j)*t1(a,l)*t2(d,b)(l,i);
+                    D7c += vmin(k,l)(c,d)*t1(c,i)*t1(b,l)*t2(d,a)(l,j);
+                    D7c -= vmin(k,l)(c,d)*t1(c,j)*t1(b,l)*t2(d,a)(l,i);
+
+                    D7d -= vmin(k,l)(c,d)*t1(c,k)*t1(d,i)*t2(a,b)(l,j);
+                    D7d += vmin(k,l)(c,d)*t1(c,k)*t1(d,j)*t2(a,b)(l,i);
+
+                    D7e -= vmin(k,l)(c,d)*t1(c,k)*t1(a,l)*t2(d,b)(i,j);
+                    D7e += vmin(k,l)(c,d)*t1(c,k)*t1(b,l)*t2(d,a)(i,j);
+                }
+            }
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(c=nE;c<nS;c++){
+            for(d=nE;d<nS;d++){
+                D8a += vmin(k,b)(c,d)*t1(c,i)*t1(a,k)*t1(d,j);
+                D8a -= vmin(k,a)(c,d)*t1(c,i)*t1(b,k)*t1(d,j);
+            }
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(c=nE;c<nS;c++){
+            for(d=nE;d<nS;d++){
+                D8b += vmin(k,l)(c,j)*t1(c,i)*t1(a,k)*t1(b,k);
+                D8b -= vmin(k,l)(c,i)*t1(c,j)*t1(a,k)*t1(b,k);
+            }
+        }
+    }
+
+    for(k=0;k<nE;k++){
+        for(l=0;l<nE;l++){
+            for(c=nE;c<nS;c++){
+                for(d=nE; d<nS;d++){
+                    D9 += vmin(k,l)(c,d)*t1(c,i)*t1(d,j)*t1(a,k)*t1(b,l);
+                }
+            }
+        }
+    }
+
+    return D4a+D4b+D5a+D5b+D5c+.5*D5e+D5g+.5*D5f+D5h + .5*D6a + .6*D6b + D6c + .5*D7a + .5*D7b + D7c + D7d + D7e + D8a + D8b + D9;
 }
 
 double ccsolve::CCDQ(int a, int b, int i, int j){
@@ -321,28 +500,39 @@ void ccsolve::CCD(){
     //Set up and solve the CCD-equation
     cout << "Performing CCD calculation." << endl;
     initT2(); //Set up initial guess following S-B, p.289
-
+    initT1();
+    //t1new.print();
     cout << "Entering iterative scheme." << endl;
     //t2new.print();
     while(unconverged(.00000001)){
         cout <<"Current energy: " << energy() << endl;
         t2 = t2new;
+        t1 = t1new;
+
         eprev = energy();
         //t2.print();
         double outfactored = 0.0;
-        for(int a = nElectrons; a<nStates; a++){
-            for(int b = a+1; b<nStates; b++){
-                for(int i = 0; i<nElectrons; i++){
-                    for(int j=i+1; j<nElectrons; j++){
+        for(int b = nElectrons; b<nStates; b++){
+            for(int a = b+1; a<nStates; a++){
+                for(int j = 0; j<nElectrons; j++){
+                    for(int i=j+1; i<nElectrons; i++){
                         outfactored = (-fmin(i,i) -fmin(j,j) + fmin(a,a) + fmin(b,b))*t2(a,b)(i,j);
                         //cout << "Denominator " << (-fmin(i,i) -fmin(j,j) + fmin(a,a) + fmin(b,b)) << i << j << a <<b << endl;
                         //cout << "Numerator "  << vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j)<<endl;
-                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //What about the terms factored outside?
+                        t2new(b,a)(j,i) = (CCSD_Double(i,j,a,b) + vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //What about the terms factored outside?
                     }
                 }
             }
         }
+        for(int a=nElectrons;a<nStates;a++){
+            for(int i=0;i<nElectrons;i++){
+                t1new(a,i) = CCSD_Single(i,a)/(fmin(i,i)-fmin(a,a));
+                //cout << CCSD_Single(i,a)/(fmin(i,i)-fmin(a,a)) << endl;
+
+            }
+        }
     }
+    //t1new.print();
 }
 
 double ccsolve::energy(){
@@ -351,12 +541,21 @@ double ccsolve::energy(){
         for(int j = i+1; j<nElectrons; j++){
             for(int a=nElectrons; a<nStates; a++){
                 for(int b=a+1; b<nStates; b++){
-                    dE += vmin(i,j)(a,b)*t2new(a,b)(i,j);
+                    dE += .25*vmin(i,j)(a,b)*t2new(a,b)(i,j);
+                    dE += .5*vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j);
                 }
             }
         }
     }
-    return dE/4.0;
+
+    for(int i = 0; i<nElectrons; i++){
+        for(int a=nElectrons; a<nStates; a++){
+            dE += fmin(i,a)*t1new(a,i);
+
+        }
+    }
+
+    return dE;
 }
 
 double ccsolve::equalfunc(int a, int b){

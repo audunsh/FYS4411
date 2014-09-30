@@ -15,6 +15,7 @@ public:
     void SetupT1();
     void SetupT2();
     void CCD();
+    void initT1();
     void initT2();
     void expandC();
     void ExpandMinimizedBasis();
