@@ -172,11 +172,7 @@ int main(int argc, char* argv[]) {
         double energy = object.solve();
         cout << "Hartree-Fock energy:" << energy << endl;
         ccsolve ccobject (object, nElectrons);
-        cout << "Program complete." << endl;
-
-
-
-
+        cout << "End of program." << endl;
     }
     if(false){
         //Calculate O2 Ground state

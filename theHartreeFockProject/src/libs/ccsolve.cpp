@@ -7,7 +7,7 @@ ccsolve::ccsolve()
 
 ccsolve::ccsolve(hartreefocksolver object, int nElect)
 {
-    /*
+    /* --- CCSolve Main ---
      * This class should be initialized with a hartreefocksolver object containing an energy-minimized basis for the Coupled-Cluster (CC) solver.
      * The CC Solver will then perform the following operations
      * 1. Set up a new basis from atomic to molecular orbitals
@@ -16,25 +16,16 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
      * 4. Return the CC-energy
     */
     hfobject = object;
-    nElectrons = nElect; //fermi level is defined by number of electrons
+    nElectrons = nElect; //Fermi level is defined by number of electrons
     nStates = hfobject.C.n_cols;
-    //hfobject.C.print();
-    cout << "CCSolve initialized." << endl;
-    cout << "Identifying number of orbitals in the basis" << endl;
-    cout << "Found " << nStates << " number of basis functions in the HF Rothaan expansion." << endl;
-    //expandC();
+    cout << "CCSolve Found " << nStates << " number of basis functions in the RHF Roothaan expansion." << endl;
     SetupMinimizedBasis();
     ExpandMinimizedBasis(); //Include spin orthogonality
     SetupT1();
     SetupT2();
-    CCD();
-    //fmin.print();
+    CCSD();
     cout << "Energy:" << energy() << endl;
-
-    //hfobject.Bs.h.print();
 }
-
-
 
 double ccsolve::GetUncoupledElement(int a, int b){
     double sm = 0;
@@ -77,19 +68,15 @@ void ccsolve::SetupMinimizedBasis(){
 
             for(int c=0; c<nStates; c++){
                 for(int d=0; d<nStates; d++){
-
-                    //vmin(a,b)(c,d) = GetCoupledElement(a,b,c,d);
                     vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
                 }
             }
         }
     }
     cout << "Finished setting up the minimized basis." << endl;
-    //coupledMatrixMinimized.print();
 }
 
 void ccsolve::ExpandMinimizedBasis(){
-
     nStates*= 2;
     temp_mo = vmin;
     vmin.set_size(nStates, nStates);
@@ -107,15 +94,7 @@ void ccsolve::ExpandMinimizedBasis(){
                     val1 = equalfunc(a%2,b%2) * equalfunc(i%2,j%2) * temp_mo(a/2,b/2)(i/2,j/2);
                     val2 = equalfunc(a%2,j%2) * equalfunc(i%2,b%2) * temp_mo(a/2,j/2)(i/2,b/2); //Originals
 
-                    //val1 = equalfunc(a%2,b%2) * equalfunc(i%2,j%2) * temp_mo(a/2,b/2)(i/2,j/2);
-                    //val2 = equalfunc(a%2,b%2) * equalfunc(i%2,j%2) * temp_mo(a/2,b/2)(j/2,i/2); //Trials
-
-                    //cout << val1 - val2 << ":" << a << ":" << b << ":" << i << ":" << j << endl;
-                    //cout << "Expanding the minimized basis." << endl;
                     vmin(a,i)(b,j) = val1 -val2; //original
-
-                    //vmin(a,b)(i,j) = hfobject.coupledMatrixTilde(a,b,i,j)*hfobject.P(a/2,b/2)*hfobject.P(j/2,i/2);
-                    //cout << "Expanding the minimized basis." << endl;
                 }
             }
         }
@@ -133,26 +112,6 @@ void ccsolve::expandC(){
         }
     }
     Cm.print();
-}
-
-void ccsolve::initT2(){
-    for(int a=nElectrons; a<nStates; a++){
-        for(int b=nElectrons; b<nStates; b++){
-            for(int i=0;i<nElectrons;i++){
-                for(int j=0;j<nElectrons;j++){
-                    t2new(a,b)(i,j) = vmin(a,b)(i,j)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
-                }
-            }
-        }
-    }
-}
-
-void ccsolve::initT1(){
-    for(int a=nElectrons; a<nStates; a++){
-        for(int i=0; i<nElectrons; i++){
-            t1new(a,i) = 1.0;//fmin(a,i)/(fmin(i,i) - fmin(a,a));
-        }
-    }
 }
 
 double ccsolve::CCSD_Single(int i, int a){
@@ -456,7 +415,6 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
     return 0.25*Qa + Qb + 0.5*(Qc + Qd);
 }
 
-
 double ccsolve::CCDL(int a, int b, int i, int j){
     double Da = 0.0;
     double Db = 0.0;
@@ -495,30 +453,23 @@ double ccsolve::CCDL(int a, int b, int i, int j){
 
 }
 
-void ccsolve::CCD(){
+void ccsolve::CCSD(){
     eprev = 0.0;
-    //Set up and solve the CCD-equation
-    cout << "Performing CCD calculation." << endl;
+    //Set up and solve the CCSD-equation
+    cout << "Performing CCSD calculation." << endl;
+    initT1(); //initial guess for the amplitudes
     initT2(); //Set up initial guess following S-B, p.289
-    initT1();
-    //t1new.print();
-    cout << "Entering iterative scheme." << endl;
-    //t2new.print();
     while(unconverged(.00000001)){
         cout <<"Current energy: " << energy() << endl;
-        t2 = t2new;
+        t2 = t2new; //updating the amplitudes
         t1 = t1new;
-
-        eprev = energy();
-        //t2.print();
+        eprev = energy(); //updating the energy
         double outfactored = 0.0;
         for(int b = nElectrons; b<nStates; b++){
             for(int a = b+1; a<nStates; a++){
                 for(int j = 0; j<nElectrons; j++){
                     for(int i=j+1; i<nElectrons; i++){
                         outfactored = (-fmin(i,i) -fmin(j,j) + fmin(a,a) + fmin(b,b))*t2(a,b)(i,j);
-                        //cout << "Denominator " << (-fmin(i,i) -fmin(j,j) + fmin(a,a) + fmin(b,b)) << i << j << a <<b << endl;
-                        //cout << "Numerator "  << vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j)<<endl;
                         t2new(b,a)(j,i) = (CCSD_Double(i,j,a,b) + vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //What about the terms factored outside?
                     }
                 }
@@ -527,12 +478,33 @@ void ccsolve::CCD(){
         for(int a=nElectrons;a<nStates;a++){
             for(int i=0;i<nElectrons;i++){
                 t1new(a,i) = CCSD_Single(i,a)/(fmin(i,i)-fmin(a,a));
-                //cout << CCSD_Single(i,a)/(fmin(i,i)-fmin(a,a)) << endl;
 
             }
         }
     }
-    //t1new.print();
+}
+
+void ccsolve::CCD(){
+    eprev = 0.0;
+    //Set up and solve the CCSD-equation
+    cout << "Performing CCD calculation." << endl;
+    //initT1(); //initial guess for the amplitudes
+    initT2(); //Set up initial guess following S-B, p.289
+    while(unconverged(.00000001)){
+        cout <<"Current energy: " << energy() << endl;
+        t2 = t2new; //updating the amplitudes
+        //t1 = t1new;
+        eprev = energy(); //updating the energy
+        for(int b = nElectrons; b<nStates; b++){
+            for(int a = b+1; a<nStates; a++){
+                for(int j = 0; j<nElectrons; j++){
+                    for(int i=j+1; i<nElectrons; i++){
+                        t2new(b,a)(j,i) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //What about the terms factored outside?
+                    }
+                }
+            }
+        }
+    }
 }
 
 double ccsolve::energy(){
@@ -566,27 +538,34 @@ double ccsolve::equalfunc(int a, int b){
     return ret;
 }
 
+
 bool ccsolve::unconverged(double tolerance){
-    //double diff = 0.0;
     bool condition = true;
-    /*
-    for(int p = 0; p<nStates; p++){
-        for(int q = 0; q<nStates; q++){
-            for(int r = 0; r<nStates; r++){
-                for(int s = 0; s<nStates; s++){
-                      diff += abs(t2(p,q)(r,s) - t2new(p,q)(r,s));
+    if(abs(energy()-eprev)<tolerance){
+        cout << "Converged at " << abs(energy()-eprev) << endl;
+        condition = false;
+    }
+    return condition;
+}
+
+void ccsolve::initT2(){
+    for(int a=nElectrons; a<nStates; a++){
+        for(int b=nElectrons; b<nStates; b++){
+            for(int i=0;i<nElectrons;i++){
+                for(int j=0;j<nElectrons;j++){
+                    t2new(a,b)(i,j) = vmin(a,b)(i,j)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                 }
             }
         }
     }
-    if(diff<tolerance){condition = false;}
-    if(diff!=diff){condition = false;}
-    */
-    if(abs(energy()-eprev)<tolerance){
-        cout << "Converged at " << abs(energy()-eprev) << endl;
-        condition = false;}
-    //cout << "Difference in t2: " <<  diff << endl;
-    return condition;
+}
+
+void ccsolve::initT1(){
+    for(int a=nElectrons; a<nStates; a++){
+        for(int i=0; i<nElectrons; i++){
+            t1new(a,i) = 1.0;//fmin(a,i)/(fmin(i,i) - fmin(a,a));
+        }
+    }
 }
 
 void ccsolve::SetupT1(){
@@ -595,7 +574,7 @@ void ccsolve::SetupT1(){
     t1new.set_size(nStates, nStates);
     t1new.zeros();
 
-    cout << "Successfully initialized t1 amplitudes." << endl;
+    cout << "Initialized t1 amplitudes." << endl;
 }
 
 void ccsolve::SetupT2(){
@@ -609,7 +588,7 @@ void ccsolve::SetupT2(){
             t2new(i,j).zeros();
         }
     }
-    cout << "Successfully initialized t2 amplitudes." << endl;
+    cout << "Initialized t2 amplitudes." << endl;
 }
 
 
