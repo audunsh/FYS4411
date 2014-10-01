@@ -23,7 +23,8 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
     ExpandMinimizedBasis(); //Include spin orthogonality
     SetupT1();
     SetupT2();
-    CCSD();
+    vmin.print();
+    //CCSD();
     cout << "Energy:" << energy() << endl;
 
 }
@@ -44,8 +45,8 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
             for(int k=0; k<nStates; k++){
                 for(int l=0; l<nStates; l++){
                     //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
-                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.Bs.v(i,j)(k,l);
-                    sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
+                    sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.Bs.v(i,j)(k,l);
+                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
                 }
             }
         }
@@ -78,7 +79,7 @@ void ccsolve::SetupMinimizedBasis(){
 void ccsolve::ExpandMinimizedBasis(){
     nStates*= 2;
     temp_mo = vmin;
-    temp_mo.print();
+    //temp_mo.print();
     vmin.set_size(nStates, nStates);
     fmin.set_size(nStates, nStates);
 
@@ -89,20 +90,27 @@ void ccsolve::ExpandMinimizedBasis(){
             //previously aibj
             fmin(p,q) = GetUncoupledElement(p,q);
             vmin(p,q) = zeros(nStates,nStates);
+        }
+    }
+    for(int p = 0; p<nStates; p++){
+        for(int q = 0; q<nStates; q++){
+            //previously aibj
             for(int r = 0; r<nStates; r++){
                 for(int s=0; s<nStates; s++){
 
-                    //val1 = equalfunc(p%2,q%2) * equalfunc(r%2,s%2) * temp_mo(p/2,q/2)(r/2,s/2);
+                    val1 = equalfunc(p%2,q%2) * equalfunc(r%2,s%2) * temp_mo(p/2,q/2)(r/2,s/2);
+                    val2 = equalfunc(p%2,s%2) * equalfunc(r%2,q%2) * temp_mo(p/2,s/2)(r/2,q/2);
+
                     //val2 = equalfunc(a%2,j%2) * equalfunc(i%2,b%2) * temp_mo(a/2,j/2)(i/2,b/2); //Originals
 
                     //val2 = equalfunc(p%2,r%2) * equalfunc(q%2,s%2) * temp_mo(p/2,q/2)(s/2,r/2); //Originals
 
                     //vmin(a,i)(b,j) = val1 -val2; //original
 
-                    //vmin(a,b)(i,j) = val1 -val2;
+                    vmin(p,r)(q,s) = val1 -val2;
                     //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2));
 
-                    vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2));
+                    //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2));
                 }
             }
         }
