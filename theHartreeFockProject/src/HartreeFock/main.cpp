@@ -152,13 +152,13 @@ int main(int argc, char* argv[]) {
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
     }
 
-    if(true){
-        //PErform a sweep of distances in the H2 config
+    if(false){
+        //PErform a sweep of distances in the H2 config using CCSD
         basis BS;
         int nElectrons = 2;
         int nProtons = 2;
 
-        int nMoves = 20; //number of moves in the sweep
+        int nMoves = 80; //number of moves in the sweep
         vec RHFe, CCSDe;
         RHFe.set_size(nMoves);
         CCSDe.set_size(nMoves);
@@ -168,6 +168,8 @@ int main(int argc, char* argv[]) {
             vec3 corePosH1 = {0,0,0};
             vec3 corePosH2 = {0,0,(i+1)*dx};
             BS.init_H2(corePosH1, corePosH2);
+            //BS.nucleusCharges(0) = 1;
+            //BS.nucleusCharges(1) = 1;
             BS.init_integrals();
             hartreefocksolver object (BS, nElectrons, nProtons);
             RHFe(i) = object.solve();
@@ -184,23 +186,18 @@ int main(int argc, char* argv[]) {
         cout << "End of program." << endl;
     }
 
-    if(false){
+    if(true){
         //Calculate H2 Ground state energy
         basis BS;
-        int nElectrons = 2;
-        int nProtons = 2;
+        int nElectrons =16;
+        int nProtons = 16;
 
-        int nMoves = 10;
-        vec RHFe, CCSDe;
-        RHFe.set_size(nMoves);
-        CCSDe.set_size(nMoves);
-        double dx = 0.2;
 
         vec3 corePosH1 = {0,0,0};
-        vec3 corePosH2 = {0,0,1.4};
+        vec3 corePosH2 = {0,0,2.282};
         //BS.init_H2(corePosH1, corePosH2);
 
-        BS.init_H2(corePosH1, corePosH2);
+        BS.init_O2(corePosH1, corePosH2);
         //BS.nucleusCharges(0) = 1;
         //BS.nucleusCharges(1) = 1;
         //BS.nucleusCharges.print();
