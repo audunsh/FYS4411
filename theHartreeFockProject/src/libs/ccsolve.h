@@ -35,6 +35,8 @@ public:
     int nElectrons;
     int nStates;
     int nFermi;
+    int counter;
+    int maxiter;
 
 private:
     field<mat> vmin; //The coupled minimized matrix elements

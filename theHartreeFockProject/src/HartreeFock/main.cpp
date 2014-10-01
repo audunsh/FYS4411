@@ -187,17 +187,40 @@ int main(int argc, char* argv[]) {
     }
 
     if(true){
+
+        //Calculate H2O Ground state energy
+        basis BS;
+        int nElectrons =10;
+        int nProtons = 10;
+        double xCenter = 0.0;
+        double yCenter = 0.0;
+        BS.init_H2O({xCenter-1.4756110550780858,yCenter,0},{xCenter+1.4756110550780858,yCenter,0},{xCenter,yCenter+1.079252144093028,0});
+
+        //BS.init_O2(corePosH1, corePosH2);
+        //BS.nucleusCharges(0) = 1;
+        //BS.nucleusCharges(1) = 1;
+        //BS.nucleusCharges.print();
+        BS.init_integrals();
+        //BS.h.print();
+        hartreefocksolver object (BS, nElectrons, nProtons);
+        double energy = object.solve();
+        cout << "Hartree-Fock energy:" << energy << endl;
+        ccsolve ccobject (object, nElectrons);
+        cout << "End of program." << endl;
+    }
+
+    if(false){
         //Calculate H2 Ground state energy
         basis BS;
-        int nElectrons =16;
-        int nProtons = 16;
+        int nElectrons =2;
+        int nProtons = 2;
 
 
         vec3 corePosH1 = {0,0,0};
-        vec3 corePosH2 = {0,0,2.282};
-        //BS.init_H2(corePosH1, corePosH2);
+        vec3 corePosH2 = {0,0,1.4};
+        BS.init_H2(corePosH1, corePosH2);
 
-        BS.init_O2(corePosH1, corePosH2);
+        //BS.init_O2(corePosH1, corePosH2);
         //BS.nucleusCharges(0) = 1;
         //BS.nucleusCharges(1) = 1;
         //BS.nucleusCharges.print();

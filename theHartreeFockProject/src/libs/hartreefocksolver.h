@@ -39,6 +39,7 @@ public:
     basis Bs;
     vec epsilon;    //eigenvalues from current diagonalization
     mat P;          //Density matrix
+    mat Cprime; //transformed Coefficient matric
 
 private:
     cube densityMap;
@@ -49,7 +50,7 @@ private:
 
 
     mat Fprime; //transformed Fock matrix
-    mat Cprime; //transformed Coefficient matric
+
 
     mat G;      //Coulomb and exchange contribution matrix
     mat U;      //unitary matrix
