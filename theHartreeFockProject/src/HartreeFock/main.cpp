@@ -153,10 +153,48 @@ int main(int argc, char* argv[]) {
     }
 
     if(true){
+        //PErform a sweep of distances in the H2 config
+        basis BS;
+        int nElectrons = 2;
+        int nProtons = 2;
+
+        int nMoves = 20; //number of moves in the sweep
+        vec RHFe, CCSDe;
+        RHFe.set_size(nMoves);
+        CCSDe.set_size(nMoves);
+        double dx = 0.2; //steplength
+        for(int i = 0; i<nMoves; i++){
+            BS = basis();
+            vec3 corePosH1 = {0,0,0};
+            vec3 corePosH2 = {0,0,(i+1)*dx};
+            BS.init_H2(corePosH1, corePosH2);
+            BS.init_integrals();
+            hartreefocksolver object (BS, nElectrons, nProtons);
+            RHFe(i) = object.solve();
+            //cout << "Hartree-Fock energy:" << energy << endl;
+            ccsolve ccobject (object, nElectrons);
+            CCSDe(i) = ccobject.energy();
+        }
+        RHFe.print();
+        cout << endl;
+
+        CCSDe.print();
+
+
+        cout << "End of program." << endl;
+    }
+
+    if(false){
         //Calculate H2 Ground state energy
         basis BS;
         int nElectrons = 2;
         int nProtons = 2;
+
+        int nMoves = 10;
+        vec RHFe, CCSDe;
+        RHFe.set_size(nMoves);
+        CCSDe.set_size(nMoves);
+        double dx = 0.2;
 
         vec3 corePosH1 = {0,0,0};
         vec3 corePosH2 = {0,0,1.4};

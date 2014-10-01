@@ -26,9 +26,10 @@ public:
     double GetCoupledElement(int a, int b, int c, int d);
     double GetUncoupledElement(int a, int b);
     double energy();
+    double CCDenergy();
     double equalfunc(int a, int b);
-    double CCSD_Single(int i, int a);
-    double CCSD_Double(int i, int j, int a, int b);
+    double CCSD_Single(int a, int i);
+    double CCSD_Double(int a, int b,int i, int j);
 
     //Variables
     int nElectrons;
