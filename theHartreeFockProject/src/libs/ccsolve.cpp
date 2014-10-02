@@ -23,12 +23,8 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
     ExpandMinimizedBasis(); //Include spin orthogonality
     SetupT1();
     SetupT2();
-<<<<<<< HEAD
+
     CCD();
-=======
-    vmin.print();
-    //CCSD();
->>>>>>> 74767c51720640fe30c8088fbe91676c88c62530
     cout << "Energy:" << energy() << endl;
 
 }
@@ -63,10 +59,10 @@ void ccsolve::SetupMinimizedBasis(){
     vmin.set_size(nStates,nStates);
     fmin.set_size(nStates,nStates);
     for(int a=0; a<nStates; a++){
-        fmin(a,a) = hfobject.epsilon(a/2);
+        //fmin(a,a) = hfobject.epsilon(a/2);
         for(int b=0; b<nStates; b++){
 
-            //fmin(a,b) = GetUncoupledElement(a,b);
+            fmin(a,b) = GetUncoupledElement(a,b);
             vmin(a,b) = zeros<mat>(nStates,nStates);
 
             for(int c=0; c<nStates; c++){
@@ -83,11 +79,6 @@ void ccsolve::SetupMinimizedBasis(){
 void ccsolve::ExpandMinimizedBasis(){
     nStates*= 2;
     temp_mo = vmin;
-<<<<<<< HEAD
-
-=======
-    //temp_mo.print();
->>>>>>> 74767c51720640fe30c8088fbe91676c88c62530
     vmin.set_size(nStates, nStates);
     fmin.set_size(nStates, nStates);
 
@@ -100,18 +91,14 @@ void ccsolve::ExpandMinimizedBasis(){
             vmin(p,q) = zeros(nStates,nStates);
         }
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 74767c51720640fe30c8088fbe91676c88c62530
     for(int p = 0; p<nStates; p++){
         for(int q = 0; q<nStates; q++){
             //previously aibj
             for(int r = 0; r<nStates; r++){
                 for(int s=0; s<nStates; s++){
 
-                    val1 = equalfunc(p%2,q%2) * equalfunc(r%2,s%2) * temp_mo(p/2,q/2)(r/2,s/2);
-                    val2 = equalfunc(p%2,s%2) * equalfunc(r%2,q%2) * temp_mo(p/2,s/2)(r/2,q/2);
+                    //val1 = equalfunc(p%2,q%2) * equalfunc(r%2,s%2) * temp_mo(p/2,q/2)(r/2,s/2);
+                    //val2 = equalfunc(p%2,s%2) * equalfunc(r%2,q%2) * temp_mo(p/2,s/2)(r/2,q/2);
 
                     //val2 = equalfunc(a%2,j%2) * equalfunc(i%2,b%2) * temp_mo(a/2,j/2)(i/2,b/2); //Originals
 
@@ -119,25 +106,17 @@ void ccsolve::ExpandMinimizedBasis(){
 
                     //vmin(a,i)(b,j) = val1 -val2; //original
 
-<<<<<<< HEAD
                     //vmin(a,b)(i,j) = val1 -val2;
-                    //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
+                    vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
 
-                    vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //Trying to make minor changes in indexing
+                    //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //Trying to make minor changes in indexing
                     //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2)); //Minor editing, producing errors
-
-=======
-                    vmin(p,r)(q,s) = val1 -val2;
-                    //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2));
-
-                    //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2));
->>>>>>> 74767c51720640fe30c8088fbe91676c88c62530
                 }
             }
         }
     }
     cout << endl;
-    //vmin.print();
+    vmin.print();
 }
 
 void ccsolve::expandC(){
@@ -517,7 +496,7 @@ double ccsolve::CCDL(int a, int b, int i, int j){
 
         }
     }
-    return 0*(L1a + L1b) + 0*.5*(L2a + L2b)  + L2c; //0*.65*L2c;
+    return 0*(L1a + L1b) + .5*(L2a + L2b)  + L2c; //0*.65*L2c;
 
 }
 
@@ -575,13 +554,13 @@ void ccsolve::CCD(){
 
         t2 = t2new; //updating the amplitudes
         //t1 = t1new;
-        eprev = CCDenergy(); //updating the energy
+        eprev = energy(); //updating the energy
         for(int b = nElectrons; b<nStates; b++){
             for(int a = b+1; a<nStates; a++){
                 for(int j = 0; j<nElectrons; j++){
                     for(int i=j+1; i<nElectrons; i++){
                         //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
-                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + 0*CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
+                        t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCDL(a,b,i,j) + 0*CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
 
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);

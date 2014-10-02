@@ -64,7 +64,7 @@ private:
     int iterations; //number of iterations (counter)
 
     double energyPrev = 10e10;
-    double tolerance = 10e-16;
+    double tolerance = 10e-10;
     double dampingFactor = 0.95;
 };
 
