@@ -44,9 +44,10 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
         for(int j=0; j<nStates; j++){
             for(int k=0; k<nStates; k++){
                 for(int l=0; l<nStates; l++){
-                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i/2,j/2)(k/2,l/2);
-                    sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.Bs.v(i,j)(k,l);
-                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
+                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i,j)(k,l);
+                    //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.Bs.v(i,j)(k,l);
+                    sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
+                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,j)(k,l);
                 }
             }
         }
@@ -59,16 +60,16 @@ void ccsolve::SetupMinimizedBasis(){
     vmin.set_size(nStates,nStates);
     fmin.set_size(nStates,nStates);
     for(int a=0; a<nStates; a++){
+        for(int b=0; b<nStates; b++){
+            fmin(a,b) = GetUncoupledElement(a,b);
+            vmin(a,b) = zeros<mat>(nStates,nStates);}}
+    for(int a=0; a<nStates; a++){
         //fmin(a,a) = hfobject.epsilon(a/2);
         for(int b=0; b<nStates; b++){
-
-            fmin(a,b) = GetUncoupledElement(a,b);
-            vmin(a,b) = zeros<mat>(nStates,nStates);
-
             for(int c=0; c<nStates; c++){
                 for(int d=0; d<nStates; d++){
                     //vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
-                    vmin(a,b)(c,d) = GetCoupledElement(a,b,c,d) ;
+                    vmin(a,c)(b,d) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
                 }
             }
         }
@@ -107,10 +108,10 @@ void ccsolve::ExpandMinimizedBasis(){
                     //vmin(a,i)(b,j) = val1 -val2; //original
 
                     //vmin(a,b)(i,j) = val1 -val2;
-                    vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
+                    //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
 
-                    //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //Trying to make minor changes in indexing
-                    //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2)); //Minor editing, producing errors
+                    //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2)); //Trying to make minor changes in indexing
+                    vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2)); //Minor editing, producing errors
                 }
             }
         }
@@ -560,7 +561,7 @@ void ccsolve::CCD(){
                 for(int j = 0; j<nElectrons; j++){
                     for(int i=j+1; i<nElectrons; i++){
                         //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
-                        t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCDL(a,b,i,j) + 0*CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
+                        t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
 
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);
@@ -586,6 +587,9 @@ double ccsolve::energy(){
                 for(int b=nElectrons; b<nStates; b++){
                     //dE += .25*vmin(i,j)(a,b)*t2new(a,b)(i,j);
                     //dE +=  .5*vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j); //originals, working
+
+                    //dE += .25*vmin(i,j)(a,b)*t2new(a,b)(i,j);
+                    //dE +=  .5*vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j);
 
                     dE += .25*vmin(i,j)(a,b)*t2new(a,b)(i,j);
                     dE +=  .5*vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j);
