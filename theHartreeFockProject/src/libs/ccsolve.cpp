@@ -23,7 +23,7 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
     ExpandMinimizedBasis(); //Include spin orthogonality
     SetupT1();
     SetupT2();
-    CCSD();
+    CCD();
     cout << "Energy:" << energy() << endl;
 
 }
@@ -78,7 +78,7 @@ void ccsolve::SetupMinimizedBasis(){
 void ccsolve::ExpandMinimizedBasis(){
     nStates*= 2;
     temp_mo = vmin;
-    temp_mo.print();
+
     vmin.set_size(nStates, nStates);
     fmin.set_size(nStates, nStates);
 
@@ -89,6 +89,12 @@ void ccsolve::ExpandMinimizedBasis(){
             //previously aibj
             fmin(p,q) = GetUncoupledElement(p,q);
             vmin(p,q) = zeros(nStates,nStates);
+        }
+    }
+
+    for(int p = 0; p<nStates; p++){
+        for(int q = 0; q<nStates; q++){
+            //previously aibj
             for(int r = 0; r<nStates; r++){
                 for(int s=0; s<nStates; s++){
 
@@ -100,9 +106,11 @@ void ccsolve::ExpandMinimizedBasis(){
                     //vmin(a,i)(b,j) = val1 -val2; //original
 
                     //vmin(a,b)(i,j) = val1 -val2;
-                    //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2));
+                    //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
 
-                    vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2));
+                    vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //Trying to make minor changes in indexing
+                    //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2)); //Minor editing, producing errors
+
                 }
             }
         }
@@ -196,7 +204,8 @@ double ccsolve::CCSD_Single(int a,int i){
         }
     }
 
-    return S1+S2a+.5*S2b+.5*S2c+   0*S3a+0*S3b  +S3c+.5*S4a+.5*S4b+S4c+S5a+S5b+S5c+S6;
+    //return S1+S2a+.5*S2b+.5*S2c+   0*S3a+0*S3b  +S3c+.5*S4a+.5*S4b+S4c+S5a+S5b+S5c+S6;
+    return .5*S2b+.5*S2c+   0*S3a+0*S3b  +S3c+.5*S4a+.5*S4b+S4c+S5b+S5c+S6; //HF-case
 }
 
 double ccsolve::CCSD_Double(int a, int b, int i, int j){
@@ -232,17 +241,23 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
 
 
     for(c=nE;c<nS;c++){
-        D4a += vmin(a,b)(c,j)*t1(c,i) - vmin(a,b)(c,i)*t1(c,j);
+        D4a += vmin(a,b)(c,j)*t1(c,i);
+        D4a -= vmin(a,b)(c,i)*t1(c,j);
     }
 
     for(k=0;k<nE;k++){
-        D4b += -vmin(k,b)(i,j)*t1(a,k) + vmin(k,a)(i,j)*t1(b,k);
+        D4b -= vmin(k,b)(i,j)*t1(a,k);
+        D4b += vmin(k,a)(i,j)*t1(b,k);
     }
 
     for(k=0;k<nE;k++){
         for(c=nE;c<nS;c++){
-            D5a += -fmin(k,c)*t1(c,i)*t2(a,b)(k,j) + fmin(k,c)*t1(c,j)*t2(a,b)(k,i);
-            D5b += -fmin(k,c)*t1(a,k)*t2(c,b)(i,j) + fmin(k,c)*t1(b,k)*t2(c,a)(i,j);
+            D5a -= fmin(k,c)*t1(c,i)*t2(a,b)(k,j);
+            D5a += fmin(k,c)*t1(c,j)*t2(a,b)(k,i);
+
+            D5b -= fmin(k,c)*t1(a,k)*t2(c,b)(i,j);
+            D5b += fmin(k,c)*t1(b,k)*t2(c,a)(i,j);
+
             for(d=nE;d<nS;d++){
                 D5c += vmin(a,k)(c,d)*t1(c,i)*t2(d,b)(k,j);
                 D5c -= vmin(a,k)(c,d)*t1(c,j)*t2(d,b)(k,i);
@@ -375,6 +390,7 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
 }
 
 double ccsolve::CCDQ(int a, int b, int i, int j){
+    //Quadratic contributions to the CCD amplitude equation
     double Qa = 0;
     double Qb = 0;
     double Qc = 0;
@@ -395,7 +411,11 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qb += vmin(k,l)(c,d)*(t2(a,c)(i,k)*t2(d,b)(j,l) - t2(a,c)(j,k)*t2(d,b)(i,l));
+                    //Qb += vmin(k,l)(c,d)*t2(a,c)(i,k)*t2(d,b)(l,j); (*) Conflictin notation in SB
+                    //Qb -= vmin(k,l)(c,d)*t2(a,c)(j,k)*t2(d,b)(l,i);
+
+                    Qb += vmin(k,l)(c,d)*t2(a,c)(i,k)*t2(b,d)(j,l);
+                    Qb -= vmin(k,l)(c,d)*t2(a,c)(j,k)*t2(b,d)(i,l);
                 }
             }
         }
@@ -405,8 +425,8 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qc -= vmin(k,l)(c,d)*t2(d,c)(i,k)*t2(a,b)(l,j);
-                    Qc += vmin(k,l)(c,d)*t2(d,c)(j,k)*t2(a,b)(l,j);
+                    Qc -= vmin(k,l)(c,d)*t2(c,d)(k,i)*t2(a,b)(l,j);
+                    Qc += vmin(k,l)(c,d)*t2(c,d)(k,j)*t2(a,b)(l,i);
                 }
             }
         }
@@ -417,8 +437,8 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qd -= vmin(k,l)(c,d)*t2(a,c)(l,k)*t2(d,b)(i,j);
-                    Qd += vmin(k,l)(c,d)*t2(b,c)(l,k)*t2(d,a)(i,j);
+                    Qd -= vmin(k,l)(c,d)*t2(c,a)(k,l)*t2(d,b)(i,j);
+                    Qd += vmin(k,l)(c,d)*t2(c,b)(k,l)*t2(d,a)(i,j);
                 }
             }
         }
@@ -428,44 +448,55 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
 }
 
 double ccsolve::CCDL(int a, int b, int i, int j){
-    double Da = 0.0;
-    double Db = 0.0;
-    double Dc = 0.0;
-    double Dd = 0.0;
-    double De = 0.0;
-    double Df = 0.0;
+    //Linear contributions to the CCD amplitude equation.
+    double L1a = 0.0;
+    double L1b = 0.0;
+    double L2a = 0.0;
+    double L2b = 0.0;
+    double L2c = 0.0;
 
 
     for(int c = nElectrons; c<nStates; c++){
-        Da += fmin(b,c)*t2(a,c)(i,j) - fmin(a,c)*t2(b,c)(i,j);
+        L1a += fmin(b,c)*t2(a,c)(i,j) - fmin(a,c)*t2(b,c)(i,j);
     }
 
     for(int k = 0; k<nElectrons; k++){
-        Db -= fmin(k,j)*t2(a,b)(i,k);
-        Db += fmin(k,i)*t2(a,b)(j,k);
+        L1b -= fmin(k,j)*t2(a,b)(i,k);
+        L1b += fmin(k,i)*t2(a,b)(j,k);
     }
 
     for(int c = nElectrons; c<nStates; c++){
         for(int d = nElectrons; d<nStates; d++){
-            Dc += vmin(a,b)(c,d)*t2(c,d)(i,j);
+            L2a += vmin(a,b)(c,d)*t2(c,d)(i,j); //H2O is highly sensitive to this contribution (2/10 2014)
+
+            //L2a += vmin(a,c)(b,d)*t2(c,d)(i,j); //Shuffling some indices
         }
     }
 
     for(int k = 0; k<nElectrons; k++){
         for(int l = 0; k<nElectrons; k++){
-            Dd += vmin(k,l)(i,j)*t2(a,b)(k,l);
+            //L2b += vmin(i,j)(k,l)*t2(a,b)(k,l); //(*) Conflicting notation in SB
+            L2b += vmin(k,l)(i,j)*t2(a,b)(k,l);
+
+            //L2b += vmin(k,i)(l,j)*t2(a,b)(k,l); //shuffling some indices
         }
     }
 
     for(int k= 0; k<nElectrons; k++){
         for(int c = nElectrons; c<nStates; c++){
-            De += vmin(k,b)(c,j)*t2(a,c)(i,k);
-            De -= vmin(k,a)(c,j)*t2(b,c)(i,k);
-            De -= vmin(k,b)(c,i)*t2(a,c)(j,k);
-            De += vmin(k,a)(c,i)*t2(b,c)(j,k);
+            //L2c -= vmin(a,k)(c,j)*t2(c,b)(i,k);
+            //L2c += vmin(a,k)(c,i)*t2(c,b)(j,k);
+            //L2c += vmin(b,k)(c,j)*t2(c,a)(i,k);
+            //L2c -= vmin(b,k)(c,i)*t2(c,a)(j,k);
+
+            L2c += vmin(k,b)(c,j)*t2(a,c)(i,k);
+            L2c -= vmin(k,b)(c,i)*t2(a,c)(j,k);
+            L2c -= vmin(k,a)(c,j)*t2(b,c)(i,k);
+            L2c += vmin(k,a)(c,i)*t2(b,c)(j,k);
+
         }
     }
-    return 0*Da + 0*Db + .5*(Dc + Dd)  + De;
+    return 0*(L1a + L1b) + 0*.5*(L2a + L2b)  + L2c; //0*.65*L2c;
 
 }
 
@@ -479,18 +510,6 @@ void ccsolve::CCSD(){
     initT1(); //initial guess for the amplitudes
     initT2(); //Set up initial guess following S-B, p.289
 
-    //for(int a = 0; a<nStates; a++){
-    //    for(int b = 0; b<nStates; b++){
-    //        for(int i = 0; i<nStates; i++){
-    //            for(int j = 0; j<nStates; j++){
-    //                cout << vmin(a,b)(i,j) << " ";
-    //            }
-    //        }
-    //    }
-    //}
-
-    vmin.print();
-
     while(unconverged(.00000001)){
 
         t2 = t2new; //updating the amplitudes
@@ -502,8 +521,10 @@ void ccsolve::CCSD(){
             for(int a = b+1; a<nStates; a++){
                 for(int j = 0; j<nElectrons; j++){
                     for(int i=j+1; i<nElectrons; i++){
-                        //t2new(b,a)(j,i) = (vmin(a,b)(i,j) + CCSD_Double(i,j,a,b) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //What about the terms factored outside?
-                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        //t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Working, original
+                        t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Faulty copy
+
+
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);
                         t2new(b,a)(j,i) =  t2new(a,b)(i,j);
@@ -530,6 +551,7 @@ void ccsolve::CCD(){
     initT2(); //Set up initial guess following S-B, p.289
     while(unconverged(.00000001)){
         cout <<"Current energy: " << energy() << endl;
+
         t2 = t2new; //updating the amplitudes
         //t1 = t1new;
         eprev = CCDenergy(); //updating the energy
@@ -537,11 +559,17 @@ void ccsolve::CCD(){
             for(int a = b+1; a<nStates; a++){
                 for(int j = 0; j<nElectrons; j++){
                     for(int i=j+1; i<nElectrons; i++){
-                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //What about the terms factored outside?
+                        //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
+                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + 0*CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
+
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);
                         t2new(b,a)(j,i) =  t2new(a,b)(i,j);
 
+                        //t2new(i,j)(a,b) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
+                        //t2new(i,j)(b,a) = -t2new(i,j)(a,b);
+                        //t2new(j,i)(a,b) = -t2new(i,j)(a,b);
+                        //t2new(j,i)(b,a) =  t2new(i,j)(a,b);
                     }
                 }
             }
@@ -556,11 +584,11 @@ double ccsolve::energy(){
         for(int j = 0; j<nElectrons; j++){
             for(int a=nElectrons; a<nStates; a++){
                 for(int b=nElectrons; b<nStates; b++){
+                    //dE += .25*vmin(i,j)(a,b)*t2new(a,b)(i,j);
+                    //dE +=  .5*vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j); //originals, working
+
                     dE += .25*vmin(i,j)(a,b)*t2new(a,b)(i,j);
                     dE +=  .5*vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j);
-
-                    //dE += .25*vmin(a,b)(i,j)*t2new(a,b)(i,j);
-                    //dE +=  .5*vmin(a,b)(i,j)*t1new(a,i)*t1new(b,j);
                 }
             }
         }
@@ -568,10 +596,8 @@ double ccsolve::energy(){
 
     for(int i = 0; i<nElectrons; i++){
         for(int a=nElectrons; a<nStates; a++){
+            //since i!=a this will never contribute to the energy when using a HF SD.
             dE += fmin(i,a)*t1new(a,i);
-
-            //dE += fmin(a,i)*t1new(a,i);
-
         }
     }
 
@@ -624,7 +650,8 @@ void ccsolve::initT2(){
         for(int b=nElectrons; b<nStates; b++){
             for(int i=0;i<nElectrons;i++){
                 for(int j=0;j<nElectrons;j++){
-                    t2new(a,b)(i,j) = -vmin(i,j)(a,b)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                    t2new(a,b)(i,j) = vmin(i,j)(a,b)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working
+                    //t2new(a,b)(i,j) = vmin(a,b)(i,j)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                 }
             }
         }
@@ -635,7 +662,7 @@ void ccsolve::initT2(){
 void ccsolve::initT1(){
     for(int a=nElectrons; a<nStates; a++){
         for(int i=0; i<nElectrons; i++){
-            t1new(a,i) = 0; //fmin(a,i)/(fmin(i,i) - fmin(a,a));
+            t1new(i,a) = fmin(a,i)/(fmin(i,i) - fmin(a,a));
         }
     }
 }
