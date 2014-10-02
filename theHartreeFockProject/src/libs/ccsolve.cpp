@@ -46,6 +46,7 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
                 for(int l=0; l<nStates; l++){
                     //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i,j)(k,l);
                     //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.Bs.v(i,j)(k,l);
+
                     sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
                     //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,j)(k,l);
                 }
@@ -69,7 +70,7 @@ void ccsolve::SetupMinimizedBasis(){
             for(int c=0; c<nStates; c++){
                 for(int d=0; d<nStates; d++){
                     //vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
-                    vmin(a,c)(b,d) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
+                    vmin(a,b)(c,d) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
                 }
             }
         }
@@ -98,20 +99,21 @@ void ccsolve::ExpandMinimizedBasis(){
             for(int r = 0; r<nStates; r++){
                 for(int s=0; s<nStates; s++){
 
-                    //val1 = equalfunc(p%2,q%2) * equalfunc(r%2,s%2) * temp_mo(p/2,q/2)(r/2,s/2);
-                    //val2 = equalfunc(p%2,s%2) * equalfunc(r%2,q%2) * temp_mo(p/2,s/2)(r/2,q/2);
+                    val1 = equalfunc(p%2,q%2) * equalfunc(r%2,s%2) * temp_mo(p/2,q/2)(r/2,s/2);
+                    val2 = equalfunc(p%2,s%2) * equalfunc(r%2,q%2) * temp_mo(p/2,s/2)(r/2,q/2);
 
                     //val2 = equalfunc(a%2,j%2) * equalfunc(i%2,b%2) * temp_mo(a/2,j/2)(i/2,b/2); //Originals
 
                     //val2 = equalfunc(p%2,r%2) * equalfunc(q%2,s%2) * temp_mo(p/2,q/2)(s/2,r/2); //Originals
 
-                    //vmin(a,i)(b,j) = val1 -val2; //original
+                    vmin(p,r)(q,s) = val2 -val1; //original
 
                     //vmin(a,b)(i,j) = val1 -val2;
                     //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
+                    //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,r/2)(q/2,s/2), temp_mo(p/2,r/2)(q/2,s/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
 
                     //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2)); //Trying to make minor changes in indexing
-                    vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2)); //Minor editing, producing errors
+                    //vmin(p,q)(r,s) = hfobject.Bs.state(p,q,r,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,q/2)(s/2,r/2)); //Minor editing, producing errors
                 }
             }
         }
