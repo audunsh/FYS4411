@@ -47,8 +47,9 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
                     //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i,j)(k,l);
                     //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.Bs.v(i,j)(k,l);
 
-                    sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
-                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,j)(k,l);
+                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
+                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,k)(j,l);
+                    sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(j,l)(k,i);
                 }
             }
         }
@@ -70,7 +71,7 @@ void ccsolve::SetupMinimizedBasis(){
             for(int c=0; c<nStates; c++){
                 for(int d=0; d<nStates; d++){
                     //vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
-                    vmin(a,b)(c,d) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
+                    vmin(a,b)(d,c) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
                 }
             }
         }
@@ -487,15 +488,15 @@ double ccsolve::CCDL(int a, int b, int i, int j){
 
     for(int k= 0; k<nElectrons; k++){
         for(int c = nElectrons; c<nStates; c++){
-            //L2c -= vmin(a,k)(c,j)*t2(c,b)(i,k);
-            //L2c += vmin(a,k)(c,i)*t2(c,b)(j,k);
-            //L2c += vmin(b,k)(c,j)*t2(c,a)(i,k);
-            //L2c -= vmin(b,k)(c,i)*t2(c,a)(j,k);
+            L2c -= vmin(a,k)(c,j)*t2(c,b)(i,k);
+            L2c += vmin(a,k)(c,i)*t2(c,b)(j,k);
+            L2c += vmin(b,k)(c,j)*t2(c,a)(i,k);
+            L2c -= vmin(b,k)(c,i)*t2(c,a)(j,k);
 
-            L2c += vmin(k,b)(c,j)*t2(a,c)(i,k);
-            L2c -= vmin(k,b)(c,i)*t2(a,c)(j,k);
-            L2c -= vmin(k,a)(c,j)*t2(b,c)(i,k);
-            L2c += vmin(k,a)(c,i)*t2(b,c)(j,k);
+            //L2c += vmin(k,b)(c,j)*t2(a,c)(i,k);
+            //L2c -= vmin(k,b)(c,i)*t2(a,c)(j,k);
+            //L2c -= vmin(k,a)(c,j)*t2(b,c)(i,k);
+            //L2c += vmin(k,a)(c,i)*t2(b,c)(j,k);
 
         }
     }
