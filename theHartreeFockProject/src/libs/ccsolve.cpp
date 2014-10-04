@@ -49,7 +49,7 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
 
                     //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
                     //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,k)(j,l);
-                    sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(j,l)(k,i);
+                    sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,k)(j,l);
                 }
             }
         }
@@ -71,7 +71,7 @@ void ccsolve::SetupMinimizedBasis(){
             for(int c=0; c<nStates; c++){
                 for(int d=0; d<nStates; d++){
                     //vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
-                    vmin(a,b)(d,c) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
+                    vmin(c,b)(a,d) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
                 }
             }
         }
