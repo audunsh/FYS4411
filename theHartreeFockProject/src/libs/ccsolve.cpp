@@ -18,6 +18,10 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
     hfobject = object;
     nElectrons = nElect; //Fermi level is defined by number of electrons
     nStates = hfobject.C.n_cols;
+
+    hfobject.C.col(3)*=-1;
+    hfobject.C.col(5)*=-1;
+
     cout << "CCSolve Found " << nStates << " number of basis functions in the RHF Roothaan expansion." << endl;
     SetupMinimizedBasis();
     ExpandMinimizedBasis(); //Include spin orthogonality
@@ -47,9 +51,9 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
                     //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.coupledMatrix(i,j)(k,l);
                     //sm += hfobject.C(a,i)*hfobject.C(b,j)*hfobject.C(c,k)*hfobject.C(d,l)*hfobject.Bs.v(i,j)(k,l);
 
-                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
+                    sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
                     //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,k)(j,l);
-                    sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,k)(j,l);
+                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.coupledMatrix(i,k)(j,l);
                 }
             }
         }
@@ -71,7 +75,7 @@ void ccsolve::SetupMinimizedBasis(){
             for(int c=0; c<nStates; c++){
                 for(int d=0; d<nStates; d++){
                     //vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
-                    vmin(c,b)(a,d) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
+                    vmin(a,b)(c,d) = GetCoupledElement(a,b,c,d) ; //Adjusting this parameter to compensate for notational differences
                 }
             }
         }
@@ -84,6 +88,8 @@ void ccsolve::ExpandMinimizedBasis(){
     temp_mo = vmin;
     vmin.set_size(nStates, nStates);
     fmin.set_size(nStates, nStates);
+    fmin.zeros();
+    //hfobject.C.col(4)*=-1;
 
     double val1 = 0.0;
     double val2 = 0.0;
@@ -102,12 +108,15 @@ void ccsolve::ExpandMinimizedBasis(){
 
                     val1 = equalfunc(p%2,q%2) * equalfunc(r%2,s%2) * temp_mo(p/2,q/2)(r/2,s/2);
                     val2 = equalfunc(p%2,s%2) * equalfunc(r%2,q%2) * temp_mo(p/2,s/2)(r/2,q/2);
+                    vmin(p,r)(q,s) = val1 -val2;
+
+
 
                     //val2 = equalfunc(a%2,j%2) * equalfunc(i%2,b%2) * temp_mo(a/2,j/2)(i/2,b/2); //Originals
-
                     //val2 = equalfunc(p%2,r%2) * equalfunc(q%2,s%2) * temp_mo(p/2,q/2)(s/2,r/2); //Originals
+                    //vmin(p,r)(q,s) = val1 -val2; //original
 
-                    vmin(p,r)(q,s) = val2 -val1; //original
+
 
                     //vmin(a,b)(i,j) = val1 -val2;
                     //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
@@ -121,6 +130,7 @@ void ccsolve::ExpandMinimizedBasis(){
     }
     cout << endl;
     vmin.print();
+    //cout << vmin(13,12) << endl;
 }
 
 void ccsolve::expandC(){
@@ -564,7 +574,7 @@ void ccsolve::CCD(){
                 for(int j = 0; j<nElectrons; j++){
                     for(int i=j+1; i<nElectrons; i++){
                         //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
-                        t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCDL(a,b,i,j) + 0*CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
 
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);
