@@ -110,6 +110,8 @@ void ccsolve::ExpandMinimizedBasis(){
                     val2 = equalfunc(p%2,s%2) * equalfunc(r%2,q%2) * temp_mo(p/2,s/2)(r/2,q/2);
                     vmin(p,r)(q,s) = val1 - val2;
 
+
+
                     //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,q/2)(r/2,s/2), temp_mo(p/2,s/2)(r/2,q/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
                     //vmin(p,r)(q,s) = hfobject.Bs.state(p,r,q,s, temp_mo(p/2,r/2)(q/2,s/2), temp_mo(p/2,r/2)(q/2,s/2)); //THIS PRODUCES SAME RESULTS (vmin) AS FROM NORDLI
 
