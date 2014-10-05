@@ -23,6 +23,11 @@ public:
     bool unconverged(double tolerance);
     double CCDQ(int a, int b, int i, int j);
     double CCDL(int a, int b, int i, int j);
+
+    double CCDQ2(int a, int b, int i, int j);
+    double CCDL2(int a, int b, int i, int j);
+    void retranslate();
+
     double GetCoupledElement(int a, int b, int c, int d);
     double GetUncoupledElement(int a, int b);
     double energy();
@@ -51,8 +56,12 @@ private:
 
     mat t1new;
     field<mat> t2new;
+    field<mat> t20;
+    field<mat> t2c; //t2 current
+    field<mat> t2p; //t2 previous
     double eprev;
 
 };
 
 #endif // CCSOLVE_H
+

@@ -192,9 +192,9 @@ int main(int argc, char* argv[]) {
         basis BS;
         int nElectrons =10;
         int nProtons = 10;
-        double xCenter = 0.0;
-        double yCenter = 0.0;
-        BS.init_H2O({xCenter-1.4756110550780858,yCenter,0},{xCenter+1.4756110550780858,yCenter,0},{xCenter,yCenter+1.079252144093028,0});
+        double xCenter = 0.1; //0.1 for same coefficient matrix
+        double yCenter =0.3;  //0.3 for same coefficient matrix
+        BS.init_H2O({xCenter-1.4756110550780858,yCenter+1.079252144093028,0},{xCenter+1.4756110550780858,yCenter+1.079252144093028,0},{xCenter,yCenter,0});
 
         //BS.init_O2(corePosH1, corePosH2);
         //BS.nucleusCharges(0) = 1;
