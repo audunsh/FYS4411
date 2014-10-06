@@ -1,5 +1,6 @@
 #include "ccsolve.h"
 #include <hartreefocksolver.h>
+#include <iomanip>
 
 ccsolve::ccsolve()
 {
@@ -29,7 +30,7 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
     SetupT2();
     //retranslate();
     CCD();
-    cout << "Energy:" << energy() << endl;
+    cout << "Energy:" << energy(t2c, t1c) << endl;
 
 }
 
@@ -38,6 +39,13 @@ double ccsolve::GetUncoupledElement(int a, int b){
     if(a==b){
         sm = hfobject.epsilon(a/2);
     }
+
+    //for(int p=0; p<nStates;p++){
+    //    for(int q=0; q<nStates;q++){
+    //        sm += hfobject.C(a,p)*hfobject.C(b,q)*hfobject.Bs.h(p,q);
+    //    }
+    //}
+
     return sm;
 }
 
@@ -123,7 +131,7 @@ void ccsolve::ExpandMinimizedBasis(){
     }
     cout << endl;
     //vmin.print();
-    // vmin(13,12);
+    //vmin(13,12)(0,1)=0.0;
 }
 
 void ccsolve::expandC(){
@@ -454,7 +462,7 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
     return 0.25*Qa + Qb + 0.5*(Qc + Qd);
 }
 
-double ccsolve::CCDQ2(int a, int b, int i, int j){
+double ccsolve::CCDQ2(int a, int b, int i, int j, field<mat> tf){
     //Quadratic contributions to the CCD amplitude equation
     //Call the elements in the following order: vmin(i,j)(a,b)
     double Qa = 0;
@@ -466,7 +474,7 @@ double ccsolve::CCDQ2(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qa += vmin(k,l)(c,d)*t2p(c,d)(i,j)*t2p(a,b)(k,l);
+                    Qa += vmin(k,l)(c,d)*tf(c,d)(i,j)*tf(a,b)(k,l);
                 }
             }
         }
@@ -480,8 +488,8 @@ double ccsolve::CCDQ2(int a, int b, int i, int j){
                     //Qb += vmin(k,l)(c,d)*t2(a,c)(i,k)*t2(d,b)(l,j); (*) Conflictin notation in SB
                     //Qb -= vmin(k,l)(c,d)*t2(a,c)(j,k)*t2(d,b)(l,i);
 
-                    Qb += vmin(k,l)(c,d)*t2p(a,c)(i,k)*t2p(b,d)(j,l);
-                    Qb -= vmin(k,l)(c,d)*t2p(a,c)(j,k)*t2p(b,d)(i,l);
+                    Qb += vmin(k,l)(c,d)*tf(a,c)(i,k)*tf(b,d)(j,l);
+                    Qb -= vmin(k,l)(c,d)*tf(a,c)(j,k)*tf(b,d)(i,l);
                 }
             }
         }
@@ -491,8 +499,8 @@ double ccsolve::CCDQ2(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qc -= vmin(k,l)(c,d)*t2p(d,c)(i,k)*t2p(a,b)(l,j);
-                    Qc += vmin(k,l)(c,d)*t2p(d,c)(j,k)*t2p(a,b)(l,i);
+                    Qc -= vmin(k,l)(c,d)*tf(d,c)(i,k)*tf(a,b)(l,j);
+                    Qc += vmin(k,l)(c,d)*tf(d,c)(j,k)*tf(a,b)(l,i);
                 }
             }
         }
@@ -503,8 +511,8 @@ double ccsolve::CCDQ2(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qd -= vmin(k,l)(c,d)*t2p(a,c)(l,k)*t2p(d,b)(i,j);
-                    Qd += vmin(k,l)(c,d)*t2p(b,c)(l,k)*t2p(d,a)(i,j);
+                    Qd -= vmin(k,l)(c,d)*tf(a,c)(l,k)*tf(d,b)(i,j);
+                    Qd += vmin(k,l)(c,d)*tf(b,c)(l,k)*tf(d,a)(i,j);
                 }
             }
         }
@@ -513,7 +521,7 @@ double ccsolve::CCDQ2(int a, int b, int i, int j){
     return 0.25*Qa + Qb + 0.5*(Qc + Qd);
 }
 
-double ccsolve::CCDL2(int a, int b, int i, int j){
+double ccsolve::CCDL2(int a, int b, int i, int j, field<mat> tf){
     //Linear contributions to the CCD amplitude equation.
     //Call the elements in the following order: v(i,j)(a,b)
     double L1a = 0.0;
@@ -524,17 +532,17 @@ double ccsolve::CCDL2(int a, int b, int i, int j){
 
 
     for(int c = nElectrons; c<nStates; c++){
-        L1a += fmin(b,c)*t2c(a,c)(i,j) - fmin(a,c)*t2c(b,c)(i,j);
+        L1a += fmin(b,c)*tf(a,c)(i,j) - fmin(a,c)*tf(b,c)(i,j);
     }
 
     for(int k = 0; k<nElectrons; k++){
-        L1b -= fmin(k,j)*t2c(a,b)(i,k);
-        L1b += fmin(k,i)*t2c(a,b)(j,k);
+        L1b -= fmin(k,j)*tf(a,b)(i,k);
+        L1b += fmin(k,i)*tf(a,b)(j,k);
     }
 
     for(int c = nElectrons; c<nStates; c++){
         for(int d = nElectrons; d<nStates; d++){
-            L2a += vmin(a,b)(c,d)*t2c(c,d)(i,j); //H2O is highly sensitive to this contribution (2/10 2014)
+            L2a += vmin(a,b)(c,d)*tf(c,d)(i,j); //H2O is highly sensitive to this contribution (2/10 2014)
 
             //L2a += vmin(a,c)(b,d)*t2(c,d)(i,j); //Shuffling some indices
         }
@@ -543,7 +551,7 @@ double ccsolve::CCDL2(int a, int b, int i, int j){
     for(int k = 0; k<nElectrons; k++){
         for(int l = 0; k<nElectrons; k++){
             //L2b += vmin(i,j)(k,l)*t2(a,b)(k,l); //(*) Conflicting notation in SB
-            L2b += vmin(i,j)(k,l)*t2c(a,b)(k,l);
+            L2b += vmin(i,j)(k,l)*tf(a,b)(k,l);
 
             //L2b += vmin(k,i)(l,j)*t2(a,b)(k,l); //shuffling some indices
         }
@@ -551,12 +559,10 @@ double ccsolve::CCDL2(int a, int b, int i, int j){
 
     for(int k= 0; k<nElectrons; k++){
         for(int c = nElectrons; c<nStates; c++){
-            L2c += vmin(k,b)(c,j)*t2c(a,c)(i,k);
-            L2c -= vmin(k,a)(c,j)*t2c(b,c)(i,k);
-            L2c -= vmin(k,b)(c,i)*t2c(a,c)(j,k);
-            L2c += vmin(k,a)(c,i)*t2c(b,c)(j,k);
-
-
+            L2c += vmin(k,b)(c,j)*tf(a,c)(i,k);
+            L2c -= vmin(k,a)(c,j)*tf(b,c)(i,k);
+            L2c -= vmin(k,b)(c,i)*tf(a,c)(j,k);
+            L2c += vmin(k,a)(c,i)*tf(b,c)(j,k);
 
             //L2c += vmin(b,k)(c,j)*t2c(a,c)(i,k);
             //L2c -= vmin(b,k)(c,i)*t2c(a,c)(j,k);
@@ -637,8 +643,8 @@ void ccsolve::CCSD(){
 
         t2 = t2new; //updating the amplitudes
         t1 = t1new;
-        cout <<"::Current energy: " << energy() << endl;
-        eprev = energy(); //updating the energy
+        cout <<"::Current energy: " << energy(t2c,t1c) << endl;
+        eprev = energy(t2c,t1c); //updating the energy
 
         for(int b = nElectrons; b<nStates; b++){
             for(int a = b+1; a<nStates; a++){
@@ -646,11 +652,10 @@ void ccsolve::CCSD(){
                     for(int i=j+1; i<nElectrons; i++){
                         //t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Working, original
                         t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Faulty copy
-
-
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);
                         t2new(b,a)(j,i) =  t2new(a,b)(i,j);
+
                     }
                 }
             }
@@ -679,21 +684,37 @@ void ccsolve::retranslate(){
 
 void ccsolve::CCD(){
     //retranslate();
-    eprev = 4.0;
+    eprev = 1.0;
     maxiter = 100;
     counter = 0;
+    double CCDL2c = 0.0; //contributions
+    double CCDQ2c = 0.0;
+
+
     //Set up and solve the CCSD-equation
     cout << "Performing CCD calculation." << endl;
-    //initT1(); //initial guess for the amplitudes
     initT2(); //Set up initial guess following S-B, p.289
-    //t20 = t2new;
+
+
+    const int naW = 12;
+    cout << endl;
+    cout << "-------------------------------------------------------------------" << endl;
+    cout << "Iteration   CCDEnergy   0th Cont.   Lin.Cont.   Quad.cont." << endl;
+    cout << "-------------------------------------------------------------------" << endl;
+
     while(unconverged(.00000001)){
-        cout <<"Current energy: " << CCDenergy() << endl;
+        CCDL2c = 0.0; //contributions
+        CCDQ2c = 0.0;
+        eprev = energy(t2c, t1c); //updating the energy
+        cout << left << setw(naW) << setfill(' ') << counter;
+        cout << left << setw(naW) << setfill(' ') << eprev ; //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2new0, t1c);
+        cout << left << setw(naW) << setfill(' ') << energy(t2newL, t1c); //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2newQ, t1c); //printing out results
 
 
-        //t2 = t2new; //updating the amplitudes
-        //t1 = t1new;
-        eprev = CCDenergy(); //updating the energy
+
+
         for(int b = nElectrons; b<nStates; b++){
             for(int a = b+1; a<nStates; a++){
                 for(int j = 0; j<nElectrons; j++){
@@ -702,11 +723,28 @@ void ccsolve::CCD(){
                         //t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
                         //t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCDL2(a,b,i,j) + CCDQ2(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                         //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL2(a,b,i,j) + 0*CCDQ2(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
-                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL2(a,b,i,j) + CCDQ2(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
 
+                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL2(a,b,i,j, t2c) + CCDQ2(a,b,i,j,t2p))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);
                         t2new(b,a)(j,i) =  t2new(a,b)(i,j);
+
+
+                        t2new0(a,b)(i,j) = vmin(a,b)(i,j)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2new0(b,a)(i,j) = -t2new0(a,b)(i,j);
+                        t2new0(a,b)(j,i) = -t2new0(a,b)(i,j);
+                        t2new0(b,a)(j,i) =  t2new0(a,b)(i,j);
+
+                        t2newL(a,b)(i,j) = CCDL2(a,b,i,j, t2c)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newL(b,a)(i,j) = -t2newL(a,b)(i,j);
+                        t2newL(a,b)(j,i) = -t2newL(a,b)(i,j);
+                        t2newL(b,a)(j,i) =  t2newL(a,b)(i,j);
+
+                        t2newQ(a,b)(i,j) = CCDQ2(a,b,i,j, t2p)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newQ(b,a)(i,j) = -t2newQ(a,b)(i,j);
+                        t2newQ(a,b)(j,i) = -t2newQ(a,b)(i,j);
+                        t2newQ(b,a)(j,i) =  t2newQ(a,b)(i,j);
+
 
                         //t2new(i,j)(a,b) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
                         //t2new(i,j)(b,a) = -t2new(i,j)(a,b);
@@ -717,15 +755,17 @@ void ccsolve::CCD(){
             }
         }
 
+
+        cout << endl;
+
+        //updating the amplitudes
         t2p = t2c;
         t2c = t2new;
-        //t2p = t2new;
-
     }
 }
 
 
-double ccsolve::energy(){
+double ccsolve::energy(field<mat> tf, mat t1f){
     double dE1 = 0;
     double dE2 = 0;
     double dE3 = 0;
@@ -739,8 +779,8 @@ double ccsolve::energy(){
                     //dE += .25*vmin(i,j)(a,b)*t2new(a,b)(i,j);
                     //dE +=  .5*vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j);
 
-                    dE1 += vmin(i,j)(a,b)*t2new(a,b)(i,j);
-                    dE2 += vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j);
+                    dE1 += vmin(i,j)(a,b)*tf(a,b)(i,j);
+                    dE2 += vmin(i,j)(a,b)*t1f(a,i)*t1f(b,j);
                 }
             }
         }
@@ -749,7 +789,7 @@ double ccsolve::energy(){
     for(int i = 0; i<nElectrons; i++){
         for(int a=nElectrons; a<nStates; a++){
             //since i!=a this will never contribute to the energy when using a HF SD.
-            dE3 += fmin(i,a)*t1new(a,i);
+            dE3 += fmin(i,a)*t1f(a,i);
         }
     }
 
@@ -767,31 +807,34 @@ double ccsolve::equalfunc(int a, int b){
 }
 
 
-double ccsolve::CCDenergy(){
+double ccsolve::CCDenergy(field<mat>tf){
     double dE = 0;
     for(int i = 0; i<nElectrons; i++){
         for(int j = 0; j<nElectrons; j++){
             for(int a=nElectrons; a<nStates; a++){
                 for(int b=nElectrons; b<nStates; b++){
                     //dE += vmin(i,j)(a,b)*t2new(a,b)(i,j);
-                    dE += .25*vmin(i,j)(a,b)*t2c(a,b)(i,j);
+                    dE += vmin(i,j)(a,b)*tf(a,b)(i,j);
+                    //dE += .25*vmin(a,b)(i,j)*t2c(a,b)(i,j);
 
 
                 }
             }
         }
     }
-    return dE;
+    return .25*dE;
 }
 
 
 bool ccsolve::unconverged(double tolerance){
+    //Convergence criteria for CC iterations
     bool condition = true;
-    if(abs(energy()-eprev)<tolerance){
-        cout << "Converged at " << abs(energy()-eprev) << endl;
+    double ec = energy(t2c,t1c);
+    if(abs(ec-eprev)<tolerance){
+        cout << "Converged at " << abs(ec-eprev) << endl;
         condition = false;
     }
-    if(energy()!=energy()){condition = false;}
+    if(ec!=ec){condition = false;}
     if(counter > maxiter){
         cout << "Maximum number of iterations exceeded. (" << maxiter << ")" << endl;
         condition = false;}
@@ -801,6 +844,7 @@ bool ccsolve::unconverged(double tolerance){
 
 
 void ccsolve::initT2(){
+    //initial values for T2 amplitudes
     for(int a=nElectrons; a<nStates; a++){
         for(int b=nElectrons; b<nStates; b++){
             for(int i=0;i<nElectrons;i++){
@@ -816,9 +860,11 @@ void ccsolve::initT2(){
 
 
 void ccsolve::initT1(){
+    //initial value for T1 amplitudes
     for(int a=nElectrons; a<nStates; a++){
         for(int i=0; i<nElectrons; i++){
             t1new(i,a) = fmin(a,i)/(fmin(i,i) - fmin(a,a));
+            t1c(i,a) = fmin(a,i)/(fmin(i,i) - fmin(a,a));
         }
     }
 }
@@ -827,6 +873,10 @@ void ccsolve::initT1(){
 void ccsolve::SetupT1(){
     t1.set_size(nStates, nStates);
     t1.zeros();
+    t1c.set_size(nStates, nStates);
+    t1c.zeros();
+    t1p.set_size(nStates, nStates);
+    t1p.zeros();
     t1new.set_size(nStates, nStates);
     t1new.zeros();
 
@@ -840,12 +890,26 @@ void ccsolve::SetupT2(){
     t2c.set_size(nStates, nStates);
     t2p.set_size(nStates, nStates);
     t2new.set_size(nStates, nStates);
+    t2new0.set_size(nStates, nStates);
+    t2newL.set_size(nStates, nStates);
+    t2newQ.set_size(nStates, nStates);
+
     for(int i = 0; i<nStates; i++){
         for(int j =0;j<nStates; j++){
             t2(i,j).set_size(nStates, nStates);
             t2(i,j).zeros();
             t2new(i,j).set_size(nStates, nStates);
             t2new(i,j).zeros();
+
+            t2new0(i,j).set_size(nStates, nStates);
+            t2new0(i,j).zeros();
+
+            t2newL(i,j).set_size(nStates, nStates);
+            t2newL(i,j).zeros();
+
+            t2newQ(i,j).set_size(nStates, nStates);
+            t2newQ(i,j).zeros();
+
             t2c(i,j).set_size(nStates, nStates);
             t2c(i,j).zeros();
             t2p(i,j).set_size(nStates, nStates);

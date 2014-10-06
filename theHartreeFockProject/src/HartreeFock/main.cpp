@@ -204,7 +204,9 @@ int main(int argc, char* argv[]) {
         //BS.h.print();
         hartreefocksolver object (BS, nElectrons, nProtons);
         double energy = object.solve();
-        cout << "Hartree-Fock energy:" << energy << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "Restricted Hartree-Fock energy:" << energy << endl;
+        cout << "-------------------------------------------------------------------" << endl;
         ccsolve ccobject (object, nElectrons);
         cout << "End of program." << endl;
     }
