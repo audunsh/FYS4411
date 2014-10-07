@@ -24,8 +24,8 @@ public:
     double CCDQ(int a, int b, int i, int j);
     double CCDL(int a, int b, int i, int j);
 
-    double CCDQ2(int a, int b, int i, int j, field<mat> tf);
-    double CCDL2(int a, int b, int i, int j, field<mat> tf);
+    double CCDQ2(int a, int b, int i, int j, field<mat> tf, double Qac, double Qbc, double Qcc, double Qdc);
+    double CCDL2(int a, int b, int i, int j, field<mat> tf, double L1ac, double L1bc,double L2ac,double L2bc,double L2cc);
     void retranslate();
 
     double GetCoupledElement(int a, int b, int c, int d);
@@ -61,10 +61,34 @@ private:
 
     field<mat> tf;
     field<mat> t1f;
+
     field<mat> t2new;
+
     field<mat> t2newL;
     field<mat> t2newQ;
     field<mat> t2new0;
+
+    field<mat> t2newL2a;
+    field<mat> t2newL2b;
+    field<mat> t2newL2c;
+
+    field<mat> t2newQa;
+    field<mat> t2newQb;
+    field<mat> t2newQc;
+    field<mat> t2newQd;
+
+    field<mat> t2newLp;
+    field<mat> t2newQp;
+    field<mat> t2new0p;
+
+    field<mat> t2newL2ap;
+    field<mat> t2newL2bp;
+    field<mat> t2newL2cp;
+
+    field<mat> t2newQap;
+    field<mat> t2newQbp;
+    field<mat> t2newQcp;
+    field<mat> t2newQdp;
 
     field<mat> t20;
     field<mat> t2c; //t2 current

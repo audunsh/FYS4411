@@ -175,7 +175,7 @@ int main(int argc, char* argv[]) {
             RHFe(i) = object.solve();
             //cout << "Hartree-Fock energy:" << energy << endl;
             ccsolve ccobject (object, nElectrons);
-            CCSDe(i) = ccobject.energy();
+            //CCSDe(i) = ccobject.energy();
         }
         RHFe.print();
         cout << endl;
@@ -186,14 +186,15 @@ int main(int argc, char* argv[]) {
         cout << "End of program." << endl;
     }
 
-    if(true){
+    if(false){
 
         //Calculate H2O Ground state energy
         basis BS;
-        int nElectrons =10;
-        int nProtons = 10;
+        int nElectrons =2;
+        int nProtons = 2;
         double xCenter = 0.1; //0.1 for same coefficient matrix
         double yCenter =0.3;  //0.3 for same coefficient matrix
+        //vec3 corePos
         BS.init_H2O({xCenter-1.4756110550780858,yCenter+1.079252144093028,0},{xCenter+1.4756110550780858,yCenter+1.079252144093028,0},{xCenter,yCenter,0});
 
         //BS.init_O2(corePosH1, corePosH2);
@@ -211,7 +212,7 @@ int main(int argc, char* argv[]) {
         cout << "End of program." << endl;
     }
 
-    if(false){
+    if(true){
         //Calculate H2 Ground state energy
         basis BS;
         int nElectrons =2;
@@ -230,7 +231,9 @@ int main(int argc, char* argv[]) {
         //BS.h.print();
         hartreefocksolver object (BS, nElectrons, nProtons);
         double energy = object.solve();
-        cout << "Hartree-Fock energy:" << energy << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "Restricted Hartree-Fock energy:" << energy << " (STO-3g)" << endl;
+        cout << "-------------------------------------------------------------------" << endl;
         ccsolve ccobject (object, nElectrons);
         cout << "End of program." << endl;
     }

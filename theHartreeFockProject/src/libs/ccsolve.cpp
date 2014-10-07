@@ -462,7 +462,7 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
     return 0.25*Qa + Qb + 0.5*(Qc + Qd);
 }
 
-double ccsolve::CCDQ2(int a, int b, int i, int j, field<mat> tf){
+double ccsolve::CCDQ2(int a, int b, int i, int j, field<mat> tf, double Qac, double Qbc, double Qcc, double Qdc){
     //Quadratic contributions to the CCD amplitude equation
     //Call the elements in the following order: vmin(i,j)(a,b)
     double Qa = 0;
@@ -518,10 +518,11 @@ double ccsolve::CCDQ2(int a, int b, int i, int j, field<mat> tf){
         }
     }
     //Qd *= .5;
-    return 0.25*Qa + Qb + 0.5*(Qc + Qd);
+    //return 0.25*Qa + Qb + 0.5*(Qc + Qd);
+    return Qac*Qa + Qbc*Qb + Qcc*Qc + Qdc*Qd;
 }
 
-double ccsolve::CCDL2(int a, int b, int i, int j, field<mat> tf){
+double ccsolve::CCDL2(int a, int b, int i, int j, field<mat> tf, double L1ac, double L1bc,double L2ac,double L2bc,double L2cc){
     //Linear contributions to the CCD amplitude equation.
     //Call the elements in the following order: v(i,j)(a,b)
     double L1a = 0.0;
@@ -570,7 +571,7 @@ double ccsolve::CCDL2(int a, int b, int i, int j, field<mat> tf){
             //L2c += vmin(a,k)(c,i)*t2c(b,c)(j,k);
         }
     }
-    return .5*(L2a + L2b) + L2c; //0*.65*L2c;
+    return L1ac*L1a + L1bc*L1b + L2ac*L2a + L2bc*L2b + L2cc*L2c; //0*.65*L2c;
 
 }
 
@@ -696,11 +697,12 @@ void ccsolve::CCD(){
     initT2(); //Set up initial guess following S-B, p.289
 
 
-    const int naW = 12;
+    const int naW = 14;
     cout << endl;
-    cout << "-------------------------------------------------------------------" << endl;
-    cout << "Iteration   CCDEnergy   0th Cont.   Lin.Cont.   Quad.cont." << endl;
-    cout << "-------------------------------------------------------------------" << endl;
+
+    cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+    cout << "Iteration     CCDEnergy     MBPT(2)        Linear        L2a           L2b           L2c           Quadratic     Qa            Qb            Qc            Qd" << endl;
+    cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
     while(unconverged(.00000001)){
         CCDL2c = 0.0; //contributions
@@ -710,8 +712,15 @@ void ccsolve::CCD(){
         cout << left << setw(naW) << setfill(' ') << eprev ; //printing out results
         cout << left << setw(naW) << setfill(' ') << energy(t2new0, t1c);
         cout << left << setw(naW) << setfill(' ') << energy(t2newL, t1c); //printing out results
-        cout << left << setw(naW) << setfill(' ') << energy(t2newQ, t1c); //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2newL2a, t1c); //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2newL2b, t1c); //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2newL2c, t1c); //printing out results
 
+        cout << left << setw(naW) << setfill(' ') << energy(t2newQ, t1c); //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2newQa, t1c); //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2newQb, t1c); //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2newQc, t1c); //printing out results
+        cout << left << setw(naW) << setfill(' ') << energy(t2newQd, t1c); //printing out results
 
 
 
@@ -724,26 +733,65 @@ void ccsolve::CCD(){
                         //t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCDL2(a,b,i,j) + CCDQ2(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                         //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL2(a,b,i,j) + 0*CCDQ2(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
 
-                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL2(a,b,i,j, t2c) + CCDQ2(a,b,i,j,t2p))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCDL2(a,b,i,j, t2c,0.0,0.0,0.5,0.5,1.0) + CCDQ2(a,b,i,j,t2p,0.25,1.0,0.5,0.5))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);
                         t2new(b,a)(j,i) =  t2new(a,b)(i,j);
-
 
                         t2new0(a,b)(i,j) = vmin(a,b)(i,j)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                         t2new0(b,a)(i,j) = -t2new0(a,b)(i,j);
                         t2new0(a,b)(j,i) = -t2new0(a,b)(i,j);
                         t2new0(b,a)(j,i) =  t2new0(a,b)(i,j);
 
-                        t2newL(a,b)(i,j) = CCDL2(a,b,i,j, t2c)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newL(a,b)(i,j) = CCDL2(a,b,i,j, t2c,0.0,0.0,0.5,0.5,1.0)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                         t2newL(b,a)(i,j) = -t2newL(a,b)(i,j);
                         t2newL(a,b)(j,i) = -t2newL(a,b)(i,j);
                         t2newL(b,a)(j,i) =  t2newL(a,b)(i,j);
 
-                        t2newQ(a,b)(i,j) = CCDQ2(a,b,i,j, t2p)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+
+                        t2newL2a(a,b)(i,j) = CCDL2(a,b,i,j, t2c,0.0,0.0,0.5,0,0)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newL2a(b,a)(i,j) = -t2newL2a(a,b)(i,j);
+                        t2newL2a(a,b)(j,i) = -t2newL2a(a,b)(i,j);
+                        t2newL2a(b,a)(j,i) =  t2newL2a(a,b)(i,j);
+
+                        t2newL2b(a,b)(i,j) = CCDL2(a,b,i,j, t2c,0.0,0.0,0,0.5,0)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newL2b(b,a)(i,j) = -t2newL2b(a,b)(i,j);
+                        t2newL2b(a,b)(j,i) = -t2newL2b(a,b)(i,j);
+                        t2newL2b(b,a)(j,i) =  t2newL2b(a,b)(i,j);
+
+                        t2newL2c(a,b)(i,j) = CCDL2(a,b,i,j, t2c,0.0,0.0,0,0,1.0)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newL2c(b,a)(i,j) = -t2newL2c(a,b)(i,j);
+                        t2newL2c(a,b)(j,i) = -t2newL2c(a,b)(i,j);
+                        t2newL2c(b,a)(j,i) =  t2newL2c(a,b)(i,j);
+
+
+                        t2newQ(a,b)(i,j) = CCDQ2(a,b,i,j, t2p,0.25,1.0,0.5,0.5)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
                         t2newQ(b,a)(i,j) = -t2newQ(a,b)(i,j);
                         t2newQ(a,b)(j,i) = -t2newQ(a,b)(i,j);
                         t2newQ(b,a)(j,i) =  t2newQ(a,b)(i,j);
+
+                        t2newQa(a,b)(i,j) = CCDQ2(a,b,i,j, t2p,0.25,0,0,0)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newQa(b,a)(i,j) = -t2newQa(a,b)(i,j);
+                        t2newQa(a,b)(j,i) = -t2newQa(a,b)(i,j);
+                        t2newQa(b,a)(j,i) =  t2newQa(a,b)(i,j);
+
+                        t2newQb(a,b)(i,j) = CCDQ2(a,b,i,j, t2p,0,1.0,0,0)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newQb(b,a)(i,j) = -t2newQb(a,b)(i,j);
+                        t2newQb(a,b)(j,i) = -t2newQb(a,b)(i,j);
+                        t2newQb(b,a)(j,i) =  t2newQb(a,b)(i,j);
+
+                        t2newQc(a,b)(i,j) = CCDQ2(a,b,i,j, t2p,0,0,0.5,0)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newQc(b,a)(i,j) = -t2newQc(a,b)(i,j);
+                        t2newQc(a,b)(j,i) = -t2newQc(a,b)(i,j);
+                        t2newQc(b,a)(j,i) =  t2newQc(a,b)(i,j);
+
+                        t2newQd(a,b)(i,j) = CCDQ2(a,b,i,j, t2p,0,0,0,0.5)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
+                        t2newQd(b,a)(i,j) = -t2newQd(a,b)(i,j);
+                        t2newQd(a,b)(j,i) = -t2newQd(a,b)(i,j);
+                        t2newQd(b,a)(j,i) =  t2newQd(a,b)(i,j);
+
+
+
 
 
                         //t2new(i,j)(a,b) = (vmin(a,b)(i,j) + CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working until 1. iteration
@@ -761,6 +809,21 @@ void ccsolve::CCD(){
         //updating the amplitudes
         t2p = t2c;
         t2c = t2new;
+
+        t2newQp = t2newQ;
+        t2newLp = t2newL;
+
+        t2newQap = t2newQa;
+        t2newQbp = t2newQb;
+        t2newQcp = t2newQc;
+        t2newQdp = t2newQd;
+
+        t2newL2a = t2newL2a;
+        t2newL2b = t2newL2b;
+        t2newL2c = t2newL2c;
+
+
+
     }
 }
 
@@ -852,10 +915,24 @@ void ccsolve::initT2(){
                     //t2new(a,b)(i,j) = vmin(i,j)(a,b)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Original, working
                     t2c(a,b)(i,j) = vmin(a,b)(i,j)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b));
 
+
+
                 }
             }
         }
     }
+    t2newLp   = t2c;
+    t2newL2ap = t2c;
+    t2newL2bp = t2c;
+    t2newL2cp = t2c;
+
+    t2newQp  = t2c;
+    t2newQap = t2c;
+    t2newQbp = t2c;
+    t2newQcp = t2c;
+    t2newQdp = t2c;
+
+
 }
 
 
@@ -891,8 +968,17 @@ void ccsolve::SetupT2(){
     t2p.set_size(nStates, nStates);
     t2new.set_size(nStates, nStates);
     t2new0.set_size(nStates, nStates);
+
     t2newL.set_size(nStates, nStates);
+    t2newL2a.set_size(nStates, nStates);
+    t2newL2b.set_size(nStates, nStates);
+    t2newL2c.set_size(nStates, nStates);
+
     t2newQ.set_size(nStates, nStates);
+    t2newQa.set_size(nStates, nStates);
+    t2newQb.set_size(nStates, nStates);
+    t2newQc.set_size(nStates, nStates);
+    t2newQd.set_size(nStates, nStates);
 
     for(int i = 0; i<nStates; i++){
         for(int j =0;j<nStates; j++){
@@ -907,8 +993,24 @@ void ccsolve::SetupT2(){
             t2newL(i,j).set_size(nStates, nStates);
             t2newL(i,j).zeros();
 
+            t2newL2a(i,j).set_size(nStates, nStates);
+            t2newL2a(i,j).zeros();
+            t2newL2b(i,j).set_size(nStates, nStates);
+            t2newL2b(i,j).zeros();
+            t2newL2c(i,j).set_size(nStates, nStates);
+            t2newL2c(i,j).zeros();
+
             t2newQ(i,j).set_size(nStates, nStates);
             t2newQ(i,j).zeros();
+
+            t2newQa(i,j).set_size(nStates, nStates);
+            t2newQa(i,j).zeros();
+            t2newQb(i,j).set_size(nStates, nStates);
+            t2newQb(i,j).zeros();
+            t2newQc(i,j).set_size(nStates, nStates);
+            t2newQc(i,j).zeros();
+            t2newQd(i,j).set_size(nStates, nStates);
+            t2newQd(i,j).zeros();
 
             t2c(i,j).set_size(nStates, nStates);
             t2c(i,j).zeros();
