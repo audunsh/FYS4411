@@ -29,7 +29,7 @@ ccsolve::ccsolve(hartreefocksolver object, int nElect)
     SetupT1();
     SetupT2();
     //retranslate();
-    CCD();
+    CCSD();
     correlation_energy = energy(t2c,t1c);
     //cout << "Energy:" << energy(t2c, t1c) << endl;
 
@@ -171,7 +171,7 @@ double ccsolve::CCSD_Single(int a,int i){
         for(c=nElectrons;c<nStates;c++){
             S2a+=fmin(k,c)*t2(a,c)(i,k);
             for(d=nElectrons;d<nStates;d++){
-                S2b+=vmin(a,k)(c,d)*t2(c,d)(i,k);
+                S2b+=vmin(a,k)(c,d)*t2c(c,d)(i,k);
             }
         }
     }
@@ -180,20 +180,20 @@ double ccsolve::CCSD_Single(int a,int i){
     for(k=0;k<nElectrons;k++){
         for(l=0;l<nElectrons;l++){
             for(c=nElectrons;c<nStates;c++){
-                S2c-=vmin(k,l)(i,c)*t2(a,c)(k,l);
+                S2c-=vmin(k,l)(i,c)*t2c(a,c)(k,l);
             }
         }
     }
 
     for(c=nElectrons;c<nStates;c++){
-        S3a+=fmin(a,c)*t1(c,i);
+        S3a+=fmin(a,c)*t1c(c,i);
     }
 
 
     for(k=0;k<nElectrons;k++){
         S3b-=fmin(k,i)*t1(a,k);
         for(c=nElectrons;c<nStates;c++){
-            S3c += vmin(a,k)(i,c)*t1(c,k);
+            S3c += vmin(a,k)(i,c)*t1c(c,k);
         }
     }
 
@@ -202,10 +202,10 @@ double ccsolve::CCSD_Single(int a,int i){
             for(c=nElectrons;c<nStates;c++){
                 S5c-=vmin(k,l)(i,c)*t1(a,k)*t1(c,l);
                 for(d=nElectrons;d<nStates;d++){
-                    S4a-=vmin(k,l)(c,d)*t1(c,i)*t2(a,d)(k,l);
-                    S4b-=vmin(k,l)(c,d)*t1(a,k)*t2(c,d)(i,l);
-                    S4c+=vmin(k,l)(c,d)*t1(c,k)*t2(d,a)(l,i);
-                    S6-=vmin(k,l)(c,d)*t1(c,i)*t1(a,k)*t1(d,l);
+                    S4a-=vmin(k,l)(c,d)*t1c(c,i)*t2c(a,d)(k,l);
+                    S4b-=vmin(k,l)(c,d)*t1c(a,k)*t2c(c,d)(i,l);
+                    S4c+=vmin(k,l)(c,d)*t1c(c,k)*t2c(d,a)(l,i);
+                    S6-=vmin(k,l)(c,d)*t1c(c,i)*t1c(a,k)*t1c(d,l);
                 }
             }
         }
@@ -213,9 +213,9 @@ double ccsolve::CCSD_Single(int a,int i){
 
     for(k=0;k<nElectrons;k++){
         for(c=nElectrons;c<nStates;c++){
-            S5a -= fmin(k,c)*t1(c,i)*t1(a,k);
+            S5a -= fmin(k,c)*t1c(c,i)*t1c(a,k);
             for(d=nElectrons; d<nStates; d++){
-                S5b += vmin(a,k)(c,d)*t1(c,i)*t1(d,k);
+                S5b += vmin(a,k)(c,d)*t1c(c,i)*t1c(d,k);
             }
         }
     }
@@ -257,28 +257,28 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
 
 
     for(c=nE;c<nS;c++){
-        D4a += vmin(a,b)(c,j)*t1(c,i);
-        D4a -= vmin(a,b)(c,i)*t1(c,j);
+        D4a += vmin(a,b)(c,j)*t1c(c,i);
+        D4a -= vmin(a,b)(c,i)*t1c(c,j);
     }
 
     for(k=0;k<nE;k++){
-        D4b -= vmin(k,b)(i,j)*t1(a,k);
-        D4b += vmin(k,a)(i,j)*t1(b,k);
+        D4b -= vmin(k,b)(i,j)*t1c(a,k);
+        D4b += vmin(k,a)(i,j)*t1c(b,k);
     }
 
     for(k=0;k<nE;k++){
         for(c=nE;c<nS;c++){
-            D5a -= fmin(k,c)*t1(c,i)*t2(a,b)(k,j);
-            D5a += fmin(k,c)*t1(c,j)*t2(a,b)(k,i);
+            D5a -= fmin(k,c)*t1c(c,i)*t2c(a,b)(k,j);
+            D5a += fmin(k,c)*t1c(c,j)*t2c(a,b)(k,i);
 
-            D5b -= fmin(k,c)*t1(a,k)*t2(c,b)(i,j);
-            D5b += fmin(k,c)*t1(b,k)*t2(c,a)(i,j);
+            D5b -= fmin(k,c)*t1c(a,k)*t2c(c,b)(i,j);
+            D5b += fmin(k,c)*t1c(b,k)*t2c(c,a)(i,j);
 
             for(d=nE;d<nS;d++){
-                D5c += vmin(a,k)(c,d)*t1(c,i)*t2(d,b)(k,j);
-                D5c -= vmin(a,k)(c,d)*t1(c,j)*t2(d,b)(k,i);
-                D5c -= vmin(b,k)(c,d)*t1(c,i)*t2(d,a)(k,j);
-                D5c += vmin(b,k)(c,d)*t1(c,j)*t2(d,a)(k,i);
+                D5c += vmin(a,k)(c,d)*t1c(c,i)*t2c(d,b)(k,j);
+                D5c -= vmin(a,k)(c,d)*t1c(c,j)*t2c(d,b)(k,i);
+                D5c -= vmin(b,k)(c,d)*t1c(c,i)*t2c(d,a)(k,j);
+                D5c += vmin(b,k)(c,d)*t1c(c,j)*t2c(d,a)(k,i);
             }
         }
     }
@@ -286,10 +286,10 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
     for(k=0;k<nE;k++){
         for(l=0;l<nE;l++){
             for(c=nE;c<nS;c++){
-                D5d -= vmin(k,l)(i,c)*t1(a,k)*t2(c,b)(l,j);
-                D5d += vmin(k,l)(j,c)*t1(a,k)*t2(c,b)(l,i);
-                D5d += vmin(k,l)(i,c)*t1(b,k)*t2(c,a)(l,j);
-                D5d -= vmin(k,l)(j,c)*t1(b,k)*t2(c,a)(l,i);
+                D5d -= vmin(k,l)(i,c)*t1c(a,k)*t2c(c,b)(l,j);
+                D5d += vmin(k,l)(j,c)*t1c(a,k)*t2c(c,b)(l,i);
+                D5d += vmin(k,l)(i,c)*t1c(b,k)*t2c(c,a)(l,j);
+                D5d -= vmin(k,l)(j,c)*t1c(b,k)*t2c(c,a)(l,i);
             }
         }
     }
@@ -297,8 +297,8 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
     for(k=0;k<nE;k++){
         for(c=nE;c<nS;c++){
             for(d=nE;d<nS;d++){
-                D5e -= vmin(k,b)(c,d)*t1(a,k)*t2(c,d)(i,j);
-                D5e += vmin(k,a)(c,d)*t1(b,k)*t2(c,d)(i,j);
+                D5e -= vmin(k,b)(c,d)*t1c(a,k)*t2c(c,d)(i,j);
+                D5e += vmin(k,a)(c,d)*t1c(b,k)*t2c(c,d)(i,j);
             }
         }
     }
@@ -306,8 +306,8 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
     for(k=0;k<nE;k++){
         for(l=0;l<nE;l++){
             for(c=nE;c<nS;c++){
-                D5f += vmin(k,l)(c,j)*t1(c,i)*t2(a,b)(k,l);
-                D5f -= vmin(k,l)(c,i)*t1(c,j)*t2(a,b)(k,l);
+                D5f += vmin(k,l)(c,j)*t1c(c,i)*t2c(a,b)(k,l);
+                D5f -= vmin(k,l)(c,i)*t1c(c,j)*t2c(a,b)(k,l);
             }
         }
     }
@@ -315,8 +315,8 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
     for(k=0;k<nE;k++){
         for(c=nE;c<nS;c++){
             for(d=nE;d<nS;d++){
-                D5g += vmin(k,a)(c,d)*t1(c,k)*t2(d,b)(i,j);
-                D5g -= vmin(k,b)(c,d)*t1(c,k)*t2(d,a)(i,j);
+                D5g += vmin(k,a)(c,d)*t1c(c,k)*t2c(d,b)(i,j);
+                D5g -= vmin(k,b)(c,d)*t1c(c,k)*t2c(d,a)(i,j);
             }
         }
     }
@@ -325,30 +325,30 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
     for(k=0;k<nE;k++){
         for(l=0;l<nE;l++){
             for(c=nE;c<nS;c++){
-                D5h -= vmin(k,l)(c,i)*t1(c,k)*t2(a,b)(l,j);
-                D5h += vmin(k,l)(c,j)*t1(c,k)*t2(a,b)(l,i);
+                D5h -= vmin(k,l)(c,i)*t1c(c,k)*t2c(a,b)(l,j);
+                D5h += vmin(k,l)(c,j)*t1c(c,k)*t2c(a,b)(l,i);
             }
         }
     }
 
     for(c=nE;c<nS;c++){
         for(d=nE;d<nS;d++){
-            D6a += vmin(a,b)(c,d)*t1(c,i)*t1(d,j);
+            D6a += vmin(a,b)(c,d)*t1c(c,i)*t1c(d,j);
         }
     }
 
     for(k=0;k<nE;k++){
         for(l=0;l<nE;l++){
-            D6b += vmin(k,l)(i,j)*t1(a,k)*t1(b,l);
+            D6b += vmin(k,l)(i,j)*t1c(a,k)*t1c(b,l);
         }
     }
 
     for(k=0;k<nE;k++){
         for(c=nE;c<nS;c++){
-            D6c -= vmin(k,b)(c,j)*t1(c,i)*t1(a,k);
-            D6c += vmin(k,b)(c,i)*t1(c,j)*t1(a,k);
-            D6c += vmin(k,a)(c,j)*t1(c,i)*t1(b,k);
-            D6c -= vmin(k,a)(c,i)*t1(c,j)*t1(b,k);
+            D6c -= vmin(k,b)(c,j)*t1c(c,i)*t1c(a,k);
+            D6c += vmin(k,b)(c,i)*t1c(c,j)*t1c(a,k);
+            D6c += vmin(k,a)(c,j)*t1c(c,i)*t1c(b,k);
+            D6c -= vmin(k,a)(c,i)*t1c(c,j)*t1c(b,k);
         }
     }
 
@@ -356,19 +356,19 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
         for(l=0;l<nE;l++){
             for(c=nE;c<nS;c++){
                 for(d=nE; d<nS;d++){
-                    D7a += vmin(k,l)(c,d)*t1(c,i)*t1(d,j)*t2(a,b)(k,l);
-                    D7b += vmin(k,l)(c,d)*t1(a,k)*t1(b,l)*t2(c,d)(i,j);
+                    D7a += vmin(k,l)(c,d)*t1c(c,i)*t1c(d,j)*t2c(a,b)(k,l);
+                    D7b += vmin(k,l)(c,d)*t1c(a,k)*t1c(b,l)*t2c(c,d)(i,j);
 
-                    D7c -= vmin(k,l)(c,d)*t1(c,i)*t1(a,k)*t2(d,b)(l,j);
-                    D7c += vmin(k,l)(c,d)*t1(c,j)*t1(a,k)*t2(d,b)(l,i);
-                    D7c += vmin(k,l)(c,d)*t1(c,i)*t1(b,k)*t2(d,a)(l,j);
-                    D7c -= vmin(k,l)(c,d)*t1(c,j)*t1(b,k)*t2(d,a)(l,i);
+                    D7c -= vmin(k,l)(c,d)*t1c(c,i)*t1c(a,k)*t2c(d,b)(l,j);
+                    D7c += vmin(k,l)(c,d)*t1c(c,j)*t1c(a,k)*t2c(d,b)(l,i);
+                    D7c += vmin(k,l)(c,d)*t1c(c,i)*t1c(b,k)*t2c(d,a)(l,j);
+                    D7c -= vmin(k,l)(c,d)*t1c(c,j)*t1c(b,k)*t2c(d,a)(l,i);
 
-                    D7d -= vmin(k,l)(c,d)*t1(c,k)*t1(d,i)*t2(a,b)(l,j);
-                    D7d += vmin(k,l)(c,d)*t1(c,k)*t1(d,j)*t2(a,b)(l,i);
+                    D7d -= vmin(k,l)(c,d)*t1c(c,k)*t1c(d,i)*t2c(a,b)(l,j);
+                    D7d += vmin(k,l)(c,d)*t1c(c,k)*t1c(d,j)*t2c(a,b)(l,i);
 
-                    D7e -= vmin(k,l)(c,d)*t1(c,k)*t1(a,l)*t2(d,b)(i,j);
-                    D7e += vmin(k,l)(c,d)*t1(c,k)*t1(b,l)*t2(d,a)(i,j);
+                    D7e -= vmin(k,l)(c,d)*t1c(c,k)*t1c(a,l)*t2c(d,b)(i,j);
+                    D7e += vmin(k,l)(c,d)*t1c(c,k)*t1c(b,l)*t2c(d,a)(i,j);
                 }
             }
         }
@@ -377,8 +377,8 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
     for(k=0;k<nE;k++){
         for(c=nE;c<nS;c++){
             for(d=nE;d<nS;d++){
-                D8a += vmin(k,b)(c,d)*t1(c,i)*t1(a,k)*t1(d,j);
-                D8a -= vmin(k,a)(c,d)*t1(c,i)*t1(b,k)*t1(d,j);
+                D8a += vmin(k,b)(c,d)*t1c(c,i)*t1c(a,k)*t1c(d,j);
+                D8a -= vmin(k,a)(c,d)*t1c(c,i)*t1c(b,k)*t1c(d,j);
             }
         }
     }
@@ -386,8 +386,8 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
     for(k=0;k<nE;k++){
         for(c=nE;c<nS;c++){
             for(d=nE;d<nS;d++){
-                D8b += vmin(k,l)(c,j)*t1(c,i)*t1(a,k)*t1(b,l);
-                D8b -= vmin(k,l)(c,i)*t1(c,j)*t1(a,k)*t1(b,l);
+                D8b += vmin(k,l)(c,j)*t1c(c,i)*t1c(a,k)*t1c(b,l);
+                D8b -= vmin(k,l)(c,i)*t1c(c,j)*t1c(a,k)*t1c(b,l);
             }
         }
     }
@@ -396,7 +396,7 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
         for(l=0;l<nE;l++){
             for(c=nE;c<nS;c++){
                 for(d=nE; d<nS;d++){
-                    D9 += vmin(k,l)(c,d)*t1(c,i)*t1(d,j)*t1(a,k)*t1(b,l);
+                    D9 += vmin(k,l)(c,d)*t1c(c,i)*t1c(d,j)*t1c(a,k)*t1c(b,l);
                 }
             }
         }
@@ -416,7 +416,7 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qa += vmin(k,l)(c,d)*t2(c,d)(i,j)*t2(a,b)(k,l);
+                    Qa += vmin(k,l)(c,d)*t2c(c,d)(i,j)*t2c(a,b)(k,l);
                 }
             }
         }
@@ -430,8 +430,8 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
                     //Qb += vmin(k,l)(c,d)*t2(a,c)(i,k)*t2(d,b)(l,j); (*) Conflictin notation in SB
                     //Qb -= vmin(k,l)(c,d)*t2(a,c)(j,k)*t2(d,b)(l,i);
 
-                    Qb += vmin(k,l)(c,d)*t2(a,c)(i,k)*t2(b,d)(j,l);
-                    Qb -= vmin(k,l)(c,d)*t2(a,c)(j,k)*t2(b,d)(i,l);
+                    Qb += vmin(k,l)(c,d)*t2c(a,c)(i,k)*t2c(b,d)(j,l);
+                    Qb -= vmin(k,l)(c,d)*t2c(a,c)(j,k)*t2c(b,d)(i,l);
                 }
             }
         }
@@ -441,8 +441,8 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qc -= vmin(k,l)(c,d)*t2(c,d)(k,i)*t2(a,b)(l,j);
-                    Qc += vmin(k,l)(c,d)*t2(c,d)(k,j)*t2(a,b)(l,i);
+                    Qc -= vmin(k,l)(c,d)*t2c(c,d)(k,i)*t2c(a,b)(l,j);
+                    Qc += vmin(k,l)(c,d)*t2c(c,d)(k,j)*t2c(a,b)(l,i);
                 }
             }
         }
@@ -453,8 +453,8 @@ double ccsolve::CCDQ(int a, int b, int i, int j){
         for(int l = 0; l<nElectrons; l++){
             for(int c = nElectrons; c<nStates; c++){
                 for(int d = nElectrons; d<nStates; d++){
-                    Qd -= vmin(k,l)(c,d)*t2(c,a)(k,l)*t2(d,b)(i,j);
-                    Qd += vmin(k,l)(c,d)*t2(c,b)(k,l)*t2(d,a)(i,j);
+                    Qd -= vmin(k,l)(c,d)*t2c(c,a)(k,l)*t2c(d,b)(i,j);
+                    Qd += vmin(k,l)(c,d)*t2c(c,b)(k,l)*t2c(d,a)(i,j);
                 }
             }
         }
@@ -587,26 +587,26 @@ double ccsolve::CCDL(int a, int b, int i, int j){
 
 
     for(int c = nElectrons; c<nStates; c++){
-        L1a += fmin(b,c)*t2(a,c)(i,j) - fmin(a,c)*t2(b,c)(i,j);
+        L1a += fmin(b,c)*t2c(a,c)(i,j) - fmin(a,c)*t2c(b,c)(i,j);
     }
 
     for(int k = 0; k<nElectrons; k++){
-        L1b -= fmin(k,j)*t2(a,b)(i,k);
-        L1b += fmin(k,i)*t2(a,b)(j,k);
+        L1b -= fmin(k,j)*t2c(a,b)(i,k);
+        L1b += fmin(k,i)*t2c(a,b)(j,k);
     }
 
     for(int c = nElectrons; c<nStates; c++){
         for(int d = nElectrons; d<nStates; d++){
-            L2a += vmin(a,b)(c,d)*t2(c,d)(i,j); //H2O is highly sensitive to this contribution (2/10 2014)
+            L2a += vmin(a,b)(c,d)*t2c(c,d)(i,j); //H2O is highly sensitive to this contribution (2/10 2014)
 
             //L2a += vmin(a,c)(b,d)*t2(c,d)(i,j); //Shuffling some indices
         }
     }
 
     for(int k = 0; k<nElectrons; k++){
-        for(int l = 0; k<nElectrons; k++){
+        for(int l = 0; l<nElectrons; l++){
             //L2b += vmin(i,j)(k,l)*t2(a,b)(k,l); //(*) Conflicting notation in SB
-            L2b += vmin(k,l)(i,j)*t2(a,b)(k,l);
+            L2b += vmin(k,l)(i,j)*t2c(a,b)(k,l);
 
             //L2b += vmin(k,i)(l,j)*t2(a,b)(k,l); //shuffling some indices
         }
@@ -614,10 +614,10 @@ double ccsolve::CCDL(int a, int b, int i, int j){
 
     for(int k = 0; k<nElectrons; k++){
         for(int c = nElectrons; c<nStates; c++){
-            L2c -= vmin(a,k)(c,j)*t2(c,b)(i,k);
-            L2c += vmin(a,k)(c,i)*t2(c,b)(j,k);
-            L2c += vmin(b,k)(c,j)*t2(c,a)(i,k);
-            L2c -= vmin(b,k)(c,i)*t2(c,a)(j,k);
+            L2c -= vmin(a,k)(c,j)*t2c(c,b)(i,k);
+            L2c += vmin(a,k)(c,i)*t2c(c,b)(j,k);
+            L2c += vmin(b,k)(c,j)*t2c(c,a)(i,k);
+            L2c -= vmin(b,k)(c,i)*t2c(c,a)(j,k);
 
             //L2c += vmin(k,b)(c,j)*t2(a,c)(i,k);
             //L2c -= vmin(k,b)(c,i)*t2(a,c)(j,k);
@@ -632,7 +632,7 @@ double ccsolve::CCDL(int a, int b, int i, int j){
 }
 
 void ccsolve::CCSD(){
-    eprev = 0.0;
+    eprev = 100.0;
     maxiter = 100;
     counter = 0;
     //Set up and solve the CCSD-equation
@@ -640,13 +640,10 @@ void ccsolve::CCSD(){
     cout << "Performing CCSD calculation." << endl;
     initT1(); //initial guess for the amplitudes
     initT2(); //Set up initial guess following S-B, p.289
-    t20 = t2new;
+    //t20 = t2new;
 
     while(unconverged(.00000001)){
-
-        t2 = t2new; //updating the amplitudes
-        t1 = t1new;
-        cout <<"::Current energy: " << energy(t2c,t1c) << endl;
+        cout <<"::Current energy: " << energy(t2new,t1new) << endl;
         eprev = energy(t2c,t1c); //updating the energy
 
         for(int b = nElectrons; b<nStates; b++){
@@ -668,6 +665,9 @@ void ccsolve::CCSD(){
                 t1new(a,i) = CCSD_Single(a,i)/(fmin(i,i)-fmin(a,a));
             }
         }
+        t2c = t2new;
+        t1c = t1new;
+
     }
 }
 
@@ -845,7 +845,7 @@ double ccsolve::energy(field<mat> tf, mat t1f){
                     //dE +=  .5*vmin(i,j)(a,b)*t1new(a,i)*t1new(b,j);
 
                     dE1 += vmin(i,j)(a,b)*tf(a,b)(i,j);
-                    //dE2 += vmin(i,j)(a,b)*t1f(a,i)*t1f(b,j);
+                    dE2 += vmin(i,j)(a,b)*t1f(a,i)*t1f(b,j);
                 }
             }
         }
@@ -923,6 +923,7 @@ void ccsolve::initT2(){
             }
         }
     }
+    t2new = t2c;
     t2newLp   = t2c;
     t2newL2ap = t2c;
     t2newL2bp = t2c;
