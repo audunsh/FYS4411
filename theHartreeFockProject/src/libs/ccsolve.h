@@ -43,6 +43,8 @@ public:
     int counter;
     int maxiter;
 
+    double correlation_energy;
+
 private:
     field<mat> vmin; //The coupled minimized matrix elements
     field<mat> temp_mo; //quarter sized molecular orbital elements

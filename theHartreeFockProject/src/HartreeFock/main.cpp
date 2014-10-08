@@ -186,12 +186,12 @@ int main(int argc, char* argv[]) {
         cout << "End of program." << endl;
     }
 
-    if(false){
+    if(true){
 
         //Calculate H2O Ground state energy
         basis BS;
-        int nElectrons =2;
-        int nProtons = 2;
+        int nElectrons =10;
+        int nProtons = 8;
         double xCenter = 0.1; //0.1 for same coefficient matrix
         double yCenter =0.3;  //0.3 for same coefficient matrix
         //vec3 corePos
@@ -209,10 +209,19 @@ int main(int argc, char* argv[]) {
         cout << "Restricted Hartree-Fock energy:" << energy << endl;
         cout << "-------------------------------------------------------------------" << endl;
         ccsolve ccobject (object, nElectrons);
+        cout << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "            Correlation Energy:" << ccobject.correlation_energy << " (CCD)" << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << endl;
+
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "                  Total energy:" << energy+ccobject.correlation_energy << " a.u." << endl;
+        cout << "-------------------------------------------------------------------" << endl;
         cout << "End of program." << endl;
     }
 
-    if(true){
+    if(false){
         //Calculate H2 Ground state energy
         basis BS;
         int nElectrons =2;
@@ -223,6 +232,7 @@ int main(int argc, char* argv[]) {
         vec3 corePosH2 = {0,0,1.4};
         BS.init_H2(corePosH1, corePosH2);
 
+        //BS.init_O(corePosH1);
         //BS.init_O2(corePosH1, corePosH2);
         //BS.nucleusCharges(0) = 1;
         //BS.nucleusCharges(1) = 1;
@@ -235,6 +245,15 @@ int main(int argc, char* argv[]) {
         cout << "Restricted Hartree-Fock energy:" << energy << " (STO-3g)" << endl;
         cout << "-------------------------------------------------------------------" << endl;
         ccsolve ccobject (object, nElectrons);
+        cout << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "            Correlation Energy:" << ccobject.correlation_energy << " (CCD)" << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << endl;
+
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "                  Total energy:" << energy+ccobject.correlation_energy << " a.u." << endl;
+        cout << "-------------------------------------------------------------------" << endl;
         cout << "End of program." << endl;
     }
     if(false){
