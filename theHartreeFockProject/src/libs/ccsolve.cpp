@@ -221,7 +221,7 @@ double ccsolve::CCSD_Single(int a,int i){
     }
 
     //return S1+S2a+.5*S2b+.5*S2c+   0*S3a+0*S3b  +S3c+.5*S4a+.5*S4b+S4c+S5a+S5b+S5c+S6;
-    return .5*S2b+.5*S2c+   0*S3a+0*S3b  +S3c+.5*S4a+.5*S4b+S4c+S5b+S5c+S6; //HF-case
+    return S1+S2a+.5*S2b+.5*S2c+   0*S3a+0*S3b  +S3c+.5*S4a+.5*S4b+S4c+S5a+S5b+S5c+S6; //HF-case
 }
 
 double ccsolve::CCSD_Double(int a, int b, int i, int j){
@@ -402,7 +402,7 @@ double ccsolve::CCSD_Double(int a, int b, int i, int j){
         }
     }
 
-    return D4a+D4b+D5a+D5b+D5c+.5*D5e+D5g+.5*D5f+D5h + D6a + D6b + D6c + .5*D7a + .5*D7b + D7c + D7d + D7e + D8a + D8b + D9;
+    return D4a+D4b + D5a+D5b+D5c+D5d+.5*D5e+.5*D5f+ D5g+D5h + D6a + D6b + D6c + .5*D7a + .5*D7b + D7c + D7d + D7e + D8a + D8b + D9;
 }
 
 double ccsolve::CCDQ(int a, int b, int i, int j){
@@ -641,17 +641,22 @@ void ccsolve::CCSD(){
     initT1(); //initial guess for the amplitudes
     initT2(); //Set up initial guess following S-B, p.289
     //t20 = t2new;
+    double CCLinear, CCQuadratic;
+    cout << energy(t2c,t1c) << endl;
 
     while(unconverged(.00000001)){
-        cout <<"::Current energy: " << energy(t2new,t1new) << endl;
+        //cout <<"::Current energy: " << energy(t2new,t1new) << endl;
         eprev = energy(t2c,t1c); //updating the energy
+        //ReportEnergy();
 
         for(int b = nElectrons; b<nStates; b++){
             for(int a = b+1; a<nStates; a++){
                 for(int j = 0; j<nElectrons; j++){
                     for(int i=j+1; i<nElectrons; i++){
-                        //t2new(a,b)(i,j) = (vmin(i,j)(a,b) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Working, original
-                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Faulty copy
+                        CCLinear = CCDL2(a,b,i,j, t2c,0.0,0.0,0.5,  0.5,  1.0);
+                        CCQuadratic = CCDQ2(a,b,i,j, t2c,0.25,1.0,0.5,0.5);
+                        //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Working
+                        t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCSD_Double(a,b,i,j) +  CCLinear + CCQuadratic)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Refining
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);
                         t2new(a,b)(j,i) = -t2new(a,b)(i,j);
                         t2new(b,a)(j,i) =  t2new(a,b)(i,j);
@@ -685,6 +690,18 @@ void ccsolve::retranslate(){
     }
 }
 
+void ccsolve::ReportEnergy(){
+    int naW = 14;
+    if(counter == 1){
+        cout << "----------------------------------" << endl;
+        cout << "Iteration     Correlation" << endl;
+        cout << "---------------------------------" << endl;
+    }
+    cout << left << setw(naW) << setfill(' ') << counter;
+    cout << left << setw(naW) << setfill(' ') << eprev ; //printing out results
+    cout << endl;
+}
+
 void ccsolve::CCD(){
     //retranslate();
     eprev = 1.0;
@@ -699,33 +716,33 @@ void ccsolve::CCD(){
     initT2(); //Set up initial guess following S-B, p.289
 
 
-    const int naW = 14;
     cout << endl;
     //vmin.print();
 
-    cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
-    cout << "Iteration     CCDEnergy     MBPT(2)        Linear        L2a           L2b           L2c           Quadratic     Qa            Qb            Qc            Qd" << endl;
-    cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+    //cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+    //cout << "Iteration     CCDEnergy     MBPT(2)        Linear        L2a           L2b           L2c           Quadratic     Qa            Qb            Qc            Qd" << endl;
+    //cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
     while(unconverged(.00000001)){
         CCDL2c = 0.0; //contributions
         CCDQ2c = 0.0;
 
         eprev = energy(t2c, t1c); //updating the energy
-        cout << left << setw(naW) << setfill(' ') << counter;
-        cout << left << setw(naW) << setfill(' ') << eprev ; //printing out results
+        ReportEnergy();
+        //cout << left << setw(naW) << setfill(' ') << counter;
+        //cout << left << setw(naW) << setfill(' ') << eprev ; //printing out results
 
-        cout << left << setw(naW) << setfill(' ') << energy(t2new0, t1c);
-        cout << left << setw(naW) << setfill(' ') << energy(t2newL, t1c); //printing out results
-        cout << left << setw(naW) << setfill(' ') << energy(t2newL2a, t1c); //printing out results
-        cout << left << setw(naW) << setfill(' ') << energy(t2newL2b, t1c); //printing out results
-        cout << left << setw(naW) << setfill(' ') << energy(t2newL2c, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2new0, t1c);
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newL, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newL2a, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newL2b, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newL2c, t1c); //printing out results
 
-        cout << left << setw(naW) << setfill(' ') << energy(t2newQ, t1c); //printing out results
-        cout << left << setw(naW) << setfill(' ') << energy(t2newQa, t1c); //printing out results
-        cout << left << setw(naW) << setfill(' ') << energy(t2newQb, t1c); //printing out results
-        cout << left << setw(naW) << setfill(' ') << energy(t2newQc, t1c); //printing out results
-        cout << left << setw(naW) << setfill(' ') << energy(t2newQd, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newQ, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newQa, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newQb, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newQc, t1c); //printing out results
+        //cout << left << setw(naW) << setfill(' ') << energy(t2newQd, t1c); //printing out results
 
 
 
@@ -854,7 +871,7 @@ double ccsolve::energy(field<mat> tf, mat t1f){
     for(int i = 0; i<nElectrons; i++){
         for(int a=nElectrons; a<nStates; a++){
             //since i!=a this will never contribute to the energy when using a HF SD.
-           // dE3 += fmin(i,a)*t1f(a,i);
+            dE3 += fmin(i,a)*t1f(a,i);
         }
     }
 
@@ -897,6 +914,7 @@ bool ccsolve::unconverged(double tolerance){
     double ec = energy(t2c,t1c);
     if(abs(ec-eprev)<tolerance){
         cout << "Converged by surpassing tolerance. (at " << abs(ec-eprev) << ")" << endl;
+        cout << "in " << counter << " iterations." << endl;
         condition = false;
     }
     if(ec!=ec){condition = false;}

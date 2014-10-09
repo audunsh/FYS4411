@@ -20,6 +20,7 @@ public:
     void initT2();
     void expandC();
     void ExpandMinimizedBasis();
+    void ReportEnergy();
     bool unconverged(double tolerance);
     double CCDQ(int a, int b, int i, int j);
     double CCDL(int a, int b, int i, int j);

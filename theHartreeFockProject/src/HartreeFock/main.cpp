@@ -17,6 +17,8 @@ double pi = 4*atan(1);
 using namespace std;
 using namespace arma;
 
+
+
 int main(int argc, char* argv[]) {
     /**************************************************************************************************************
      * Hartree-Fock solver with support for gaussian basis sets.
@@ -158,11 +160,11 @@ int main(int argc, char* argv[]) {
         int nElectrons = 2;
         int nProtons = 2;
 
-        int nMoves = 80; //number of moves in the sweep
+        int nMoves = 100; //number of moves in the sweep
         vec RHFe, CCSDe;
         RHFe.set_size(nMoves);
         CCSDe.set_size(nMoves);
-        double dx = 0.2; //steplength
+        double dx = 0.05; //steplength
         for(int i = 0; i<nMoves; i++){
             BS = basis();
             vec3 corePosH1 = {0,0,0};
@@ -175,6 +177,7 @@ int main(int argc, char* argv[]) {
             RHFe(i) = object.solve();
             //cout << "Hartree-Fock energy:" << energy << endl;
             ccsolve ccobject (object, nElectrons);
+            CCSDe(i) = ccobject.correlation_energy;
             //CCSDe(i) = ccobject.energy();
         }
         RHFe.print();
@@ -186,7 +189,7 @@ int main(int argc, char* argv[]) {
         cout << "End of program." << endl;
     }
 
-    if(true){
+    if(false){
 
         //Calculate H2O Ground state energy
         basis BS;
@@ -206,17 +209,17 @@ int main(int argc, char* argv[]) {
         hartreefocksolver object (BS, nElectrons, nProtons);
         double energy = object.solve();
         cout << "-------------------------------------------------------------------" << endl;
-        cout << "Restricted Hartree-Fock energy:" << energy << endl;
+        cout << std::setprecision(14) << "Restricted Hartree-Fock energy:" << energy << endl;
         cout << "-------------------------------------------------------------------" << endl;
         ccsolve ccobject (object, nElectrons);
         cout << endl;
         cout << "-------------------------------------------------------------------" << endl;
-        cout << "            Correlation Energy:" << ccobject.correlation_energy << " (CCD)" << endl;
+        cout << "Correlation Energy:" << ccobject.correlation_energy << " (CCD)" << endl;
         cout << "-------------------------------------------------------------------" << endl;
         cout << endl;
 
         cout << "-------------------------------------------------------------------" << endl;
-        cout << "                  Total energy:" << energy+ccobject.correlation_energy << " a.u." << endl;
+        cout << "Total energy      :" << energy+ccobject.correlation_energy << " a.u." << endl;
         cout << "-------------------------------------------------------------------" << endl;
         cout << "End of program." << endl;
     }
@@ -256,6 +259,45 @@ int main(int argc, char* argv[]) {
         cout << "-------------------------------------------------------------------" << endl;
         cout << "End of program." << endl;
     }
+
+    if(true){
+        //Calculate O2 Ground state energy
+        basis BS;
+        int nElectrons =1;
+        int nProtons =1;
+
+
+        vec3 corePosH1 = {0,0,0};
+        vec3 corePosH2 = {0,0,2.287};
+        //BS.init_O2(corePosH1, corePosH2);
+        BS.init_Be(corePosH1);
+        //BS.init_HTO4(nProtons);
+
+        //BS.init_He(corePosH2);
+        //BS.init_O2(corePosH1, corePosH2);
+        //BS.nucleusCharges(0) = 1;
+        //BS.nucleusCharges(1) = 1;
+        //BS.nucleusCharges.print();
+        BS.init_integrals();
+        //BS.h.print();
+        hartreefocksolver object (BS, nElectrons, nProtons);
+        double energy = object.solve();
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "Restricted Hartree-Fock energy:" << energy << " (STO-3g)" << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        ccsolve ccobject (object, nElectrons);
+        cout << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "            Correlation Energy:" << ccobject.correlation_energy << " (CCD)" << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << endl;
+
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "                  Total energy:" << energy+ccobject.correlation_energy << " a.u." << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "End of program." << endl;
+    }
+
     if(false){
         //Calculate O2 Ground state
         basis BS;               //initialize basis object
@@ -344,8 +386,10 @@ int main(int argc, char* argv[]) {
             object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
 
             energies(i) = object.solve();
-            cout << "series: [ " << i << " ]  " <<   " Energy convergence occurs at " << energies(i) << " (a.u.). Distance: " << x << endl;
 
+            ccsolve ccobject (object, nElectrons);
+            cout << endl;
+            cout << ccobject.correlation_energy << endl;
         }
         //energies.save("Sweep_He2_101.dataset", raw_ascii);
         cout << "Calculation complete, file saved to disk." << endl;
