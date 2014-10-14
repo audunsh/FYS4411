@@ -1,15 +1,15 @@
 #include "ccsolve.h"
-#include <hartreefocksolver.h>
+#include <rhfsolve.h>
 #include <iomanip>
 
 ccsolve::ccsolve()
 {
 }
 
-ccsolve::ccsolve(hartreefocksolver object, int nElect)
+ccsolve::ccsolve(rhfsolve object, int nElect)
 {
     /* --- CCSolve Main ---
-     * This class should be initialized with a hartreefocksolver object containing an energy-minimized basis for the Coupled-Cluster (CC) solver.
+     * This class should be initialized with a rhfsolve object containing an energy-minimized basis for the Coupled-Cluster (CC) solver.
      * The CC Solver will then perform the following operations
      * 1. Set up a new basis from atomic to molecular orbitals
      * 2. Initialize the cluster amplitudes with a given initial value (Begin with CCD only)

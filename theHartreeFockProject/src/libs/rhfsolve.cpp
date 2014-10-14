@@ -1,9 +1,9 @@
-#include "hartreefocksolver.h"
+#include "rhfsolve.h"
 #include <basis.h>
 
-hartreefocksolver::hartreefocksolver(){}
+rhfsolve::rhfsolve(){}
 
-hartreefocksolver::hartreefocksolver(basis BS, int N, int Z){
+rhfsolve::rhfsolve(basis BS, int N, int Z){
     //initialize solver with given basis, number of electrons (and now superfluos number of protons)
     //This solver follows the algo described in Thijssen, p74-76
     Bs = BS;
@@ -27,7 +27,7 @@ hartreefocksolver::hartreefocksolver(basis BS, int N, int Z){
     s_diag.zeros(nStates);
 }
 
-void hartreefocksolver::reset(basis BS, int N, int Z){
+void rhfsolve::reset(basis BS, int N, int Z){
     //initialize solver with given basis, number of electrons (and now superfluos number of protons)
     //This solver follows the algo described in Thijssen, p74-76
     Bs = BS;
@@ -53,7 +53,7 @@ void hartreefocksolver::reset(basis BS, int N, int Z){
     s_diag.zeros(nStates);
 }
 
-double hartreefocksolver::solve(){
+double rhfsolve::solve(){
     //carefully following the steps laid out on pages 74-77 in Thijssen
 
     setupUnitMatrices();
@@ -82,7 +82,7 @@ double hartreefocksolver::solve(){
     return energyCalc();
 }
 
-double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
+double rhfsolve::evaluateProbabilityDensity(vec3 r){
     double result = 0;
     for(int p=0;p<nStates;p++){
         for(int q=0;q<nStates;q++){
@@ -92,7 +92,7 @@ double hartreefocksolver::evaluateProbabilityDensity(vec3 r){
     return result;
 }
 
-void hartreefocksolver::createDensityMap(string filename){
+void rhfsolve::createDensityMap(string filename){
     int dim=1000;
     double dx = 0.01;
     double dV = dx*dx*dx;
@@ -118,7 +118,7 @@ void hartreefocksolver::createDensityMap(string filename){
 
 }
 
-void hartreefocksolver::setupCoupledMatrix(){
+void rhfsolve::setupCoupledMatrix(){
     //import particle-particle interaction integrals
     int n = Bs.Nstates;
     coupledMatrix.set_size(n, n);
@@ -139,7 +139,7 @@ void hartreefocksolver::setupCoupledMatrix(){
     }
 }
 
-void hartreefocksolver::setupF(){
+void rhfsolve::setupF(){
     //set up the Fock matrix
     for(int p=0;p<nStates;p++){
         for(int q=0;q<nStates;q++){
@@ -153,12 +153,12 @@ void hartreefocksolver::setupF(){
     }
 }
 
-double hartreefocksolver::energyCalc(){
+double rhfsolve::energyCalc(){
     //return energy for current Fock matrix
     return 0.5*accu(P % (Bs.h + F))+Bs.nnInteraction();
 }
 
-double hartreefocksolver::energy(){
+double rhfsolve::energy(){
     //return ground state energy
     double e0 = 0;
     for(int p = 0; p<nStates;p++){
@@ -174,25 +174,25 @@ double hartreefocksolver::energy(){
     return e0+Bs.nnInteraction();
 }
 
-double hartreefocksolver::coupledMatrixTilde(int p, int q, int r, int s){
+double rhfsolve::coupledMatrixTilde(int p, int q, int r, int s){
     //return direct and exchange term, weigthed to include spin
     //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q); //CHANGED 27/5
     return 2*Bs.v(p,q)(r,s) - Bs.v(p,s)(r,q); //CHANGED 28/9
 }
 
-void hartreefocksolver::setupUnitMatrices(){
+void rhfsolve::setupUnitMatrices(){
     //Bring overlap matrix to unit form, set up V
     eig_sym(s_diag,U,Bs.S);           //following Thijssen, p38-39
     V = U*diagmat(1.0/sqrt(s_diag));
 }
 
-void hartreefocksolver::setupP(){
+void rhfsolve::setupP(){
     //setup density matrix, make a first guess
     //P.zeros(); //we don't have any reason to do this any other ways yet.
     P.eye();
 }
 
-void hartreefocksolver::diagonalizeF(){
+void rhfsolve::diagonalizeF(){
     //diagonalize the Fock matrix
     Fprime = V.t()*F*V;
     eig_sym(epsilon, Cprime, Fprime);
@@ -200,7 +200,7 @@ void hartreefocksolver::diagonalizeF(){
     C = V*Cprime; //alternating between these two to implement coupled cluster calculations (need virtual orbitals)
 }
 
-void hartreefocksolver::normalizeC(){
+void rhfsolve::normalizeC(){
     //Normalize the coefficient matrix
     double norm;
     //for(int i = 0; i<nElectrons/2;i++){
@@ -215,7 +215,7 @@ void hartreefocksolver::normalizeC(){
     }
 }
 
-void hartreefocksolver::updateP(){
+void rhfsolve::updateP(){
     //construct new density matrix
     //P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
     //P =C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
@@ -223,7 +223,7 @@ void hartreefocksolver::updateP(){
     P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 -1)*C.cols(0, nElectrons/2.0 -1).t();
 }
 
-bool hartreefocksolver::convergenceCriteria(){
+bool rhfsolve::convergenceCriteria(){
     //Evaluate convergence conditions
     bool condition = true;
     if(iterations>5000){
@@ -236,7 +236,7 @@ bool hartreefocksolver::convergenceCriteria(){
 }
 
 
-void hartreefocksolver::setupCoupledMatrix_unused(){
+void rhfsolve::setupCoupledMatrix_unused(){
     //still following Dragly, further references to indexation differences between Thijssen and Helgaker
     coupledMatrix.set_size(nStates,nStates);
     for(int p = 0; p<nStates;p++){
@@ -269,7 +269,7 @@ void hartreefocksolver::setupCoupledMatrix_unused(){
     coupledMatrix.print();
 }
 
-void hartreefocksolver::printMatrices(){
+void rhfsolve::printMatrices(){
     cout << "Fock matrix" << endl;
     F.print();
     cout << " " << endl;

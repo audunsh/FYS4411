@@ -1,14 +1,14 @@
 #ifndef CCSOLVE_H
 #define CCSOLVE_H
 
-#include <hartreefocksolver.h>
+#include <rhfsolve.h>
 #include <armadillo>
 
 class ccsolve
 {
 public:
     ccsolve();
-    ccsolve(hartreefocksolver object, int nElect);
+    ccsolve(rhfsolve object, int nElect);
 
     //Functions
     void SetupMinimizedBasis();
@@ -50,7 +50,7 @@ private:
     field<mat> vmin; //The coupled minimized matrix elements
     field<mat> temp_mo; //quarter sized molecular orbital elements
     mat fmin; //The uncoupled minimized matrix elements
-    hartreefocksolver hfobject;
+    rhfsolve hfobject;
     mat Cm;
 
     //amplitude tensors

@@ -1,14 +1,16 @@
-#ifndef HARTREEFOCKSOLVER_H
-#define HARTREEFOCKSOLVER_H
+#ifndef UHFSOLVE_H
+#define UHFSOLVE_H
 
 #include <basis.h>
-#include <armadillo>
 
-class hartreefocksolver
+using namespace std;
+using namespace arma;
+
+class uhfsolve
 {
 public:
-    hartreefocksolver();
-    hartreefocksolver(basis BS, int N, int Z);
+    uhfsolve();
+    uhfsolve(basis BS, int N, int Z);
     void setupUnitMatrices(); //Bring overlap matrix to unit form
     void setupP();       //setup density matrix, make a first guess
     void setupF();       //setup the Fock matrix
@@ -68,4 +70,4 @@ private:
     double dampingFactor = 0.95; //0.95
 };
 
-#endif // HARTREEFOCKSOLVER_H
+#endif // UHFSOLVE_H

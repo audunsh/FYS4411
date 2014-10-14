@@ -9,7 +9,7 @@
 #include <integrator.h>
 #include <hfsolve.h>
 #include <contracted.h>
-#include <hartreefocksolver.h>
+#include <rhfsolve.h>
 #include <ccsolve.h>
 
 double pi = 4*atan(1);
@@ -21,9 +21,14 @@ using namespace arma;
 
 int main(int argc, char* argv[]) {
     /**************************************************************************************************************
-     * Hartree-Fock solver with support for gaussian basis sets.
+     * Fermion Mingle Quantum Solver
+     * A solver for quantum many-body problems with support for
+     * - Restricted and unrestricted* Hartree Fock
+     * - Coupled Cluster (CCD, CCSD, CCSDT*)
+     * - Gaussian Basis sets
+     * - Fermion density evaluation
+     *
      * Written in C++ by Audun Skau Hansen & Goran Brekke Svaland
-     * Spring, 2014
      *
      * Library Armadillo is required for compilation.
      **************************************************************************************************************/
@@ -64,7 +69,7 @@ int main(int argc, char* argv[]) {
 
         if (val == 1){
             BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
-            hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+            rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
             E = object.solve();                          //solve for the given basis
             cout << E << endl;
@@ -129,7 +134,7 @@ int main(int argc, char* argv[]) {
         BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
         //BS.init_HTO4(nProtons);
         //BS.printAllContracted();
-        hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+        rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
         double E = object.solve();                          //solve for the given basis
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
@@ -147,7 +152,7 @@ int main(int argc, char* argv[]) {
         BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
         //BS.init_HTO4(nProtons);
         //BS.printAllContracted();
-        hartreefocksolver object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+        rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
         double E = object.solve();                          //solve for the given basis
         object.createDensityMap("H2O_density_map4.dataset");
@@ -173,7 +178,7 @@ int main(int argc, char* argv[]) {
             //BS.nucleusCharges(0) = 1;
             //BS.nucleusCharges(1) = 1;
             BS.init_integrals();
-            hartreefocksolver object (BS, nElectrons, nProtons);
+            rhfsolve object (BS, nElectrons, nProtons);
             RHFe(i) = object.solve();
             //cout << "Hartree-Fock energy:" << energy << endl;
             ccsolve ccobject (object, nElectrons);
@@ -206,7 +211,7 @@ int main(int argc, char* argv[]) {
         //BS.nucleusCharges.print();
         BS.init_integrals();
         //BS.h.print();
-        hartreefocksolver object (BS, nElectrons, nProtons);
+        rhfsolve object (BS, nElectrons, nProtons);
         double energy = object.solve();
         cout << "-------------------------------------------------------------------" << endl;
         cout << std::setprecision(14) << "Restricted Hartree-Fock energy:" << energy << endl;
@@ -242,7 +247,7 @@ int main(int argc, char* argv[]) {
         //BS.nucleusCharges.print();
         BS.init_integrals();
         //BS.h.print();
-        hartreefocksolver object (BS, nElectrons, nProtons);
+        rhfsolve object (BS, nElectrons, nProtons);
         double energy = object.solve();
         cout << "-------------------------------------------------------------------" << endl;
         cout << "Restricted Hartree-Fock energy:" << energy << " (STO-3g)" << endl;
@@ -263,14 +268,14 @@ int main(int argc, char* argv[]) {
     if(true){
         //Calculate O2 Ground state energy
         basis BS;
-        int nElectrons =1;
-        int nProtons =1;
+        int nElectrons =2;
+        int nProtons =2;
 
 
         vec3 corePosH1 = {0,0,0};
-        vec3 corePosH2 = {0,0,2.287};
+        vec3 corePosH2 = {0,0,1.4};
         //BS.init_O2(corePosH1, corePosH2);
-        BS.init_Be(corePosH1);
+        BS.init_H2(corePosH1, corePosH2);
         //BS.init_HTO4(nProtons);
 
         //BS.init_He(corePosH2);
@@ -280,7 +285,7 @@ int main(int argc, char* argv[]) {
         //BS.nucleusCharges.print();
         BS.init_integrals();
         //BS.h.print();
-        hartreefocksolver object (BS, nElectrons, nProtons);
+        rhfsolve object (BS, nElectrons, nProtons);
         double energy = object.solve();
         cout << "-------------------------------------------------------------------" << endl;
         cout << "Restricted Hartree-Fock energy:" << energy << " (STO-3g)" << endl;
@@ -306,7 +311,7 @@ int main(int argc, char* argv[]) {
         energies.zeros(N,N);
         int nElectrons = 16;
         double nProtons = 16;
-        hartreefocksolver object (BS, nElectrons,nProtons);
+        rhfsolve object (BS, nElectrons,nProtons);
         vec3 corePosH1, corePosH2;
         vec3 molecularCenter = {0,0,0};
 
@@ -337,7 +342,7 @@ int main(int argc, char* argv[]) {
                 BS.init_integrals();
 
 
-                object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
+                object = rhfsolve(BS,nElectrons,nProtons); //reinitializing class
 
 
 
@@ -360,7 +365,7 @@ int main(int argc, char* argv[]) {
         int nElectrons = 4;
         double nProtons = 4;
 
-        hartreefocksolver object (BS, nElectrons,nProtons);
+        rhfsolve object (BS, nElectrons,nProtons);
         vec3 corePosH1, corePosH2;
         vec3 molecularCenter = {0,0,0};
 
@@ -383,7 +388,7 @@ int main(int argc, char* argv[]) {
             BS.init_He2(dB1, dB2);
             BS.init_integrals();
 
-            object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
+            object = rhfsolve(BS,nElectrons,nProtons); //reinitializing class
 
             energies(i) = object.solve();
 
@@ -407,7 +412,7 @@ int main(int argc, char* argv[]) {
         int nElectrons = 10;
         double nProtons = 10;
         energies.zeros(N,N);
-        hartreefocksolver object (BS, nElectrons,nProtons);
+        rhfsolve object (BS, nElectrons,nProtons);
         vec3 corePosH1, corePosH2, corePosO;
         vec3 molecularCenter = {0,0,0};
 
@@ -439,7 +444,7 @@ int main(int argc, char* argv[]) {
                 BS.init_integrals();
 
                 //object.reset(BS,6,6);
-                object = hartreefocksolver(BS,nElectrons,nProtons); //reinitializing class
+                object = rhfsolve(BS,nElectrons,nProtons); //reinitializing class
                 energies(i,j) = object.solve();
                 cout << "series: [ " << i << " | " << j << " ]  " << " At angle:" << setprecision(10) << 2*acos(y/sqrt(y*y + x*x)) << " the energy converges at " << energies(i,j) << " at a absolute distance r = " << sqrt(x*x+y*y) << ". (x,y) = " << "(" << x << "," << y << ")" << endl;
             }
