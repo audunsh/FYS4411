@@ -10,7 +10,7 @@ class uhfsolve
 {
 public:
     uhfsolve();
-    uhfsolve(basis BS, int N, int Z);
+    uhfsolve(basis BS, int N_spin_up, int N_spin_down);
     void setupUnitMatrices(); //Bring overlap matrix to unit form
     void setupP();       //setup density matrix, make a first guess
     void setupF();       //setup the Fock matrix
@@ -34,14 +34,25 @@ public:
 
     //Trying to make some objects availabe to external classes, rammifications unknown
     mat C;          //Coefficient matric
+    mat Cu;          //Coefficient matrix u
+    mat Cd;          //Coefficient matrix d
     field<mat> coupledMatrix;
     mat F;          //Fock matrix
-    int nElectrons; //number of electrons
+    mat Fu;          //Fock matrix up
+    mat Fd;          //Fock matrix down
+    int nElectrons; //number of electrons in total
+    int nElectronsU; //number of electrons with spin-up config
+    int nElectronsD; // --" -- spin-down
     int nStates;    //number of states
     basis Bs;
     vec epsilon;    //eigenvalues from current diagonalization
     mat P;          //Density matrix
+    mat Pu;          //Density matrix
+    mat Pd;          //Density matrix
+
     mat Cprime; //transformed Coefficient matric
+    mat Cprimeu; //transformed Coefficient matric
+    mat Cprimed; //transformed Coefficient matric
 
 private:
     cube densityMap;
@@ -52,6 +63,8 @@ private:
 
 
     mat Fprime; //transformed Fock matrix
+    mat Fprimeu; //transformed Fock matrix
+    mat Fprimed; //transformed Fock matrix
 
 
     mat G;      //Coulomb and exchange contribution matrix

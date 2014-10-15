@@ -3,18 +3,32 @@
 
 uhfsolve::uhfsolve(){}
 
-uhfsolve::uhfsolve(basis BS, int N, int Z){
+uhfsolve::uhfsolve(basis BS, int N_spin_up, int N_spin_down){
     //initialize solver with given basis, number of electrons (and now superfluos number of protons)
     //This solver follows the algo described in Thijssen, p74-76
     Bs = BS;
     nStates = Bs.Nstates;        //set number of states in basis
-    nElectrons = N;              //set number of electrons
-    nProtons = Z;                //set number of protons, may be removed
+
+    nElectrons = N_spin_up + N_spin_down;              //set number of electrons
+    nElectronsU = N_spin_up;
+    nElectronsD = N_spin_down;
+    //nProtons = Z;                //set number of protons, may be removed
 
     //initializing all matrices and vectors
     C.zeros(nStates,nElectrons/2);//set initial C equal to the unit matrix
+
+    Cu.zeros(nStates,nElectronsU);//set initial C equal to the unit matrix
+    Cd.zeros(nStates,nElectronsD);//set initial C equal to the unit matrix
+
+
     F.zeros(nStates,nStates);     //initialize Fock matrix
+    Fu.zeros(nStates,nStates);     //initialize Fock matrix
+    Fd.zeros(nStates,nStates);     //initialize Fock matrix
+
     P.zeros(nStates,nStates);     //initialize Density matrix
+    Pu.zeros(nStates,nStates);     //initialize Density matrix
+    Pd.zeros(nStates,nStates);     //initialize Density matrix
+
     U.zeros(nStates,nStates);     //initialize Unitary matrix
     G.zeros(nStates,nStates);     //initialize Fock-component matrix
     Fprime.zeros(nStates,nStates);//transformed Fock matrix
@@ -190,6 +204,8 @@ void uhfsolve::setupP(){
     //setup density matrix, make a first guess
     //P.zeros(); //we don't have any reason to do this any other ways yet.
     P.eye();
+    Pu.eye();
+    Pd.eye();
 }
 
 void uhfsolve::diagonalizeF(){
@@ -212,6 +228,12 @@ void uhfsolve::normalizeC(){
     for(int i = 0; i<nStates;i++){
         norm = dot(C.col(i),Bs.S*C.col(i));
         C.col(i) = C.col(i)/sqrt(norm);
+
+        norm = dot(Cu.col(i),Bs.S*Cu.col(i));
+        Cu.col(i) = Cu.col(i)/sqrt(norm);
+
+        norm = dot(Cd.col(i),Bs.S*Cd.col(i));
+        Cd.col(i) = Cd.col(i)/sqrt(norm);
     }
 }
 
@@ -221,6 +243,9 @@ void uhfsolve::updateP(){
     //P =C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
     //P = C*C.t();
     P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 -1)*C.cols(0, nElectrons/2.0 -1).t();
+
+    Pu = dampingFactor*Pu + (1-dampingFactor)*Cu*Cu.t();
+    Pd = dampingFactor*Pd + (1-dampingFactor)*Cd*Cd.t();
 }
 
 bool uhfsolve::convergenceCriteria(){
