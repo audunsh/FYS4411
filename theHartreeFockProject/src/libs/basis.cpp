@@ -23,7 +23,6 @@ void basis::set_orthonormal(){
 }
 
 
-
 void basis::read(string filename, int Zn){
     Z = Zn;
     //read basis from file
@@ -142,6 +141,95 @@ double basis::state(int p, int q, int r, int s, double D, double Ex){
     }
     return S;
 }
+void basis::add_state(){
+    Nstates += 1;
+    nPrimitivesInState.set_size(Nstates);
+    basisSts.push_back(contracted());
+}
+
+void basis::add_primitive_to_state(int Stateindex, Primitive P){
+    basisSts.at(Stateindex).appendPrimitive(P);
+    nPrimitivesInState(Stateindex) += 1;
+    nPrimitivesInState.print();
+}
+
+void basis::add_nucleus(vec3 pos, int charge){
+    int Nsize = nucleusCharges.size();
+    nucleusCharges.set_size(Nsize + 1);
+    nucleusPositions.set_size(Nsize + 1);
+    nucleusPositions(Nsize) = pos;
+    nucleusCharges(Nsize) = charge;
+}
+
+void basis::add_STO_NG_s_orbital(int NG, vec exponents, vec weigths, vec3 corePos){
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive S = turbomolePrimitive(weigths(i),exponents(i),0,0,0,corePos);
+        add_primitive_to_state(Nstates-1, S);
+    }
+
+}
+
+void basis::add_STO_NG_p_orbital(int NG, vec exponents, vec weigths, vec3 corePos){
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive P1 = turbomolePrimitive(weigths(i),exponents(i),1,0,0,corePos);
+        add_primitive_to_state(Nstates-1, P1);
+    }
+
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive P2 = turbomolePrimitive(weigths(i),exponents(i),0,1,0,corePos);
+        add_primitive_to_state(Nstates-1, P2);
+    }
+
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive P3 = turbomolePrimitive(weigths(i),exponents(i),0,0,1,corePos);
+        add_primitive_to_state(Nstates-1, P3);
+    }
+
+}
+
+void basis::add_STO_NG_d_orbital(int NG, vec exponents, vec weigths, vec3 corePos){
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive D1 = turbomolePrimitive(weigths(i),exponents(i),2,0,0,corePos);
+        add_primitive_to_state(Nstates-1, D1);
+    }
+
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive D2 = turbomolePrimitive(weigths(i),exponents(i),0,2,0,corePos);
+        add_primitive_to_state(Nstates-1, D2);
+    }
+
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive D3 = turbomolePrimitive(weigths(i),exponents(i),0,0,2,corePos);
+        add_primitive_to_state(Nstates-1, D3);
+    }
+
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive D4 = turbomolePrimitive(weigths(i),exponents(i),1,1,0,corePos);
+        add_primitive_to_state(Nstates-1, D4);
+    }
+
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive D5 = turbomolePrimitive(weigths(i),exponents(i),0,1,1,corePos);
+        add_primitive_to_state(Nstates-1, D5);
+    }
+
+    add_state();
+    for(int i = 0; i<NG;i++){
+        Primitive D6 = turbomolePrimitive(weigths(i),exponents(i),1,0,1,corePos);
+        add_primitive_to_state(Nstates-1, D6);
+    }
+
+}
+
 
 void basis::init_Be2(vec3 corePos1, vec3 corePos2){
     Nstates = 0;
@@ -160,15 +248,22 @@ void basis::init_Be2(vec3 corePos1, vec3 corePos2){
 void basis::init_H2(vec3 corePos1, vec3 corePos2){
     Nstates = 0;
     Nprimitives = 3;
-    nucleusPositions.set_size(2);
-    nucleusCharges.set_size(2);
-    nucleusPositions(0) = corePos1;
-    nucleusPositions(1) = corePos2;
-    nucleusCharges(0) = 1;
-    nucleusCharges(1) = 1;
+
+    //nucleusPositions.set_size(0);
+    //nucleusCharges.set_size(0);
+    //nucleusPositions(0) = corePos1;
+    //nucleusPositions(1) = corePos2;
+    //nucleusCharges(0) = 1;
+    //nucleusCharges(1) = 1;
+
+    add_nucleus(corePos1, 1);
+    add_nucleus(corePos2, 1);
+
     add_atom_STO3G("H", corePos1);
     add_atom_STO3G("H", corePos2);
+
     set_size(Nstates);
+
 }
 
 void basis::init_He2(vec3 corePos1, vec3 corePos2){
@@ -295,184 +390,159 @@ Primitive basis::turbomolePrimitive(double weight, double exponent, double i, do
 void basis::add_atom_STO3G(string configuration, vec3 corePos){
     //add new atom to the basis
     if(configuration == "H"){
-        Nstates += 1;
-
+        add_state();
         Primitive S1A = turbomolePrimitive(0.15432897,3.42525091,0,0,0,corePos);
         Primitive S1B = turbomolePrimitive(0.53532814,0.62391373,0,0,0,corePos);
         Primitive S1C = turbomolePrimitive(0.44463454,0.16885540,0,0,0,corePos);
 
-        Primitive S1[3] = {S1A,S1B,S1C};
-
-        contracted C1 (3,S1);
-
-        basisSts.push_back(C1);
+        add_primitive_to_state(Nstates-1, S1A);
+        add_primitive_to_state(Nstates-1, S1B);
+        add_primitive_to_state(Nstates-1, S1C);
 
     }
 
     if(configuration == "He"){
-        Nstates += 1;
-        //Primitive A();
+        add_state();
         Primitive S1A = turbomolePrimitive(0.15432897,6.36242139,0,0,0,corePos);
         Primitive S1B = turbomolePrimitive(0.53532814,1.15892300,0,0,0,corePos);
         Primitive S1C = turbomolePrimitive(0.44463454,0.31364979,0,0,0,corePos);
 
-
-        Primitive S1[3] = {S1A,S1B,S1C};
-
-        contracted C1 (3,S1);
-
-        basisSts.push_back(C1);
+        add_primitive_to_state(Nstates-1, S1A);
+        add_primitive_to_state(Nstates-1, S1B);
+        add_primitive_to_state(Nstates-1, S1C);
 
     }
 
     if(configuration == "Be"){
-        Nstates += 5;
+
+
+
+
+        add_state();
         Primitive S1A = turbomolePrimitive(0.15432897,30.1678710,0,0,0,corePos);
         Primitive S1B = turbomolePrimitive(0.53532814,5.4951153,0,0,0,corePos);
         Primitive S1C = turbomolePrimitive(0.44463454,1.4871927,0,0,0,corePos);
+        add_primitive_to_state(Nstates-1, S1A);
+        add_primitive_to_state(Nstates-1, S1B);
+        add_primitive_to_state(Nstates-1, S1C);
 
+        add_state();
         Primitive S2A = turbomolePrimitive(-0.09996723,1.3148331,0,0,0,corePos);
         Primitive S2B = turbomolePrimitive(0.39951283,0.3055389,0,0,0,corePos);
         Primitive S2C = turbomolePrimitive(0.70011547,0.0993707,0,0,0,corePos);
+        add_primitive_to_state(Nstates-1, S2A);
+        add_primitive_to_state(Nstates-1, S2B);
+        add_primitive_to_state(Nstates-1, S2C);
 
+        add_state();
         Primitive P1A = turbomolePrimitive(0.15591627,1.3148331,1,0,0,corePos);
         Primitive P1B = turbomolePrimitive(0.60768372,0.3055389,1,0,0,corePos);
         Primitive P1C = turbomolePrimitive(0.39195739,0.0993707,1,0,0,corePos);
+        add_primitive_to_state(Nstates-1, P1A);
+        add_primitive_to_state(Nstates-1, P1B);
+        add_primitive_to_state(Nstates-1, P1C);
 
+        add_state();
         Primitive P2A = turbomolePrimitive(0.15591627,1.3148331,0,1,0,corePos);
         Primitive P2B = turbomolePrimitive(0.60768372,0.3055389,0,1,0,corePos);
         Primitive P2C = turbomolePrimitive(0.39195739,0.0993707,0,1,0,corePos);
+        add_primitive_to_state(Nstates-1, P2A);
+        add_primitive_to_state(Nstates-1, P2B);
+        add_primitive_to_state(Nstates-1, P2C);
 
+        add_state();
         Primitive P3A = turbomolePrimitive(0.15591627,1.3148331,0,0,1,corePos);
         Primitive P3B = turbomolePrimitive(0.60768372,0.3055389,0,0,1,corePos);
         Primitive P3C = turbomolePrimitive(0.39195739,0.0993707,0,0,1,corePos);
+        add_primitive_to_state(Nstates-1, P3A);
+        add_primitive_to_state(Nstates-1, P3B);
+        add_primitive_to_state(Nstates-1, P3C);
 
-        Primitive S1[3] = {S1A,S1B,S1C};
-        Primitive S2[3] = {S2A,S2B,S2C};
-        Primitive P1[3] = {P1A,P1B,P1C};
-        Primitive P2[3] = {P2A,P2B,P2C};
-        Primitive P3[3] = {P3A,P3B,P3C};
-
-        contracted C1(3,S1);
-        contracted C2(3,S2);
-        contracted C3(3,P1);
-        contracted C4(3,P2);
-        contracted C5(3,P3);
-
-        basisSts.push_back(C1);
-        basisSts.push_back(C2);
-        basisSts.push_back(C3);
-        basisSts.push_back(C4);
-        basisSts.push_back(C5);
     }
 
     if(configuration == "Ne"){
-        Nstates += 5;
+        add_state();
         Primitive S1A = turbomolePrimitive(0.15432897,207.0156100,0,0,0,corePos);
         Primitive S1B = turbomolePrimitive(0.53532814,37.7081510,0,0,0,corePos);
         Primitive S1C = turbomolePrimitive(0.44463454,10.2052970,0,0,0,corePos);
+        add_primitive_to_state(Nstates-1, S1A);
+        add_primitive_to_state(Nstates-1, S1B);
+        add_primitive_to_state(Nstates-1, S1C);
 
+
+        add_state();
         Primitive S2A = turbomolePrimitive(-0.09996723,8.2463151,0,0,0,corePos);
         Primitive S2B = turbomolePrimitive(0.39951283,1.9162662,0,0,0,corePos);
         Primitive S2C = turbomolePrimitive(0.70011547,0.6232293,0,0,0,corePos);
+        add_primitive_to_state(Nstates-1, S2A);
+        add_primitive_to_state(Nstates-1, S2B);
+        add_primitive_to_state(Nstates-1, S2C);
 
+        add_state();
         Primitive P1A = turbomolePrimitive(0.15591627,8.2463151,1,0,0,corePos);
         Primitive P1B = turbomolePrimitive(0.60768372,1.9162662,1,0,0,corePos);
         Primitive P1C = turbomolePrimitive(0.39195739,0.6232293,1,0,0,corePos);
+        add_primitive_to_state(Nstates-1, P1A);
+        add_primitive_to_state(Nstates-1, P1B);
+        add_primitive_to_state(Nstates-1, P1C);
 
+        add_state();
         Primitive P2A = turbomolePrimitive(0.15591627,8.2463151,0,1,0,corePos);
         Primitive P2B = turbomolePrimitive(0.60768372,1.9162662,0,1,0,corePos);
         Primitive P2C = turbomolePrimitive(0.39195739,0.6232293,0,1,0,corePos);
+        add_primitive_to_state(Nstates-1, P2A);
+        add_primitive_to_state(Nstates-1, P2B);
+        add_primitive_to_state(Nstates-1, P2C);
 
+        add_state();
         Primitive P3A = turbomolePrimitive(0.15591627,8.2463151,0,0,1,corePos);
         Primitive P3B = turbomolePrimitive(0.60768372,1.9162662,0,0,1,corePos);
         Primitive P3C = turbomolePrimitive(0.39195739,0.6232293,0,0,1,corePos);
-
-
-        Primitive S1[3] = {S1A,S1B,S1C};
-        Primitive S2[3] = {S2A,S2B,S2C};
-        Primitive P1[3] = {P1A,P1B,P1C};
-        Primitive P2[3] = {P2A,P2B,P2C};
-        Primitive P3[3] = {P3A,P3B,P3C};
-
-
-        contracted C1(3,S1);
-        contracted C2(3,S2);
-        contracted C3(3,P1);
-        contracted C4(3,P2);
-        contracted C5(3,P3);
-
-        basisSts.push_back(C1);
-        basisSts.push_back(C2);
-        basisSts.push_back(C3);
-        basisSts.push_back(C4);
-        basisSts.push_back(C5);
+        add_primitive_to_state(Nstates-1, P3A);
+        add_primitive_to_state(Nstates-1, P3B);
+        add_primitive_to_state(Nstates-1, P3C);
     }
 
     if(configuration == "O"){
-        Nstates += 5;
-        /*
-        Primitive S1A(turboNormalization(130.7093200,0,0,0)*0.15432897,0,0,0,130.7093200,corePos);
-        Primitive S1B(turboNormalization(23.8088610,0,0,0)*0.53532814,0,0,0,23.8088610, corePos);
-        Primitive S1C(turboNormalization(6.4436083,0,0,0)*0.44463454,0,0,0,6.4436083, corePos);
-
-        Primitive S2A(turboNormalization(5.0331513,0,0,0)*-0.09996723,0,0,0,5.0331513,corePos);
-        Primitive S2B(turboNormalization(1.1695961,0,0,0)*0.39951283,0,0,0,1.1695961, corePos);
-        Primitive S2C(turboNormalization(0.3803890,0,0,0)*0.70011547,0,0,0,0.3803890, corePos);
-
-        Primitive P1A(turboNormalization(5.0331513,1,0,0)*0.15591627,1,0,0,5.0331513, corePos);
-        Primitive P1B(turboNormalization(1.1695961,1,0,0)*0.60768372,1,0,0,1.1695961, corePos);
-        Primitive P1C(turboNormalization(0.3803890,1,0,0)*0.39195739,1,0,0,0.3803890, corePos);
-
-        Primitive P2A(turboNormalization(5.0331513,0,1,0)*0.15591627,0,1,0,5.0331513, corePos);
-        Primitive P2B(turboNormalization(1.1695961,0,1,0)*0.60768372,0,1,0,1.1695961, corePos);
-        Primitive P2C(turboNormalization(0.3803890,0,1,0)*0.39195739,0,1,0,0.3803890, corePos);
-
-        Primitive P3A(turboNormalization(5.0331513,0,0,1)*0.15591627,0,0,1,5.0331513, corePos);
-        Primitive P3B(turboNormalization(1.1695961,0,0,1)*0.60768372,0,0,1,1.1695961, corePos);
-        Primitive P3C(turboNormalization(0.3803890,0,0,1)*0.39195739,0,0,1,0.3803890, corePos);
-
-        */
-
+        add_state();
         Primitive S1A = turbomolePrimitive(0.15432897,130.7093200,0,0,0,corePos);
         Primitive S1B = turbomolePrimitive(0.53532814,23.8088610,0,0,0,corePos);
         Primitive S1C = turbomolePrimitive(0.44463454,6.4436083,0,0,0,corePos);
+        add_primitive_to_state(Nstates-1, S1A);
+        add_primitive_to_state(Nstates-1, S1B);
+        add_primitive_to_state(Nstates-1, S1C);
 
+        add_state();
         Primitive S2A = turbomolePrimitive(-0.09996723,5.0331513,0,0,0,corePos);
         Primitive S2B = turbomolePrimitive(0.39951283,1.1695961,0,0,0,corePos);
         Primitive S2C = turbomolePrimitive(0.70011547,0.3803890,0,0,0,corePos);
+        add_primitive_to_state(Nstates-1, S2A);
+        add_primitive_to_state(Nstates-1, S2B);
+        add_primitive_to_state(Nstates-1, S2C);
 
+        add_state();
         Primitive P1A = turbomolePrimitive(0.15591627,5.0331513,1,0,0,corePos);
         Primitive P1B = turbomolePrimitive(0.60768372,1.1695961,1,0,0,corePos);
         Primitive P1C = turbomolePrimitive(0.39195739,0.3803890,1,0,0,corePos);
+        add_primitive_to_state(Nstates-1, P1A);
+        add_primitive_to_state(Nstates-1, P1B);
+        add_primitive_to_state(Nstates-1, P1C);
 
+        add_state();
         Primitive P2A = turbomolePrimitive(0.15591627,5.0331513,0,1,0,corePos);
         Primitive P2B = turbomolePrimitive(0.60768372,1.1695961,0,1,0,corePos);
         Primitive P2C = turbomolePrimitive(0.39195739,0.3803890,0,1,0,corePos);
+        add_primitive_to_state(Nstates-1, P2A);
+        add_primitive_to_state(Nstates-1, P2B);
+        add_primitive_to_state(Nstates-1, P2C);
 
+        add_state();
         Primitive P3A = turbomolePrimitive(0.15591627,5.0331513,0,0,1,corePos);
         Primitive P3B = turbomolePrimitive(0.60768372,1.1695961,0,0,1,corePos);
         Primitive P3C = turbomolePrimitive(0.39195739,0.3803890,0,0,1,corePos);
-
-
-        Primitive S1[3] = {S1A,S1B,S1C};
-        Primitive S2[3] = {S2A,S2B,S2C};
-        Primitive P1[3] = {P1A,P1B,P1C};
-        Primitive P2[3] = {P2A,P2B,P2C};
-        Primitive P3[3] = {P3A,P3B,P3C};
-
-
-        contracted C1(3,S1);
-        contracted C2(3,S2);
-        contracted C3(3,P1);
-        contracted C4(3,P2);
-        contracted C5(3,P3);
-
-        basisSts.push_back(C1);
-        basisSts.push_back(C2);
-        basisSts.push_back(C3);
-        basisSts.push_back(C4);
-        basisSts.push_back(C5);
+        add_primitive_to_state(Nstates-1, P3A);
+        add_primitive_to_state(Nstates-1, P3B);
+        add_primitive_to_state(Nstates-1, P3C);
     }
 
     if(configuration == "Si"){
@@ -788,6 +858,7 @@ double basis::nnInteraction(){
 
 void basis::init_integrals(){
     //Set up and solve all intergals for the current gaussian basis
+
     BoysFunction boys(3);
     //initializing 4 dummy primitives used in the iteration below
     Primitive A(0,0,0,0,0,{0,0,0});
@@ -797,8 +868,8 @@ void basis::init_integrals(){
 
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
-            for(int i=0; i<Nprimitives;i++){
-                for(int j=0; j<Nprimitives;j++){
+            for(int i=0; i<nPrimitivesInState(p);i++){
+                for(int j=0; j<nPrimitivesInState(q);j++){
                     A = basisSts[p].getPrimitive(i);
                     B = basisSts[q].getPrimitive(j);
                     integrator AB (A,B, boys);
@@ -810,10 +881,12 @@ void basis::init_integrals(){
                         //cout << nucleusCharges(n)*AB.pNuclei() << endl;
                         h(p,q) -= nucleusCharges(n)*AB.pNuclei();
                     }
+
                     for(int r=0; r<Nstates; r++){
                         for(int s=0; s<Nstates; s++){
-                            for(int k=0;k<Nprimitives;k++){
-                                for(int l=0;l<Nprimitives;l++){
+                            for(int k=0;k<nPrimitivesInState(r);k++){
+                                for(int l=0;l<nPrimitivesInState(s);l++){
+
                                     C = basisSts[r].getPrimitive(k);
                                     D = basisSts[s].getPrimitive(l);
                                     //v(p,q)(r,s) += AB.pp(C,D);
@@ -880,6 +953,10 @@ void basis::set_size(int N){
     //overlap matrix
     S.set_size(Nstates,Nstates);
     S.zeros();
+
+    nPrimitivesInState.set_size(0);
+
+
 }
 
 void basis::printAllContracted(){

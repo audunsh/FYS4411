@@ -5,6 +5,10 @@
 using namespace std;
 using namespace arma;
 
+contracted::contracted(){
+    Nprimitives = 0;
+}
+
 contracted::contracted(int N, Primitive primitives[]){
     Nprimitives = N;
     //basisFunction[N];
@@ -12,8 +16,14 @@ contracted::contracted(int N, Primitive primitives[]){
     //basisFs.resize(N);
     for(int i=0; i<N; i++){
         //basisFunction[i] = primitives[i];
-        basisFs.push_back(primitives[i]);
+        //basisFs.push_back(primitives[i]);
+        appendPrimitive(primitives[i]);
+
     }
+}
+
+void contracted::appendPrimitive(Primitive P){
+    basisFs.push_back(P);
 }
 
 void contracted::setPrimitive(int n){

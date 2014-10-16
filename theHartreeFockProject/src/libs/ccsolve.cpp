@@ -1,12 +1,12 @@
 #include "ccsolve.h"
 #include <rhfsolve.h>
 #include <iomanip>
-
+#include <hfsolve.h>
 ccsolve::ccsolve()
 {
 }
 
-ccsolve::ccsolve(rhfsolve object, int nElect)
+ccsolve::ccsolve(HFSolve object, int nElect)
 {
     /* --- CCSolve Main ---
      * This class should be initialized with a rhfsolve object containing an energy-minimized basis for the Coupled-Cluster (CC) solver.

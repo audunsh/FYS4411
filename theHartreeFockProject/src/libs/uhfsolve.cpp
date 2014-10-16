@@ -52,15 +52,34 @@ void uhfsolve::reset(basis BS, int N, int Z){
     //initializing all matrices and vectors
     //C.zeros(nStates,nElectrons/2);//set initial C equal to the unit matrix
     C.zeros(nStates,nStates); // Alternating between these two, alteration made to implement CoupledCluster extension of code
+    Cu.zeros(nStates,nStates); // Alternating between these two, alteration made to implement CoupledCluster extension of code
+    Cd.zeros(nStates,nStates); // Alternating between these two, alteration made to implement CoupledCluster extension of code
 
 
     F.zeros(nStates,nStates);     //initialize Fock matrix
+    Fu.zeros(nStates,nStates);     //initialize Fock matrix
+    Fd.zeros(nStates,nStates);     //initialize Fock matrix
+
     P.zeros(nStates,nStates);     //initialize Density matrix
+    Pu.zeros(nStates,nStates);     //initialize Density matrix
+    Pd.zeros(nStates,nStates);     //initialize Density matrix
+
     U.zeros(nStates,nStates);     //initialize Unitary matrix
     G.zeros(nStates,nStates);     //initialize Fock-component matrix
+
     Fprime.zeros(nStates,nStates);//transformed Fock matrix
+    Fprimeu.zeros(nStates,nStates);//transformed Fock matrix
+    Fprimed.zeros(nStates,nStates);//transformed Fock matrix
+
     epsilon.zeros(nStates);       //eigenvalues from diagonalization
     epsilon_prev.zeros(nStates);  //eigenvalues from previous diagonalization
+
+    epsilonu.zeros(nStates);       //eigenvalues from diagonalization
+    epsilonu_prev.zeros(nStates);  //eigenvalues from previous diagonalization
+
+    epsilond.zeros(nStates);       //eigenvalues from diagonalization
+    epsilond_prev.zeros(nStates);  //eigenvalues from previous diagonalization
+
 
     setupCoupledMatrix();  //import particle-particle interaction integrals
     setupP();              //set up initial density matrix
@@ -155,12 +174,22 @@ void uhfsolve::setupCoupledMatrix(){
 
 void uhfsolve::setupF(){
     //set up the Fock matrix
+    double Di = 0;
+    double Ex = 0;
+    double DiMinusEx = 0;
     for(int p=0;p<nStates;p++){
         for(int q=0;q<nStates;q++){
             F(p,q) = Bs.h(p,q);
+            Fu(p,q) = Bs.h(p,q);
+            Fd(p,q) = Bs.h(p,q);
             for(int r=0;r<nStates;r++){
                 for(int s=0;s<nStates;s++){
-                    F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(r,s);  //Alt. 2 27/5 2014
+                    Di = Bs.v(p,r)(q,s);
+                    Ex = Bs.v(p,r)(s,q);
+                    DiMinusEx = Di-Ex;
+                    //F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(r,s);  //Alt. 2 27/5 2014
+                    Fu(p,q) += Pu(s,r)*(Di-Ex) + Pd(s,r)*Di;
+                    Fd(p,q) += Pd(s,r)*(Di-Ex) + Pu(s,r)*Di;
                 }
             }
         }
@@ -169,7 +198,9 @@ void uhfsolve::setupF(){
 
 double uhfsolve::energyCalc(){
     //return energy for current Fock matrix
-    return 0.5*accu(P % (Bs.h + F))+Bs.nnInteraction();
+
+    //return 0.5*accu(P % (Bs.h + F))+Bs.nnInteraction();
+    return 0.5*accu((Pu+Pd) % Bs.h + Fu % Pu + Fd % Pd)+Bs.nnInteraction();
 }
 
 double uhfsolve::energy(){
@@ -191,7 +222,7 @@ double uhfsolve::energy(){
 double uhfsolve::coupledMatrixTilde(int p, int q, int r, int s){
     //return direct and exchange term, weigthed to include spin
     //return 2*coupledMatrix(p,r)(q,s) - coupledMatrix(p,r)(s,q); //CHANGED 27/5
-    return 2*Bs.v(p,q)(r,s) - Bs.v(p,s)(r,q); //CHANGED 28/9
+    return Bs.v(p,q)(r,s) - Bs.v(p,s)(r,q); //CHANGED 28/9
 }
 
 void uhfsolve::setupUnitMatrices(){
@@ -211,9 +242,17 @@ void uhfsolve::setupP(){
 void uhfsolve::diagonalizeF(){
     //diagonalize the Fock matrix
     Fprime = V.t()*F*V;
+    Fprimeu = V.t()*Fu*V;
+    Fprimed = V.t()*Fd*V;
+
     eig_sym(epsilon, Cprime, Fprime);
+    eig_sym(epsilonu, Cprimeu, Fprimeu);
+    eig_sym(epsilond, Cprimed, Fprimed);
+
     //C = V*Cprime.submat(0, 0, nStates - 1, nElectrons/2 -1);
     C = V*Cprime; //alternating between these two to implement coupled cluster calculations (need virtual orbitals)
+    Cu = V*Cprimeu; //alternating between these two to implement coupled cluster calculations (need virtual orbitals)
+    Cd = V*Cprimed; //alternating between these two to implement coupled cluster calculations (need virtual orbitals)
 }
 
 void uhfsolve::normalizeC(){

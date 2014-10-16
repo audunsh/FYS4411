@@ -46,6 +46,10 @@ public:
     int nStates;    //number of states
     basis Bs;
     vec epsilon;    //eigenvalues from current diagonalization
+
+    vec epsilonu;    //eigenvalues from current diagonalization
+    vec epsilond;    //eigenvalues from current diagonalization
+
     mat P;          //Density matrix
     mat Pu;          //Density matrix
     mat Pd;          //Density matrix
@@ -60,6 +64,8 @@ private:
     mat V;      //Transformation matrix
 
     mat P_prev; //previous density matrix
+    mat Pu_prev; //previous density matrix
+    mat Pd_prev; //previous density matrix
 
 
     mat Fprime; //transformed Fock matrix
@@ -72,6 +78,8 @@ private:
 
 
     vec epsilon_prev; //eigenvalues from previous diagonalization
+    vec epsilonu_prev; //eigenvalues from previous diagonalization
+    vec epsilond_prev; //eigenvalues from previous diagonalization
     vec s_diag;       //diagonalized S matrix
 
 

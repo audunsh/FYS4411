@@ -18,7 +18,7 @@ TEST(H2_STO3G){
     double nProtons = 2;
     BS.init_H2({2,1.3,0},{2,2.7,0}); //insert parameter dist here (calculation is however still off for molecules)
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
-    rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    rhfsolve object (BS,nElectrons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
     cout << "H2:" << E << endl;
     //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
@@ -39,7 +39,7 @@ TEST(He_STO3G){
     //BS.init_STO_3G("He", nProtons);
     BS.init_He({0,0,0});
     BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
-    rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    rhfsolve object (BS,nElectrons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
     //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
 
@@ -80,7 +80,7 @@ TEST(Be_Hydrogenlike){
     int nElectrons = 4;
     double nProtons = 4;
     BS.init_HTO4(nProtons);
-    rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    rhfsolve object (BS,nElectrons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
     //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
     bool B = false;
@@ -98,7 +98,7 @@ TEST(He_Hydrogenlike){
     int nElectrons = 2;
     double nProtons = 2;
     BS.init_HTO4(nProtons);
-    rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    rhfsolve object (BS,nElectrons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
     //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
     bool B = false;
@@ -126,7 +126,7 @@ TEST(HFSolve){
     BS.init_HTO4(nProtons);
 
 
-    rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+    rhfsolve object (BS,nElectrons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
     double E = object.solve();                          //solve for the given basis
 
 

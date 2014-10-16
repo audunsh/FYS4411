@@ -10,6 +10,7 @@
 #include <hfsolve.h>
 #include <contracted.h>
 #include <rhfsolve.h>
+#include <uhfsolve.h>
 #include <ccsolve.h>
 
 double pi = 4*atan(1);
@@ -69,7 +70,7 @@ int main(int argc, char* argv[]) {
 
         if (val == 1){
             BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
-            rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+            rhfsolve object (BS,nElectrons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
             E = object.solve();                          //solve for the given basis
             cout << E << endl;
@@ -134,7 +135,7 @@ int main(int argc, char* argv[]) {
         BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
         //BS.init_HTO4(nProtons);
         //BS.printAllContracted();
-        rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+        rhfsolve object (BS,nElectrons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
         double E = object.solve();                          //solve for the given basis
         cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (Approx. " << 27.212*E << " eV)" << endl;
@@ -152,7 +153,7 @@ int main(int argc, char* argv[]) {
         BS.init_integrals();  //set up and solve the needed integrals to calculate overlap matrix, single-particle interaction and two-particle interaction
         //BS.init_HTO4(nProtons);
         //BS.printAllContracted();
-        rhfsolve object (BS,nElectrons,nProtons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
+        rhfsolve object (BS,nElectrons);  //initialize solver using 4 protons in the nucleus and 3 contracted orbitals
 
         double E = object.solve();                          //solve for the given basis
         object.createDensityMap("H2O_density_map4.dataset");
@@ -178,11 +179,11 @@ int main(int argc, char* argv[]) {
             //BS.nucleusCharges(0) = 1;
             //BS.nucleusCharges(1) = 1;
             BS.init_integrals();
-            rhfsolve object (BS, nElectrons, nProtons);
+            rhfsolve object (BS, nElectrons);
             RHFe(i) = object.solve();
             //cout << "Hartree-Fock energy:" << energy << endl;
-            ccsolve ccobject (object, nElectrons);
-            CCSDe(i) = ccobject.correlation_energy;
+            //ccsolve ccobject (object, nElectrons);
+            //CCSDe(i) = ccobject.correlation_energy;
             //CCSDe(i) = ccobject.energy();
         }
         RHFe.print();
@@ -211,11 +212,12 @@ int main(int argc, char* argv[]) {
         //BS.nucleusCharges.print();
         BS.init_integrals();
         //BS.h.print();
-        rhfsolve object (BS, nElectrons, nProtons);
+        rhfsolve object (BS, nElectrons);
         double energy = object.solve();
         cout << "-------------------------------------------------------------------" << endl;
         cout << std::setprecision(14) << "Restricted Hartree-Fock energy:" << energy << endl;
         cout << "-------------------------------------------------------------------" << endl;
+        /*
         ccsolve ccobject (object, nElectrons);
         cout << endl;
         cout << "-------------------------------------------------------------------" << endl;
@@ -227,6 +229,7 @@ int main(int argc, char* argv[]) {
         cout << "Total energy      :" << energy+ccobject.correlation_energy << " a.u." << endl;
         cout << "-------------------------------------------------------------------" << endl;
         cout << "End of program." << endl;
+        */
     }
 
     if(false){
@@ -247,11 +250,12 @@ int main(int argc, char* argv[]) {
         //BS.nucleusCharges.print();
         BS.init_integrals();
         //BS.h.print();
-        rhfsolve object (BS, nElectrons, nProtons);
+        rhfsolve object (BS, nElectrons);
         double energy = object.solve();
         cout << "-------------------------------------------------------------------" << endl;
         cout << "Restricted Hartree-Fock energy:" << energy << " (STO-3g)" << endl;
         cout << "-------------------------------------------------------------------" << endl;
+        /*
         ccsolve ccobject (object, nElectrons);
         cout << endl;
         cout << "-------------------------------------------------------------------" << endl;
@@ -263,6 +267,7 @@ int main(int argc, char* argv[]) {
         cout << "                  Total energy:" << energy+ccobject.correlation_energy << " a.u." << endl;
         cout << "-------------------------------------------------------------------" << endl;
         cout << "End of program." << endl;
+        */
     }
 
     if(true){
@@ -274,22 +279,19 @@ int main(int argc, char* argv[]) {
 
         vec3 corePosH1 = {0,0,0};
         vec3 corePosH2 = {0,0,1.4};
-        //BS.init_O2(corePosH1, corePosH2);
-        BS.init_H2(corePosH1, corePosH2);
-        //BS.init_HTO4(nProtons);
 
-        //BS.init_He(corePosH2);
-        //BS.init_O2(corePosH1, corePosH2);
-        //BS.nucleusCharges(0) = 1;
-        //BS.nucleusCharges(1) = 1;
-        //BS.nucleusCharges.print();
+        BS.init_H2(corePosH1, corePosH2);
         BS.init_integrals();
-        //BS.h.print();
-        rhfsolve object (BS, nElectrons, nProtons);
-        double energy = object.solve();
+
+        HFSolve object (BS);
+        //object.solve_uhf(2,0);
+        object.solve_rhf(2);
+
+        double energy = object.energy;
         cout << "-------------------------------------------------------------------" << endl;
-        cout << "Restricted Hartree-Fock energy:" << energy << " (STO-3g)" << endl;
+        cout << "Restricted Hartree-Fock energy:" << object.energy << " (STO-3g)" << endl;
         cout << "-------------------------------------------------------------------" << endl;
+
         ccsolve ccobject (object, nElectrons);
         cout << endl;
         cout << "-------------------------------------------------------------------" << endl;
@@ -300,163 +302,9 @@ int main(int argc, char* argv[]) {
         cout << "-------------------------------------------------------------------" << endl;
         cout << "                  Total energy:" << energy+ccobject.correlation_energy << " a.u." << endl;
         cout << "-------------------------------------------------------------------" << endl;
+
         cout << "End of program." << endl;
     }
-
-    if(false){
-        //Calculate O2 Ground state
-        basis BS;               //initialize basis object
-        int N = 33;  //Grid to calculate is NxN
-        mat energies;
-        energies.zeros(N,N);
-        int nElectrons = 16;
-        double nProtons = 16;
-        rhfsolve object (BS, nElectrons,nProtons);
-        vec3 corePosH1, corePosH2;
-        vec3 molecularCenter = {0,0,0};
-
-        double x = 0;
-        double x0 = 0;
-        double dx = 0.1;
-
-        double y = 0;
-        double y0 = 1;
-        double dy = 0.3;
-
-        vec3 dB1, dB2;
-
-        for(int i=0; i<N;i++){
-            for(int j=0; j<N;j++){
-                x = i*dx + x0;
-                y = j*dy + y0;
-
-                corePosH1 = {0,.01,0};
-                corePosH2 = {x,y,0};
-
-                dB1 = corePosH1 + molecularCenter;
-                dB2 = corePosH2 + molecularCenter;
-
-                BS = basis(); //reinitializing class
-
-                BS.init_O2(dB1, dB2);
-                BS.init_integrals();
-
-
-                object = rhfsolve(BS,nElectrons,nProtons); //reinitializing class
-
-
-
-                energies(i,j) = object.solve();
-                cout << "series: [ " << i << " | " << j << " ]  " <<   " Energy convergence occurs at " << energies(i,j) << " (a.u.). Distance: " << sqrt(x*x+y*y) << endl;
-            }
-        }
-        energies.save("Be2_100.dataset", raw_ascii);
-        cout << "Calculation complete, file saved to disk." << endl;
-
-    }
-
-    if(false){
-        //Perform a sweep along a given axis, save array to disk
-
-        basis BS;               //initialize basis object
-        int N = 2;             //Number of calculations
-        vec energies;
-        energies.zeros(N);
-        int nElectrons = 4;
-        double nProtons = 4;
-
-        rhfsolve object (BS, nElectrons,nProtons);
-        vec3 corePosH1, corePosH2;
-        vec3 molecularCenter = {0,0,0};
-
-        double x = 0;
-        double x0 = 5.5;
-        double dx = 0.1;
-        vec3 dB1, dB2;
-
-        for(int i=0; i<N;i++){
-            x = i*dx + x0;
-
-            corePosH1 = {0,0,0};
-            corePosH2 = {x,0,0};
-
-            dB1 = corePosH1 + molecularCenter;
-            dB2 = corePosH2 + molecularCenter;
-
-            BS = basis(); //reinitializing class
-
-            BS.init_He2(dB1, dB2);
-            BS.init_integrals();
-
-            object = rhfsolve(BS,nElectrons,nProtons); //reinitializing class
-
-            energies(i) = object.solve();
-
-            ccsolve ccobject (object, nElectrons);
-            cout << endl;
-            cout << ccobject.correlation_energy << endl;
-        }
-        //energies.save("Sweep_He2_101.dataset", raw_ascii);
-        cout << "Calculation complete, file saved to disk." << endl;
-
-
-    }
-
-
-    if(false){
-        //Perform a lowest eigenenergy fit of a H2O molecule
-        basis BS;               //initialize basis object
-        int N = 25;
-        mat energies;
-
-        int nElectrons = 10;
-        double nProtons = 10;
-        energies.zeros(N,N);
-        rhfsolve object (BS, nElectrons,nProtons);
-        vec3 corePosH1, corePosH2, corePosO;
-        vec3 molecularCenter = {0,0,0};
-
-        double x = 0;
-        double x0 = 1.3;
-        double dx = 0.02;
-
-        double y = 0;
-        double y0 = 0.8;
-        double dy = 0.02;
-
-        vec3 dB1, dB2, dB3;
-
-        for(int i=0; i<N;i++){
-            for(int j=0; j<N;j++){
-                x = i*dx + x0;
-                y = j*dy + y0;
-
-                corePosH1 = {-x,0,0};
-                corePosH2 = {x,0,0};
-                corePosO =  {0,y,0};
-
-                dB1 = corePosH1 + molecularCenter;
-                dB2 = corePosH2 + molecularCenter;
-                dB3 = corePosO  + molecularCenter;
-
-                BS = basis();
-                BS.init_H2O(dB1,dB2,dB3);
-                BS.init_integrals();
-
-                //object.reset(BS,6,6);
-                object = rhfsolve(BS,nElectrons,nProtons); //reinitializing class
-                energies(i,j) = object.solve();
-                cout << "series: [ " << i << " | " << j << " ]  " << " At angle:" << setprecision(10) << 2*acos(y/sqrt(y*y + x*x)) << " the energy converges at " << energies(i,j) << " at a absolute distance r = " << sqrt(x*x+y*y) << ". (x,y) = " << "(" << x << "," << y << ")" << endl;
-            }
-            cout << " " << endl;
-        }
-        //energies.print();
-        energies.save("H2O_208.dataset", raw_ascii);
-        cout << "Calculation complete, file saved to disk." << endl;
-        //double E = energies(0,0);
-        //cout << setprecision(10) << "Ground state energy:" << E << " atomic units. (" << 27.212*E << " eV)" << endl;        //print out approximated ground state energy
-    }
-
 
 
 

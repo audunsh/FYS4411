@@ -3,7 +3,8 @@
 #include <armadillo>
 #include <string>
 #include <basis.h>
-
+#include <uhfsolve.h>
+#include <rhfsolve.h>
 
 using namespace std;
 using namespace arma;
@@ -11,27 +12,26 @@ using namespace arma;
 class HFSolve{
     int Z,N, Nstates;
 public:
-    HFSolve(int Zn, int Nn);
-    double Solve(basis BS);
-    double energy();
-    void init_solver();
-    void advance();
+    HFSolve();
+    HFSolve(basis BS);
+    double solve(int N_electrons);
+    void solve_rhf(int N_electrons);
+    void solve_uhf(int N_electrons_up, int N_electrons_down);
+    void reset();
+    //rhfsolve restrictedhf;
+    //uhfsolve urestrictedhf;
+    basis Bs;
 
+
+    //The following variables must be available for the CCSolve class when performing coupled cluster calculations
+    mat C;          //Coefficient matrix
+    mat F;          //Fock matrix
+    vec epsilon;    //eigenvalues from current diagonalization
+    mat P;          //Density matrix
+    mat Cprime; //transformed Coefficient matric
+    double energy;
 
 private:
-    void updateF();
-    void normalize_col(mat C);
-    void setupP(mat C);
-    void setupG();
-
-
-
-    mat HFmatrix(mat C);
-    double calc_energy(mat C);
-
-    mat G,P,C,U, V, F,F_trans, C_trans; //The transformed matrices (Thijessen, p38-39)
-    vec s, e_v, e_v_prev;
-    basis Bs;
 
 };
 

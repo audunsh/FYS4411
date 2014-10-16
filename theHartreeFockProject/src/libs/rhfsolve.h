@@ -8,7 +8,7 @@ class rhfsolve
 {
 public:
     rhfsolve();
-    rhfsolve(basis BS, int N, int Z);
+    rhfsolve(basis BS, int N);
     void setupUnitMatrices(); //Bring overlap matrix to unit form
     void setupP();       //setup density matrix, make a first guess
     void setupF();       //setup the Fock matrix
@@ -28,7 +28,7 @@ public:
     double energyCalc();
     double evaluateProbabilityDensity(vec3 r);
     void createDensityMap(string filename);
-    void reset(basis BS, int N, int Z);
+    void reset(basis BS, int N);
 
     //Trying to make some objects availabe to external classes, rammifications unknown
     mat C;          //Coefficient matric

@@ -3,13 +3,13 @@
 
 rhfsolve::rhfsolve(){}
 
-rhfsolve::rhfsolve(basis BS, int N, int Z){
+rhfsolve::rhfsolve(basis BS, int N){
     //initialize solver with given basis, number of electrons (and now superfluos number of protons)
     //This solver follows the algo described in Thijssen, p74-76
     Bs = BS;
     nStates = Bs.Nstates;        //set number of states in basis
     nElectrons = N;              //set number of electrons
-    nProtons = Z;                //set number of protons, may be removed
+    //nProtons = Z;                //set number of protons, may be removed
 
     //initializing all matrices and vectors
     C.zeros(nStates,nElectrons/2);//set initial C equal to the unit matrix
@@ -27,13 +27,13 @@ rhfsolve::rhfsolve(basis BS, int N, int Z){
     s_diag.zeros(nStates);
 }
 
-void rhfsolve::reset(basis BS, int N, int Z){
+void rhfsolve::reset(basis BS, int N){
     //initialize solver with given basis, number of electrons (and now superfluos number of protons)
     //This solver follows the algo described in Thijssen, p74-76
     Bs = BS;
     nStates = Bs.Nstates;        //set number of states in basis
     nElectrons = N;              //set number of electrons
-    nProtons = Z;                //set number of protons, may be removed
+    //nProtons = Z;                //set number of protons, may be removed
 
     //initializing all matrices and vectors
     //C.zeros(nStates,nElectrons/2);//set initial C equal to the unit matrix

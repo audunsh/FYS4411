@@ -27,6 +27,14 @@ public:
     void printAllContracted();
     void flip_index(); //Change indexing to match Thijssen
 
+    //implementing a more streamlined interface for dealing with the basis
+    void add_state();
+    void add_primitive_to_state(int Stateindex, Primitive P);
+    void add_nucleus(vec3 pos, int charge);
+    void add_STO_NG_s_orbital(int NG, vec exponents, vec weigths, vec3 corePos);
+    void add_STO_NG_p_orbital(int NG, vec exponents, vec weigths, vec3 corePos);
+    void add_STO_NG_d_orbital(int NG, vec exponents, vec weigths, vec3 corePos);
+
     void init_H2(vec3 corePos1, vec3 corePos2);
     void init_Be2(vec3 corePos1, vec3 corePos2);
     void init_H2O(vec3 corePos1, vec3 corePos2, vec3 corePos3);
@@ -37,6 +45,8 @@ public:
     void init_He(vec3 corePos1);
     void init_Be(vec3 corePos1);
     void init_He2(vec3 corePos1, vec3 corePos2);
+
+
 
     void add_atom_STO3G(string configuration, vec3 corePos);
     //void init_Be2(vec3 corePos1, vec3 corePos2);
@@ -58,6 +68,7 @@ public:
 
     //Need to access this externally, temporarily
     vec nucleusCharges;
+    vec nPrimitivesInState;
 
 
 private:
