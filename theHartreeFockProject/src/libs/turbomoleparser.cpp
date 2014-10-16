@@ -2,26 +2,30 @@
 
 #include <fstream>
 #include <iostream>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
+#include <regex>
 #include <clocale>
 #include <basis.h>
+#include <armadillo>
 
 using namespace std;
-using namespace boost;
+using namespace arma;
+//using namespace boost;
 
 TurboMoleParser::TurboMoleParser()
 {
     /* A parser for reading files from turbomole
      * Originally written by Svenn-Arne Dragly
-     * Only some minor changes made to this version to make it work with the Fermion Mingle framework
+     * Only some minor changes made to this version to make it work with the Fermion Mingle classes
      *
      */
 }
 
 bool TurboMoleParser::load(string fileName)
 {
+    cout << "Turbomole parser loading file..." << endl;
     //load the file fileName into basis BS
-    setlocale(LC_ALL, "C");
+    //setlocale(LC_ALL, "C");
     //m_contractedBasisFunctions.clear();
     ifstream dataFile(fileName);
     if(!dataFile.is_open()) {
@@ -33,23 +37,36 @@ bool TurboMoleParser::load(string fileName)
     string atomTypeAbbreviation;
     vec weights, exponents;
     int Nprimitives;
+    regex basisRegex("a-zA-Z");
     while (getline(dataFile, line))
     {
+        //cout << line << endl;
+
         bool ignoredLine = false;
         ignoredLine |= regex_match(line, regex("#.*"));
         ignoredLine |= regex_match(line, regex("$basis.*"));
         ignoredLine |= regex_match(line, regex("$end.*"));
         ignoredLine |= regex_match(line, regex("\\*.*"));
+
         if(ignoredLine) {
             continue;
         }
         smatch what;
-        regex basisRegex("^\\s*([a-zA-Z]+)");
+
+
+
+        //regex basisRegex("a-zA-Z");
+        //regex basisRegex("");
         while(regex_search(line, what, basisRegex)) { // n 4-31G
             atomTypeAbbreviation = string(what[1]);
+            cout << atomTypeAbbreviation << endl;
             //m_atomType = HF::abbreviationToAtomType(atomTypeAbbreviation);
             break;
         }
+
+
+
+        /*
         regex orbitalRegex("\\s*([0-9])\\s*([spdf])\\s*");
 
         weights.set_size(0);
@@ -91,10 +108,13 @@ bool TurboMoleParser::load(string fileName)
             //primitive.setExponent(exponent);
             //m_collectedPrimitiveBasisFunctions.push_back(primitive);
         }
-        exponents.print();
-        weights.print();
+        */
+
+
 
     }
+    exponents.print();
+    weights.print();
     //mergePrimitivesIntoContracted();
     //    for(GaussianContractedOrbital orbital : m_contractedBasisFunctions) {
     //        cout << "Contracted:" << endl;

@@ -4,8 +4,9 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <basis.h>
+#include <armadillo>
 
+using namespace arma;
 using namespace std;
 
 class TurboMoleParser

@@ -150,7 +150,6 @@ void basis::add_state(){
 void basis::add_primitive_to_state(int Stateindex, Primitive P){
     basisSts.at(Stateindex).appendPrimitive(P);
     nPrimitivesInState(Stateindex) += 1;
-    nPrimitivesInState.print();
 }
 
 void basis::add_nucleus(vec3 pos, int charge){

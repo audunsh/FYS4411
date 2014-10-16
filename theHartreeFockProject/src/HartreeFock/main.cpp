@@ -276,7 +276,7 @@ int main(int argc, char* argv[]) {
         //Calculate O2 Ground state energy
         basis BS;
         TurboMoleParser electronsystem;
-        electronsystem.load("sto6gH.txt"); //loads sto6gh.txt
+        electronsystem.load("sto6g_H.txt"); //loads sto6gh.txt
 
         int nElectrons =2;
         int nProtons =2;
