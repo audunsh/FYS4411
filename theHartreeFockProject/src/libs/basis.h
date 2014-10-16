@@ -7,7 +7,7 @@
 #include <primitive.h>
 #include <integrator.h>
 #include <boysfunction.h>
-
+#include <turbomoleparser.h>
 
 using namespace std;
 using namespace arma;
@@ -31,9 +31,10 @@ public:
     void add_state();
     void add_primitive_to_state(int Stateindex, Primitive P);
     void add_nucleus(vec3 pos, int charge);
-    void add_STO_NG_s_orbital(int NG, vec exponents, vec weigths, vec3 corePos);
+    void add_STO_NG_s_orbital(int NG, vec weigths, vec exponents, vec3 corePos);
     void add_STO_NG_p_orbital(int NG, vec exponents, vec weigths, vec3 corePos);
     void add_STO_NG_d_orbital(int NG, vec exponents, vec weigths, vec3 corePos);
+    //void import(TurboMoleParser system, vec3 corePos);
 
     void init_H2(vec3 corePos1, vec3 corePos2);
     void init_Be2(vec3 corePos1, vec3 corePos2);

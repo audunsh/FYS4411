@@ -12,7 +12,8 @@ SOURCES= \
          contracted.cpp \
     ccsolve.cpp \
     rhfsolve.cpp \
-    uhfsolve.cpp
+    uhfsolve.cpp \
+    turbomoleparser.cpp
 
 HEADERS= \
          basis.h \
@@ -24,6 +25,7 @@ HEADERS= \
          contracted.h \
     ccsolve.h \
     rhfsolve.h \
-    uhfsolve.h
+    uhfsolve.h \
+    turbomoleparser.h
 
 LIBS += -larmadillo -lblas -llapack

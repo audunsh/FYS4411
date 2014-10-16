@@ -12,6 +12,7 @@
 #include <rhfsolve.h>
 #include <uhfsolve.h>
 #include <ccsolve.h>
+#include <turbomoleparser.h>
 
 double pi = 4*atan(1);
 
@@ -24,11 +25,12 @@ int main(int argc, char* argv[]) {
     /**************************************************************************************************************
      * Fermion Mingle Quantum Solver
      * A solver for quantum many-body problems with support for
-     * - Restricted and unrestricted* Hartree Fock
+     * - Restricted and unrestricted Hartree Fock
      * - Coupled Cluster (CCD, CCSD, CCSDT*)
      * - Gaussian Basis sets
      * - Fermion density evaluation
      *
+     * (*) remains to be implemented
      * Written in C++ by Audun Skau Hansen & Goran Brekke Svaland
      *
      * Library Armadillo is required for compilation.
@@ -273,6 +275,9 @@ int main(int argc, char* argv[]) {
     if(true){
         //Calculate O2 Ground state energy
         basis BS;
+        TurboMoleParser electronsystem;
+        electronsystem.load("sto6gH.txt"); //loads sto6gh.txt
+
         int nElectrons =2;
         int nProtons =2;
 

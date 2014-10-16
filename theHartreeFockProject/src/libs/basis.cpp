@@ -4,7 +4,7 @@
 #include <armadillo>
 #include <integrator.h>
 #include <boysfunction.h>
-
+#include <turbomoleparser.h>
 
 basis::basis(){
     set_size(3);
@@ -161,13 +161,12 @@ void basis::add_nucleus(vec3 pos, int charge){
     nucleusCharges(Nsize) = charge;
 }
 
-void basis::add_STO_NG_s_orbital(int NG, vec exponents, vec weigths, vec3 corePos){
+void basis::add_STO_NG_s_orbital(int NG, vec weigths, vec exponents, vec3 corePos){
     add_state();
     for(int i = 0; i<NG;i++){
         Primitive S = turbomolePrimitive(weigths(i),exponents(i),0,0,0,corePos);
         add_primitive_to_state(Nstates-1, S);
     }
-
 }
 
 void basis::add_STO_NG_p_orbital(int NG, vec exponents, vec weigths, vec3 corePos){
@@ -176,19 +175,16 @@ void basis::add_STO_NG_p_orbital(int NG, vec exponents, vec weigths, vec3 corePo
         Primitive P1 = turbomolePrimitive(weigths(i),exponents(i),1,0,0,corePos);
         add_primitive_to_state(Nstates-1, P1);
     }
-
     add_state();
     for(int i = 0; i<NG;i++){
         Primitive P2 = turbomolePrimitive(weigths(i),exponents(i),0,1,0,corePos);
         add_primitive_to_state(Nstates-1, P2);
     }
-
     add_state();
     for(int i = 0; i<NG;i++){
         Primitive P3 = turbomolePrimitive(weigths(i),exponents(i),0,0,1,corePos);
         add_primitive_to_state(Nstates-1, P3);
     }
-
 }
 
 void basis::add_STO_NG_d_orbital(int NG, vec exponents, vec weigths, vec3 corePos){
@@ -227,7 +223,6 @@ void basis::add_STO_NG_d_orbital(int NG, vec exponents, vec weigths, vec3 corePo
         Primitive D6 = turbomolePrimitive(weigths(i),exponents(i),1,0,1,corePos);
         add_primitive_to_state(Nstates-1, D6);
     }
-
 }
 
 
@@ -387,37 +382,26 @@ Primitive basis::turbomolePrimitive(double weight, double exponent, double i, do
 
 }
 
+//void basis::import(TurboMoleParser system, vec3 corePos){
+    //imports one state basis from a file using a parser written by Svenn-Arne Dragly
+//}
+
 void basis::add_atom_STO3G(string configuration, vec3 corePos){
     //add new atom to the basis
+    //turbo(we,exp)
     if(configuration == "H"){
-        add_state();
-        Primitive S1A = turbomolePrimitive(0.15432897,3.42525091,0,0,0,corePos);
-        Primitive S1B = turbomolePrimitive(0.53532814,0.62391373,0,0,0,corePos);
-        Primitive S1C = turbomolePrimitive(0.44463454,0.16885540,0,0,0,corePos);
-
-        add_primitive_to_state(Nstates-1, S1A);
-        add_primitive_to_state(Nstates-1, S1B);
-        add_primitive_to_state(Nstates-1, S1C);
-
+        vec weigths =   {0.15432897, 0.53532814,0.44463454};
+        vec exponents   = {3.42525091, 0.62391373,0.16885540};
+        add_STO_NG_s_orbital(3 , weigths,exponents,corePos);
     }
 
     if(configuration == "He"){
-        add_state();
-        Primitive S1A = turbomolePrimitive(0.15432897,6.36242139,0,0,0,corePos);
-        Primitive S1B = turbomolePrimitive(0.53532814,1.15892300,0,0,0,corePos);
-        Primitive S1C = turbomolePrimitive(0.44463454,0.31364979,0,0,0,corePos);
-
-        add_primitive_to_state(Nstates-1, S1A);
-        add_primitive_to_state(Nstates-1, S1B);
-        add_primitive_to_state(Nstates-1, S1C);
-
+        vec weigths =   {0.15432897,0.53532814,0.44463454};
+        vec exponents   = {6.36242139,1.15892300,0.31364979};
+        add_STO_NG_s_orbital(3 , weigths,exponents,corePos);
     }
 
     if(configuration == "Be"){
-
-
-
-
         add_state();
         Primitive S1A = turbomolePrimitive(0.15432897,30.1678710,0,0,0,corePos);
         Primitive S1B = turbomolePrimitive(0.53532814,5.4951153,0,0,0,corePos);
