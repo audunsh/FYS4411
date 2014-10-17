@@ -234,16 +234,18 @@ int main(int argc, char* argv[]) {
         */
     }
 
-    if(false){
+    if(true){
         //Calculate H2 Ground state energy
         basis BS;
         int nElectrons =2;
-        int nProtons = 2;
+        int nProtons =2;
 
 
         vec3 corePosH1 = {0,0,0};
         vec3 corePosH2 = {0,0,1.4};
-        BS.init_H2(corePosH1, corePosH2);
+        //BS.init_H2(corePosH1, corePosH2);
+        BS.init_He(corePosH1);
+        //BS.init_STO_3G("H", 1);
 
         //BS.init_O(corePosH1);
         //BS.init_O2(corePosH1, corePosH2);
@@ -291,10 +293,10 @@ int main(int argc, char* argv[]) {
         //BS.init_H2(corePosH1, corePosH2);
 
 
-        wrapped.bs.add_nucleus(corePosH1, 1);
+        wrapped.bs.add_nucleus(corePosH1, 2);
         //wrapped.bs.add_nucleus(corePosH2, 1);
         //cout << "Number of states:" << wrapped.bs.Nstates << endl;
-        wrapped.add_STO6G_H(corePosH1);
+        wrapped.add_STO6G_He(corePosH1);
         //cout << "Number of states:" << wrapped.bs.Nstates << endl;
         //wrapped.add_STO6G_H(corePosH2);
 
@@ -306,7 +308,7 @@ int main(int argc, char* argv[]) {
 
         HFSolve object (wrapped.bs);
         //object.solve_uhf(2,0);
-        object.solve_rhf(1);
+        object.solve_rhf(2);
 
         double energy = object.energy;
         cout << "-------------------------------------------------------------------" << endl;

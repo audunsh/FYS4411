@@ -13,7 +13,6 @@ SOURCES= \
     ccsolve.cpp \
     rhfsolve.cpp \
     uhfsolve.cpp \
-    turbomoleparser.cpp \
     basisbank.cpp
 
 HEADERS= \
@@ -27,7 +26,6 @@ HEADERS= \
     ccsolve.h \
     rhfsolve.h \
     uhfsolve.h \
-    turbomoleparser.h \
     basisbank.h
 
 LIBS += -larmadillo -lblas -llapack

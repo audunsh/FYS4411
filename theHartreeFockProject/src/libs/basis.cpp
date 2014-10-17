@@ -143,7 +143,6 @@ double basis::state(int p, int q, int r, int s, double D, double Ex){
 }
 void basis::add_state(){
     Nstates += 1;
-    cout << "Added state: " << Nstates << endl;
     nPrimitivesInState.set_size(Nstates);
     basisSts.push_back(contracted());
 }
