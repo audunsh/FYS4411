@@ -12,7 +12,6 @@
 #include <rhfsolve.h>
 #include <uhfsolve.h>
 #include <ccsolve.h>
-#include <turbomoleparser.h>
 #include <basisbank.h>
 double pi = 4*atan(1);
 
@@ -254,8 +253,13 @@ int main(int argc, char* argv[]) {
         //BS.nucleusCharges.print();
         BS.init_integrals();
         //BS.h.print();
+        //HFSolve object (BS, nElectrons);
+        //object.solve_rhf(2);
+
         rhfsolve object (BS, nElectrons);
+
         double energy = object.solve();
+        //double energy = object.energy;
         cout << "-------------------------------------------------------------------" << endl;
         cout << "Restricted Hartree-Fock energy:" << energy << " (STO-3g)" << endl;
         cout << "-------------------------------------------------------------------" << endl;

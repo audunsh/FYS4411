@@ -4,8 +4,12 @@
 #include <primitive.h>
 using namespace std;
 using namespace arma;
+
+basisbank::basisbank(){}
+
 basisbank::basisbank(basis BS){
     bs = BS;}
+
 
 //# STO-6G EMSL Basis Set Exchange Library 10/17/14 4:51 AM
 //# Elements References

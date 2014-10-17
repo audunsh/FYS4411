@@ -9,6 +9,7 @@ using namespace arma;
 class basisbank{
 public:
     basisbank(basis BS);
+    basisbank();
     basis bs;
     void add_STO6G_He(vec3 corePos);
     void add_STO6G_H(vec3 corePos);

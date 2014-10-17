@@ -13,7 +13,8 @@ SOURCES= \
     ccsolve.cpp \
     rhfsolve.cpp \
     uhfsolve.cpp \
-    basisbank.cpp
+    basisbank.cpp \
+    fmingle.cpp
 
 HEADERS= \
          basis.h \
@@ -26,6 +27,7 @@ HEADERS= \
     ccsolve.h \
     rhfsolve.h \
     uhfsolve.h \
-    basisbank.h
+    basisbank.h \
+    fmingle.h
 
 LIBS += -larmadillo -lblas -llapack
