@@ -292,26 +292,25 @@ int main(int argc, char* argv[]) {
 
 
         wrapped.bs.add_nucleus(corePosH1, 1);
-        wrapped.bs.add_nucleus(corePosH2, 1);
-        cout << "Number of states:" << wrapped.bs.Nstates << endl;
+        //wrapped.bs.add_nucleus(corePosH2, 1);
+        //cout << "Number of states:" << wrapped.bs.Nstates << endl;
         wrapped.add_STO6G_H(corePosH1);
-        cout << "Number of states:" << wrapped.bs.Nstates << endl;
-        wrapped.add_STO6G_H(corePosH2);
+        //cout << "Number of states:" << wrapped.bs.Nstates << endl;
+        //wrapped.add_STO6G_H(corePosH2);
 
 
 
         wrapped.bs.set_size(wrapped.bs.Nstates);
-        cout << "Number of states:" << wrapped.bs.Nstates << endl;
 
         wrapped.bs.init_integrals();
 
         HFSolve object (wrapped.bs);
         //object.solve_uhf(2,0);
-        object.solve_rhf(2);
+        object.solve_rhf(1);
 
         double energy = object.energy;
         cout << "-------------------------------------------------------------------" << endl;
-        cout << "Restricted Hartree-Fock energy:" << object.energy << " (STO-3g)" << endl;
+        cout << "                    SCF energy:" << object.energy << endl;
         cout << "-------------------------------------------------------------------" << endl;
 
         ccsolve ccobject (object, nElectrons);
