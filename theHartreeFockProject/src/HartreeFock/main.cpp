@@ -13,7 +13,7 @@
 #include <uhfsolve.h>
 #include <ccsolve.h>
 #include <turbomoleparser.h>
-
+#include <basisbank.h>
 double pi = 4*atan(1);
 
 using namespace std;
@@ -275,8 +275,11 @@ int main(int argc, char* argv[]) {
     if(true){
         //Calculate O2 Ground state energy
         basis BS;
-        TurboMoleParser electronsystem;
-        electronsystem.load("sto6g_H.txt"); //loads sto6gh.txt
+        BS.Nstates = 0;
+        basisbank wrapped (BS);
+
+        //TurboMoleParser electronsystem;
+        //electronsystem.load("sto6g_H.txt"); //loads sto6gh.txt
 
         int nElectrons =2;
         int nProtons =2;
@@ -285,10 +288,24 @@ int main(int argc, char* argv[]) {
         vec3 corePosH1 = {0,0,0};
         vec3 corePosH2 = {0,0,1.4};
 
-        BS.init_H2(corePosH1, corePosH2);
-        BS.init_integrals();
+        //BS.init_H2(corePosH1, corePosH2);
 
-        HFSolve object (BS);
+
+        wrapped.bs.add_nucleus(corePosH1, 1);
+        wrapped.bs.add_nucleus(corePosH2, 1);
+        cout << "Number of states:" << wrapped.bs.Nstates << endl;
+        wrapped.add_STO6G_H(corePosH1);
+        cout << "Number of states:" << wrapped.bs.Nstates << endl;
+        wrapped.add_STO6G_H(corePosH2);
+
+
+
+        wrapped.bs.set_size(wrapped.bs.Nstates);
+        cout << "Number of states:" << wrapped.bs.Nstates << endl;
+
+        wrapped.bs.init_integrals();
+
+        HFSolve object (wrapped.bs);
         //object.solve_uhf(2,0);
         object.solve_rhf(2);
 
@@ -307,6 +324,7 @@ int main(int argc, char* argv[]) {
         cout << "-------------------------------------------------------------------" << endl;
         cout << "                  Total energy:" << energy+ccobject.correlation_energy << " a.u." << endl;
         cout << "-------------------------------------------------------------------" << endl;
+
 
         cout << "End of program." << endl;
     }
