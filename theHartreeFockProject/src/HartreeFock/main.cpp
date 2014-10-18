@@ -35,15 +35,16 @@ int main(int argc, char* argv[]) {
      *
      * Library Armadillo is required for compilation.
      **************************************************************************************************************/
-    vec3 corePos1 = {0,0,0};                          //setting up some position vectors for the cores
+    vec3 corePos1 = {0,0,0};                            //setting up some position vectors for the cores
     vec3 corePos2 = {0,0,1.4};
-    fmingle mysystem;                                 //creating the system
-    mysystem.add_nucleus(corePos1, 1);                //creating a nucleus with charge 1
-    mysystem.add_nucleus(corePos2, 1);                //creating a nucleus with charge 1
-    mysystem.fminglebasisbank.add_STO_6G_h(corePos1); //creating an electrons positioned at core 1 using STO-6G basis set
-    mysystem.fminglebasisbank.add_STO_6G_h(corePos2); //creating an electrons positioned at core 2 using STO-6G basis set
-    mysystem.rhf_solve(2);                            //perform a restricted hartree fock procedure for 2 electrons
-    mysystem.ccsd_solve(2);                           //perform a coupled cluster procedure for 2 electrons
+    fmingle mysystem;                                   //creating the system
+    mysystem.add_nucleus(corePos1, 3);                  //creating a nucleus with charge 1
+    //mysystem.add_nucleus(corePos2, 1);                //creating a nucleus with charge 1
+    mysystem.fminglebasisbank.add_STO_6G_li(corePos1);  //creating an electrons positioned at core 1 using STO-6G basis set
+    //mysystem.fminglebasisbank.add_STO_6G_h(corePos2); //creating an electrons positioned at core 2 using STO-6G basis set
+    mysystem.uhf_solve(2,1);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
+    mysystem.ccsd_solve(2);                             //perform a coupled cluster procedure for 2 electrons
+    cout << mysystem.report;
     return 0;
 
 }

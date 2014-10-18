@@ -24,6 +24,7 @@ fmingle::fmingle()
     basisbank wrapped (BS);
     fminglebasisbank = wrapped;
     fminglebasisbank.bs.Nstates = 0;
+    report = "";
 }
 
 void fmingle::add_nucleus(vec3 corePos, int charge){

@@ -35,6 +35,7 @@ public:
     uhfsolve fminglesolver_uhf;
     ccsolve fminglesolver_cc;
     double rhf_energy, uhf_energy, correlation_energy;
+    string report;
 
 
 };

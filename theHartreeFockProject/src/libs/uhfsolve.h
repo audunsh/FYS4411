@@ -19,6 +19,7 @@ public:
     void updateP();      //construct new density matrix
     void setupCoupledMatrix(); //set up direct and exchange terms from basis
     void printMatrices();//print the iterating matrices
+    void setupTotalCoefficientMatrix();
     bool convergenceCriteria(); //check for convergence
     double energy();     //return ground state energy
     double solve();      //automated solving process, returns energy

@@ -112,7 +112,12 @@ double uhfsolve::solve(){
     //printMatrices();
     //createDensityMap();
     //return iterations;
+    C = Cu + Cd;
     return energyCalc();
+}
+
+void uhfsolve::setupTotalCoefficientMatrix(){
+
 }
 
 double uhfsolve::evaluateProbabilityDensity(vec3 r){
@@ -200,6 +205,7 @@ double uhfsolve::energyCalc(){
     //return energy for current Fock matrix
 
     //return 0.5*accu(P % (Bs.h + F))+Bs.nnInteraction();
+    //return 0.5*accu((Pu.submat(0,0,nStates, nElectronsU)+Pd.submat(0,0,nStates,nElectronsD)) % Bs.h + Fu.submat(0,0,nStates, nElectronsU) % Pu.submat(0,0,nStates, nElectronsU) + Fd.submat(0,0,nStates,nElectronsD) % Pd.submat(0,0,nStates,nElectronsD))+Bs.nnInteraction();
     return 0.5*accu((Pu+Pd) % Bs.h + Fu % Pu + Fd % Pd)+Bs.nnInteraction();
 }
 
@@ -283,8 +289,10 @@ void uhfsolve::updateP(){
     //P = C*C.t();
     P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 -1)*C.cols(0, nElectrons/2.0 -1).t();
 
-    Pu = dampingFactor*Pu + (1-dampingFactor)*Cu*Cu.t();
-    Pd = dampingFactor*Pd + (1-dampingFactor)*Cd*Cd.t();
+    //Pu = dampingFactor*Pu + (1-dampingFactor)*Cu*Cu.t();
+    //Pd = dampingFactor*Pd + (1-dampingFactor)*Cd*Cd.t();
+    Pu = dampingFactor*Pu + (1-dampingFactor)*Cu.submat(0,0,nStates, nElectronsU)*Cu.submat(0,0,nStates, nElectronsU).t();
+    Pd = dampingFactor*Pd + (1-dampingFactor)*Cd.submat(0,0,nStates, nElectronsD)*Cd.submat(0,0,nStates, nElectronsD).t();;
 }
 
 bool uhfsolve::convergenceCriteria(){
