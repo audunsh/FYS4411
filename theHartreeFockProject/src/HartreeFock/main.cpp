@@ -300,7 +300,7 @@ int main(int argc, char* argv[]) {
         wrapped.bs.add_nucleus(corePosH1, 2);
         //wrapped.bs.add_nucleus(corePosH2, 1);
         //cout << "Number of states:" << wrapped.bs.Nstates << endl;
-        wrapped.add_STO6G_He(corePosH1);
+        wrapped.add_6_311G_he(corePosH1);
         //cout << "Number of states:" << wrapped.bs.Nstates << endl;
         //wrapped.add_STO6G_H(corePosH2);
 
