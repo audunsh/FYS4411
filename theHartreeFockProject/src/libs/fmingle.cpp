@@ -23,6 +23,7 @@ fmingle::fmingle()
     initialized = 0;
     basisbank wrapped (BS);
     fminglebasisbank = wrapped;
+    fminglebasisbank.bs.Nstates = 0;
 }
 
 void fmingle::add_nucleus(vec3 corePos, int charge){
@@ -30,12 +31,6 @@ void fmingle::add_nucleus(vec3 corePos, int charge){
 }
 
 void fmingle::add_orbitals(vec3 corePos, string config){
-    try{
-        //fminglebasisbank.add_
-    }
-    catch(int e){
-        cout << "Could not find requested basis:" << config << endl;
-    }
 }
 
 void fmingle::rhf_solve(int nElectrons){

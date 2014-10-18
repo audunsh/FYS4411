@@ -13,7 +13,10 @@
 #include <uhfsolve.h>
 #include <ccsolve.h>
 #include <basisbank.h>
+#include <fmingle.h>
+
 double pi = 4*atan(1);
+
 
 using namespace std;
 using namespace arma;
@@ -234,6 +237,18 @@ int main(int argc, char* argv[]) {
     }
 
     if(true){
+        //Preparing to migrate to fmingle usage, testing that it all works
+        vec3 corePos = {0,0,0};
+        fmingle mysystem;
+        mysystem.add_nucleus(corePos, 2);
+        mysystem.fminglebasisbank.add_STO_6G_he(corePos);
+        mysystem.rhf_solve(2);
+        mysystem.uhf_solve(1,1);
+
+
+
+    }
+    if(false){
         //Calculate H2 Ground state energy
         basis BS;
         int nElectrons =2;
@@ -278,7 +293,7 @@ int main(int argc, char* argv[]) {
         */
     }
 
-    if(true){
+    if(false){
         //Calculate O2 Ground state energy
         basis BS;
         BS.Nstates = 0;

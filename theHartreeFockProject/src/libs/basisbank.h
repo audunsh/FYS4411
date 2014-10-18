@@ -12,7 +12,8 @@ public:
     basisbank(basis BS);
     basisbank();
     basis bs;
-    string basistype;    void add_3_21G_h(vec3 corePos);
+    string basistype;
+    void add_3_21G_h(vec3 corePos);
     void add_3_21G_he(vec3 corePos);
     void add_3_21G_li(vec3 corePos);
     void add_3_21G_be(vec3 corePos);
