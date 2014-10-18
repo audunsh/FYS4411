@@ -23,7 +23,7 @@ ccsolve::ccsolve(HFSolve object, int nElect)
     //hfobject.C.col(3)*=-1;
     //hfobject.C.col(5)*=-1;
 
-    cout << "CCSolve Found " << nStates << " number of basis functions in the RHF Roothaan expansion." << endl;
+    //cout << "CCSolve Found " << nStates << " number of basis functions in the RHF Roothaan expansion." << endl;
     SetupMinimizedBasis();
     ExpandMinimizedBasis(); //Include spin orthogonality
     SetupT1();
@@ -41,11 +41,6 @@ double ccsolve::GetUncoupledElement(int a, int b){
         sm = hfobject.epsilon(a/2);
     }
 
-    //for(int p=0; p<nStates;p++){
-    //    for(int q=0; q<nStates;q++){
-    //        sm += hfobject.C(a,p)*hfobject.C(b,q)*hfobject.Bs.h(p,q);
-    //    }
-    //}
 
     return sm;
 }
@@ -71,7 +66,7 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
 }
 
 void ccsolve::SetupMinimizedBasis(){
-    cout << "Setting up the minimized basis." << endl;
+    //cout << "Setting up the minimized basis." << endl;
     vmin.set_size(nStates,nStates);
     fmin.set_size(nStates,nStates);
     fmin.zeros();
@@ -90,7 +85,7 @@ void ccsolve::SetupMinimizedBasis(){
             }
         }
     }
-    cout << "Finished setting up the minimized basis." << endl;
+    //cout << "Finished setting up the minimized basis." << endl;
 }
 
 void ccsolve::ExpandMinimizedBasis(){
@@ -637,12 +632,12 @@ void ccsolve::CCSD(){
     counter = 0;
     //Set up and solve the CCSD-equation
 
-    cout << "Performing CCSD calculation." << endl;
+    //cout << "Performing CCSD calculation." << endl;
     initT1(); //initial guess for the amplitudes
     initT2(); //Set up initial guess following S-B, p.289
     //t20 = t2new;
     double CCLinear, CCQuadratic;
-    cout << energy(t2c,t1c) << endl;
+    //cout << "MBPT2:" << energy(t2c,t1c) << endl;
 
     while(unconverged(.00000001)){
         //cout <<"::Current energy: " << energy(t2new,t1new) << endl;
@@ -913,13 +908,12 @@ bool ccsolve::unconverged(double tolerance){
     bool condition = true;
     double ec = energy(t2c,t1c);
     if(abs(ec-eprev)<tolerance){
-        cout << "Converged by surpassing tolerance. (at " << abs(ec-eprev) << ")" << endl;
-        cout << "in " << counter << " iterations." << endl;
+        //cout << "CCsolve:Converged by surpassing tolerance in " << counter << " iterations." << endl;
         condition = false;
     }
     if(ec!=ec){condition = false;}
     if(counter > maxiter){
-        cout << "Maximum number of iterations exceeded. (" << maxiter << ")" << endl;
+        //cout << "Maximum number of iterations exceeded. (" << maxiter << ")" << endl;
         condition = false;}
     counter += 1;
     return condition;
@@ -978,7 +972,7 @@ void ccsolve::SetupT1(){
     t1new.set_size(nStates, nStates);
     t1new.zeros();
 
-    cout << "Initialized t1 amplitudes." << endl;
+    //cout << "Initialized t1 amplitudes." << endl;
 }
 
 
@@ -1040,7 +1034,7 @@ void ccsolve::SetupT2(){
 
         }
     }
-    cout << "Initialized t2 amplitudes." << endl;
+    //cout << "Initialized t2 amplitudes." << endl;
 }
 
 

@@ -33,38 +33,69 @@ void fmingle::add_nucleus(vec3 corePos, int charge){
 void fmingle::add_orbitals(vec3 corePos, string config){
 }
 
-void fmingle::rhf_solve(int nElectrons){
+void fmingle::initialize(){
+    fminglebasisbank.bs.set_size(fminglebasisbank.bs.Nstates);
+    fminglebasisbank.bs.init_integrals();
+    HFSolve solverobject(fminglebasisbank.bs);
+    fminglesolver_hf = solverobject;
+}
 
-    if(initialized == 0){
-        fminglebasisbank.bs.set_size(fminglebasisbank.bs.Nstates);
-        fminglebasisbank.bs.init_integrals();
-        initialized =1;
+void fmingle::rhf_solve(int nElectrons){
+    if(initialized == 0){initialize();
     }
-    rhfsolve solverobject(fminglebasisbank.bs, nElectrons);
-    fminglesolver_rhf =solverobject;
-    rhf_energy = fminglesolver_rhf.solve();
+    initialized =1;
+    fminglesolver_hf.solve_rhf(nElectrons);
+    rhf_energy = fminglesolver_hf.energy;
     cout << "-------------------------------------------------------------------" << endl;
-    cout << "  Restricted Hartree-Fock energy:" << rhf_energy << endl;
+    cout << std::setprecision(14)<<"  Restricted Hartree-Fock energy:" << rhf_energy << endl;
     cout << "-------------------------------------------------------------------" << endl;
 };
 
 void fmingle::uhf_solve(int nElectronsUp, int nElectronsDown){
-    if(initialized == 0){
-        fminglebasisbank.bs.set_size(fminglebasisbank.bs.Nstates);
-        fminglebasisbank.bs.init_integrals();
-        initialized =1;
+    if(initialized == 0){initialize();
     }
-    uhfsolve solverobject(fminglebasisbank.bs, nElectronsUp, nElectronsDown);
-    fminglesolver_uhf =solverobject;
-    uhf_energy = fminglesolver_uhf.solve();
+    initialized =2;
+    fminglesolver_hf.solve_uhf(nElectronsUp, nElectronsDown);
+    uhf_energy = fminglesolver_hf.energy;
     cout << "-------------------------------------------------------------------" << endl;
-    cout << "Unrestricted Hartree-Fock energy:" << uhf_energy << endl;
+    cout << std::setprecision(14)<<"Unrestricted Hartree-Fock energy:" << uhf_energy << endl;
     cout << "-------------------------------------------------------------------" << endl;
 };
 
-void fmingle::ccd_solve(int nElectrons){
+void fmingle::ccsd_solve(int nElectrons){
+    if(initialized==0){
+        cout << "The basis is not initialized." << endl;
+        //Do nothing.
+    }
+    if(initialized==1){
+        //Perform ccd for a RHF basis
+        ccsolve solverobject(fminglesolver_hf, nElectrons);
+        fminglesolver_cc = solverobject;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << std::setprecision(14)<< "       CCSD Electron correlation:" << fminglesolver_cc.correlation_energy << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << std::setprecision(14)<<"                    Total energy:" << fminglesolver_cc.correlation_energy+rhf_energy << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+
+
+    }
+    if(initialized==2){
+        //Perform ccd for a RHF basis
+        ccsolve solverobject(fminglesolver_hf, nElectrons);
+        fminglesolver_cc = solverobject;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << std::setprecision(14)<<"       CCSD Electron correlation:" << fminglesolver_cc.correlation_energy << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+        cout << std::setprecision(14)<<"                    Total energy:" << fminglesolver_cc.correlation_energy+uhf_energy << endl;
+        cout << "-------------------------------------------------------------------" << endl;
+    }
+
+
 }
 
-void fmingle::ccsd_solve(int nElectrons){
+void fmingle::ccd_solve(int nElectrons){
 
 }

@@ -26,10 +26,11 @@ public:
     void uhf_solve(int nElectronsUp, int nElectronsDown);
     void ccd_solve(int nElectrons);
     void ccsd_solve(int nElectrons);
+    void initialize();
     int initialized;
     //basis fminglebasis;
     basisbank fminglebasisbank;
-    HFSolve fminglesolver;
+    HFSolve fminglesolver_hf;
     rhfsolve fminglesolver_rhf;
     uhfsolve fminglesolver_uhf;
     ccsolve fminglesolver_cc;
