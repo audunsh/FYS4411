@@ -17,8 +17,13 @@ uhfsolve::uhfsolve(basis BS, int N_spin_up, int N_spin_down){
     //initializing all matrices and vectors
     C.zeros(nStates,nElectrons/2);//set initial C equal to the unit matrix
 
-    Cu.zeros(nStates,nElectronsU);//set initial C equal to the unit matrix
-    Cd.zeros(nStates,nElectronsD);//set initial C equal to the unit matrix
+    //Cu.zeros(nStates,nElectronsU);//set initial C equal to the unit matrix
+    //Cd.zeros(nStates,nElectronsD);//set initial C equal to the unit matrix
+
+    Cu.zeros(nStates,nStates);//set initial C equal to the unit matrix
+    Cd.zeros(nStates,nStates);//set initial C equal to the unit matrix
+    //Cu.randn(nStates, nStates);
+    //Cd.randn(nStates, nStates);
 
 
     F.zeros(nStates,nStates);     //initialize Fock matrix
@@ -54,6 +59,9 @@ void uhfsolve::reset(basis BS, int N, int Z){
     C.zeros(nStates,nStates); // Alternating between these two, alteration made to implement CoupledCluster extension of code
     Cu.zeros(nStates,nStates); // Alternating between these two, alteration made to implement CoupledCluster extension of code
     Cd.zeros(nStates,nStates); // Alternating between these two, alteration made to implement CoupledCluster extension of code
+
+    //Cu.zeros(nStates,nElectronsU); // Alternating between these two, alteration made to implement CoupledCluster extension of code
+    //Cd.zeros(nStates,nElectronsD); // Alternating between these two, alteration made to implement CoupledCluster extension of code
 
 
     F.zeros(nStates,nStates);     //initialize Fock matrix
@@ -112,7 +120,7 @@ double uhfsolve::solve(){
     //printMatrices();
     //createDensityMap();
     //return iterations;
-    C = Cu + Cd;
+    //C = Cu + Cd;
     return energyCalc();
 }
 
@@ -184,13 +192,16 @@ void uhfsolve::setupF(){
     double DiMinusEx = 0;
     for(int p=0;p<nStates;p++){
         for(int q=0;q<nStates;q++){
-            F(p,q) = Bs.h(p,q);
+            //F(p,q) = Bs.h(p,q);
             Fu(p,q) = Bs.h(p,q);
             Fd(p,q) = Bs.h(p,q);
             for(int r=0;r<nStates;r++){
                 for(int s=0;s<nStates;s++){
-                    Di = Bs.v(p,r)(q,s);
-                    Ex = Bs.v(p,r)(s,q);
+                    //Di = Bs.v(p,r)(q,s);
+                    //Ex = Bs.v(p,r)(s,q);
+
+                    Di = Bs.v(p,q)(r,s);
+                    Ex = Bs.v(p,s)(r,q);
                     DiMinusEx = Di-Ex;
                     //F(p,q) += 0.5*coupledMatrixTilde(p,q,r,s)*P(r,s);  //Alt. 2 27/5 2014
                     Fu(p,q) += Pu(s,r)*(Di-Ex) + Pd(s,r)*Di;
@@ -205,8 +216,10 @@ double uhfsolve::energyCalc(){
     //return energy for current Fock matrix
 
     //return 0.5*accu(P % (Bs.h + F))+Bs.nnInteraction();
-    //return 0.5*accu((Pu.submat(0,0,nStates, nElectronsU)+Pd.submat(0,0,nStates,nElectronsD)) % Bs.h + Fu.submat(0,0,nStates, nElectronsU) % Pu.submat(0,0,nStates, nElectronsU) + Fd.submat(0,0,nStates,nElectronsD) % Pd.submat(0,0,nStates,nElectronsD))+Bs.nnInteraction();
+
     return 0.5*accu((Pu+Pd) % Bs.h + Fu % Pu + Fd % Pd)+Bs.nnInteraction();
+
+    //return 0.5*accu((Pu.submat(0,0,nStates, nElectronsU)+Pd.submat(0,0,nStates,nElectronsD)) % Bs.h + Fu.submat(0,0,nStates, nElectronsU) % Pu.submat(0,0,nStates, nElectronsU) + Fd.submat(0,0,nStates,nElectronsD) % Pd.submat(0,0,nStates,nElectronsD))+Bs.nnInteraction();
 }
 
 double uhfsolve::energy(){
@@ -237,13 +250,7 @@ void uhfsolve::setupUnitMatrices(){
     V = U*diagmat(1.0/sqrt(s_diag));
 }
 
-void uhfsolve::setupP(){
-    //setup density matrix, make a first guess
-    //P.zeros(); //we don't have any reason to do this any other ways yet.
-    P.eye();
-    Pu.eye();
-    Pd.eye();
-}
+
 
 void uhfsolve::diagonalizeF(){
     //diagonalize the Fock matrix
@@ -263,7 +270,7 @@ void uhfsolve::diagonalizeF(){
 
 void uhfsolve::normalizeC(){
     //Normalize the coefficient matrix
-    double norm;
+    double norm, normu, normd;
     //for(int i = 0; i<nElectrons/2;i++){
     //    norm = dot(C.col(i),Bs.S*C.col(i));
     //    C.col(i) = C.col(i)/sqrt(norm);
@@ -274,25 +281,52 @@ void uhfsolve::normalizeC(){
         norm = dot(C.col(i),Bs.S*C.col(i));
         C.col(i) = C.col(i)/sqrt(norm);
 
-        norm = dot(Cu.col(i),Bs.S*Cu.col(i));
-        Cu.col(i) = Cu.col(i)/sqrt(norm);
+        normu = dot(Cu.col(i),Bs.S*Cu.col(i));
+        Cu.col(i) = Cu.col(i)/sqrt(normu);
 
-        norm = dot(Cd.col(i),Bs.S*Cd.col(i));
-        Cd.col(i) = Cd.col(i)/sqrt(norm);
+        normd = dot(Cd.col(i),Bs.S*Cd.col(i));
+        Cd.col(i) = Cd.col(i)/sqrt(normd);
     }
+}
+
+void uhfsolve::setupP(){
+    //setup density matrix, make a first guess
+    //P.zeros(); //we don't have any reason to do this any other ways yet.
+    //P.eye();
+    //Pu.eye();
+    //Pd.eye();
+    //Pu.zeros(nStates, nElectronsU);
+    //Pd.zeros(nStates, nElectronsD);
+
+
+    //Pu = dampingFactor*Pu + (1-dampingFactor)*Cu.submat(0,0,nStates-1, nElectronsU-1)*Cu.submat(0,0,nStates-1, nElectronsU-1).t();
+    //Pd = dampingFactor*Pd + (1-dampingFactor)*Cd.submat(0,0,nStates-1, nElectronsD-1)*Cd.submat(0,0,nStates-1, nElectronsD-1).t();
+
+    //Pu = dampingFactor*Pu + (1-dampingFactor)*Cu.submat(0,0,nStates, nElectronsU)*Cu.submat(0,0,nStates, nElectronsU).t();
+    //Pd = dampingFactor*Pd + (1-dampingFactor)*Cd.submat(0,0,nStates, nElectronsD)*Cd.submat(0,0,nStates, nElectronsD).t();
+
+    //Pu = Cu.submat(0,0,nStates, nElectronsU)*Cu.submat(0,0,nStates, nElectronsU).t();
+    //Pd = Cd.submat(0,0,nStates, nElectronsD)*Cd.submat(0,0,nStates, nElectronsD).t();;
+
+    //Pu = Cu*Cu.t();
+    //Pd = Cd*Cd.t();
+
+    Pu = Cu.submat(0,0,nStates-1, nElectronsU-1)*Cu.submat(0,0,nStates-1, nElectronsU-1).t(); //new
+    Pd = Cd.submat(0,0,nStates-1, nElectronsD-1)*Cd.submat(0,0,nStates-1, nElectronsD-1).t();
 }
 
 void uhfsolve::updateP(){
     //construct new density matrix
-    //P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
-    //P =C.cols(0, nElectrons/2.0 - 1)*C.cols(0, nElectrons/2.0 - 1).t();
-    //P = C*C.t();
     P = dampingFactor*P + (1-dampingFactor)*2.0*C.cols(0, nElectrons/2.0 -1)*C.cols(0, nElectrons/2.0 -1).t();
 
-    //Pu = dampingFactor*Pu + (1-dampingFactor)*Cu*Cu.t();
+    //Pu = dampingFactor*Pu + (1-dampingFactor)*Cu*Cu.t(); //will produce correct results for nElectronsU!=nElectronsD
     //Pd = dampingFactor*Pd + (1-dampingFactor)*Cd*Cd.t();
-    Pu = dampingFactor*Pu + (1-dampingFactor)*Cu.submat(0,0,nStates, nElectronsU)*Cu.submat(0,0,nStates, nElectronsU).t();
-    Pd = dampingFactor*Pd + (1-dampingFactor)*Cd.submat(0,0,nStates, nElectronsD)*Cd.submat(0,0,nStates, nElectronsD).t();;
+
+    //Pu = dampingFactor*Pu + (1-dampingFactor)*Cu.submat(0,0,nStates, nElectronsU)*Cu.submat(0,0,nStates, nElectronsU).t(); //will produce correct result for spin-symmetric systems
+    //Pd = dampingFactor*Pd + (1-dampingFactor)*Cd.submat(0,0,nStates, nElectronsD)*Cd.submat(0,0,nStates, nElectronsD).t();
+
+    Pu = dampingFactor*Pu + (1-dampingFactor)*Cu.submat(0,0,nStates-1, nElectronsU-1)*Cu.submat(0,0,nStates-1, nElectronsU-1).t(); //new
+    Pd = dampingFactor*Pd + (1-dampingFactor)*Cd.submat(0,0,nStates-1, nElectronsD-1)*Cd.submat(0,0,nStates-1, nElectronsD-1).t();
 }
 
 bool uhfsolve::convergenceCriteria(){
@@ -302,6 +336,7 @@ bool uhfsolve::convergenceCriteria(){
         condition = false;
     }
     if(abs(energyPrev-energy())<tolerance){
+
         condition = false;
     }
     return condition;

@@ -27,7 +27,7 @@ void HFSolve::solve_rhf(int N_electrons){
 }
 
 void HFSolve::solve_uhf(int N_electrons_up, int N_electrons_down){
-    //Do a restricted HF-calc and extract the variables needed by CCSolve
+    //Do an unrestricted HF-calc and extract the variables needed by CCSolve
     uhfsolve object (Bs, N_electrons_up, N_electrons_down);
     energy = object.solve();
     C = object.C;

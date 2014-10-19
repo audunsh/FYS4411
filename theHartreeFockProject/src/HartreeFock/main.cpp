@@ -35,16 +35,28 @@ int main(int argc, char* argv[]) {
      *
      * Library Armadillo is required for compilation.
      **************************************************************************************************************/
-    vec3 corePos1 = {0,0,0};                            //setting up some position vectors for the cores
-    vec3 corePos2 = {0,0,1.4};
-    fmingle mysystem;                                   //creating the system
-    mysystem.add_nucleus(corePos1, 3);                  //creating a nucleus with charge 1
-    //mysystem.add_nucleus(corePos2, 1);                //creating a nucleus with charge 1
-    mysystem.fminglebasisbank.add_STO_6G_li(corePos1);  //creating an electrons positioned at core 1 using STO-6G basis set
-    //mysystem.fminglebasisbank.add_STO_6G_h(corePos2); //creating an electrons positioned at core 2 using STO-6G basis set
-    mysystem.uhf_solve(2,1);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
-    mysystem.ccsd_solve(2);                             //perform a coupled cluster procedure for 2 electrons
-    cout << mysystem.report;
+    //Testing UHF procedure
+    if(true){
+        cout << "Performing an UHF on Li using STO-6G set" << endl;
+        vec3 corePos0 = {0,0,0};                            //setting up some position vectors for the cores
+        fmingle mysystem1;                                   //creating the system
+        mysystem1.add_nucleus(corePos0, 3);                  //creating a nucleus with charge 1
+        mysystem1.fminglebasisbank.add_6_311G2df2pd_li(corePos0);  //creating an electrons positioned at core 1 using STO-6G basis set
+        mysystem1.uhf_solve(1,2);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
+    }
+
+    if(false){
+        cout << "Performing an UHF on H2 using STO-6G set" << endl;
+        vec3 corePos1 = {0,0,0};                            //setting up some position vectors for the cores
+        vec3 corePos2 = {0,0,1.4};
+        fmingle mysystem2;                                   //creating the system
+        mysystem2.add_nucleus(corePos1, 1);                  //creating a nucleus with charge 1
+        mysystem2.add_nucleus(corePos2, 1);                //creating a nucleus with charge 1
+        mysystem2.fminglebasisbank.add_STO_6G_h(corePos1);  //creating an electrons positioned at core 1 using STO-6G basis set
+        mysystem2.fminglebasisbank.add_STO_6G_h(corePos2); //creating an electrons positioned at core 2 using STO-6G basis set
+        mysystem2.uhf_solve(1,1);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
+    }
+
     return 0;
 
 }
