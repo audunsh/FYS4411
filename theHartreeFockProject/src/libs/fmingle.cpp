@@ -21,6 +21,7 @@ fmingle::fmingle()
     //A typical runtime should only communicate with the respective solvers through this class
     basis BS;
     initialized = 0;
+    printing = false;
     basisbank wrapped (BS);
     fminglebasisbank = wrapped;
     fminglebasisbank.bs.Nstates = 0;
@@ -47,9 +48,10 @@ void fmingle::rhf_solve(int nElectrons){
     initialized =1;
     fminglesolver_hf.solve_rhf(nElectrons);
     rhf_energy = fminglesolver_hf.energy;
+    if(printing){
     cout << "-------------------------------------------------------------------" << endl;
     cout << std::setprecision(14)<<"  Restricted Hartree-Fock energy:" << rhf_energy << endl;
-    cout << "-------------------------------------------------------------------" << endl;
+    cout << "-------------------------------------------------------------------" << endl;}
 };
 
 void fmingle::uhf_solve(int nElectronsUp, int nElectronsDown){
@@ -58,9 +60,10 @@ void fmingle::uhf_solve(int nElectronsUp, int nElectronsDown){
     initialized =2;
     fminglesolver_hf.solve_uhf(nElectronsUp, nElectronsDown);
     uhf_energy = fminglesolver_hf.energy;
+    if(printing){
     cout << "-------------------------------------------------------------------" << endl;
     cout << std::setprecision(14)<<"Unrestricted Hartree-Fock energy:" << uhf_energy << endl;
-    cout << "-------------------------------------------------------------------" << endl;
+    cout << "-------------------------------------------------------------------" << endl;}
 };
 
 void fmingle::ccsd_solve(int nElectrons){
@@ -70,28 +73,37 @@ void fmingle::ccsd_solve(int nElectrons){
     }
     if(initialized==1){
         //Perform ccd for a RHF basis
-        ccsolve solverobject(fminglesolver_hf, nElectrons);
+        ccsolve solverobject(fminglesolver_hf);
         fminglesolver_cc = solverobject;
+        fminglesolver_cc.init_RHF_basis();
+        fminglesolver_cc.CCSD(nElectrons);
+        if(printing){
         cout << "-------------------------------------------------------------------" << endl;
         cout << std::setprecision(14)<< "       CCSD Electron correlation:" << fminglesolver_cc.correlation_energy << endl;
         cout << "-------------------------------------------------------------------" << endl;
 
         cout << "-------------------------------------------------------------------" << endl;
         cout << std::setprecision(14)<<"                    Total energy:" << fminglesolver_cc.correlation_energy+rhf_energy << endl;
-        cout << "-------------------------------------------------------------------" << endl;
+        cout << "-------------------------------------------------------------------" << endl;}
+        correlation_energy = fminglesolver_cc.correlation_energy;
 
 
     }
     if(initialized==2){
         //Perform ccd for a RHF basis
-        ccsolve solverobject(fminglesolver_hf, nElectrons);
+        //cout << "Entering UHF CCSD procedure."<< endl;
+        ccsolve solverobject(fminglesolver_hf);
         fminglesolver_cc = solverobject;
+        fminglesolver_cc.init_UHF_basis();
+        fminglesolver_cc.CCSD(nElectrons);
+        correlation_energy = fminglesolver_cc.correlation_energy;
+        if(printing){
         cout << "-------------------------------------------------------------------" << endl;
         cout << std::setprecision(14)<<"       CCSD Electron correlation:" << fminglesolver_cc.correlation_energy << endl;
         cout << "-------------------------------------------------------------------" << endl;
         cout << "-------------------------------------------------------------------" << endl;
         cout << std::setprecision(14)<<"                    Total energy:" << fminglesolver_cc.correlation_energy+uhf_energy << endl;
-        cout << "-------------------------------------------------------------------" << endl;
+        cout << "-------------------------------------------------------------------" << endl;}
     }
 
 

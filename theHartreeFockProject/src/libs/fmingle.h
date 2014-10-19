@@ -36,6 +36,7 @@ public:
     ccsolve fminglesolver_cc;
     double rhf_energy, uhf_energy, correlation_energy;
     string report;
+    bool printing;
 
 
 };

@@ -9,28 +9,34 @@ class ccsolve
 {
 public:
     ccsolve();
-    ccsolve(HFSolve object, int nElect);
+    ccsolve(HFSolve object);
 
     //Functions
     void SetupMinimizedBasis();
+    void SetupMinimizedUHFBasis();
     void SetupT1();
     void SetupT2();
     void CCD();
-    void CCSD();
+    void CCSD(int N_electrons);
     void initT1();
     void initT2();
     void expandC();
     void ExpandMinimizedBasis();
     void ReportEnergy();
+    void CombineUHFCoefficients();
     bool unconverged(double tolerance);
+    double UHFCoefficient(int i,int j,int k,int l,int a,int b,int c,int d);
     double CCDQ(int a, int b, int i, int j);
     double CCDL(int a, int b, int i, int j);
 
     double CCDQ2(int a, int b, int i, int j, field<mat> tf, double Qac, double Qbc, double Qcc, double Qdc);
     double CCDL2(int a, int b, int i, int j, field<mat> tf, double L1ac, double L1bc,double L2ac,double L2bc,double L2cc);
     void retranslate();
-
+    void init_UHF_basis();
+    void init_RHF_basis();
+    void Antisymmetrize();
     double GetCoupledElement(int a, int b, int c, int d);
+    double GetCoupledUHFElement(int a, int b, int c, int d);
     double GetUncoupledElement(int a, int b);
     double energy(field<mat> tf, mat t1f);
     double CCDenergy(field<mat> tf);
@@ -53,6 +59,7 @@ private:
     mat fmin; //The uncoupled minimized matrix elements
     HFSolve hfobject;
     mat Cm;
+    mat UHFC;
 
     //amplitude tensors
     mat t1;

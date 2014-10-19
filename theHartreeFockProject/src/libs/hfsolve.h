@@ -25,6 +25,8 @@ public:
 
     //The following variables must be available for the CCSolve class when performing coupled cluster calculations
     mat C;          //Coefficient matrix
+    mat Cu;          //Coefficient matrix
+    mat Cd;          //Coefficient matrix
     mat F;          //Fock matrix
     vec epsilon;    //eigenvalues from current diagonalization
     mat P;          //Density matrix

@@ -30,7 +30,9 @@ void HFSolve::solve_uhf(int N_electrons_up, int N_electrons_down){
     //Do an unrestricted HF-calc and extract the variables needed by CCSolve
     uhfsolve object (Bs, N_electrons_up, N_electrons_down);
     energy = object.solve();
-    C = object.C;
+    C = object.Cu + object.Cd;
+    Cu = object.Cu;
+    Cd = object.Cd;
     epsilon = object.epsilon;
 }
 
