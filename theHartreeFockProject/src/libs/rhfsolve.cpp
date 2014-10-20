@@ -75,6 +75,7 @@ double rhfsolve::solve(){
         iterations += 1;
         //cout << energy() << endl;
     }
+    cout << nElectrons << endl;
     //cout << "Converged in " << iterations << " iterations." << endl;
     //printMatrices();
     //createDensityMap();
@@ -155,7 +156,7 @@ void rhfsolve::setupF(){
 
 double rhfsolve::energyCalc(){
     //return energy for current Fock matrix
-    return 0.5*accu(P % (Bs.h + F))+Bs.nnInteraction();
+    return 0.5*accu(P.submat(0,0,nStates-1, nElectrons-1) % (Bs.h + F))+Bs.nnInteraction();
 }
 
 double rhfsolve::energy(){
