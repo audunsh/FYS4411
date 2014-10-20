@@ -83,6 +83,16 @@ double rhfsolve::solve(){
     return energyCalc();
 }
 
+double rhfsolve::getOrbitalEnergy(int i){
+    //return energy of orbital i
+    //Using Koopmans Thm,
+    double ei = epsilon(i);
+    for(int b=0;b<nStates;b++){
+        ei += C(b,i)*C(b,i)*Bs.v(b,i)(b,i);
+    }
+    return ei;
+}
+
 double rhfsolve::evaluateProbabilityDensity(vec3 r){
     double result = 0;
     for(int p=0;p<nStates;p++){

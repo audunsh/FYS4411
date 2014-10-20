@@ -14,6 +14,7 @@ public:
     //Functions
     void SetupMinimizedBasis();
     void SetupMinimizedUHFBasis();
+    void SetupMinimizedUHFBasis2();
     void SetupT1();
     void SetupT2();
     void CCD();
@@ -55,6 +56,7 @@ public:
 
 private:
     field<mat> vmin; //The coupled minimized matrix elements
+    field<mat> vminu; //The coupled minimized matrix elements Spin down for UHF
     field<mat> temp_mo; //quarter sized molecular orbital elements
     mat fmin; //The uncoupled minimized matrix elements
     HFSolve hfobject;

@@ -28,12 +28,16 @@ ccsolve::ccsolve(HFSolve object)
 
 void ccsolve::CombineUHFCoefficients(){
     mat C;
-    //C.zeros(nStates, 2*nStates);
-    C.zeros(2*nStates, 2*nStates);
+    C.zeros(nStates, 2*nStates);
+    //C.zeros(2*nStates, 2*nStates);
     for(int i = 0; i<nStates; i++){
         //colu.subvec(0,nStates/2-1) = hfobject.Cu.col(i);
-        C.col(2*i).subvec(0,nStates/2) =  hfobject.Cu.col(i);
-        C.col(2*i + 1).subvec(nStates/2+1, nStates+1) = hfobject.Cd.col(i);
+
+        //C.col(2*i).subvec(0,nStates/2) =  hfobject.Cu.col(i);
+        //C.col(2*i + 1).subvec(nStates/2+1, nStates+1) = hfobject.Cd.col(i);
+
+        C.col(2*i) =  hfobject.Cu.col(i);
+        C.col(2*i + 1) = hfobject.Cd.col(i);
     }
     UHFC = C;
 }
@@ -41,16 +45,21 @@ void ccsolve::CombineUHFCoefficients(){
 void ccsolve::init_UHF_basis(){
     nStates = hfobject.Cd.n_cols; // + hfobject.Cu.n_cols; //Double spin later
     CombineUHFCoefficients();
+    UHFC.print();
     SetupMinimizedUHFBasis();
+    //vmin.print();
+    //vminu.print();
+
     Antisymmetrize();
     //ExpandMinimizedBasis();
     SetupT1();
     SetupT2();
+    vmin.print();
 
 }
 
 void ccsolve::Antisymmetrize(){
-    nStates *= 2;
+    //nStates *= 2;
     temp_mo = vmin;
     vmin.set_size(nStates, nStates);
     fmin.set_size(nStates, nStates);
@@ -121,25 +130,7 @@ double ccsolve::UHFCoefficient(int i,int j,int k,int l,int a,int b,int c,int d){
 
 }
 
-double ccsolve::GetCoupledUHFElement(int a, int b, int c, int d){
-    double sm = 0.0;
-    for(int i=0; i<2*nStates; i++){
-        for(int j=0; j<2*nStates; j++){
-            for(int k=0; k<2*nStates; k++){
-                for(int l=0; l<2*nStates; l++){
-                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
-                    //sm += UHFCoefficient(i,j,k,l,a,b,c,d)*hfobject.Bs.v(i,j)(k,l);
 
-                    //sm += equalfunc(i%2,k%2)*equalfunc(j%2,l%2)*UHFC(a,i)*UHFC(b,j)*UHFC(c,k)*UHFC(d,l)*hfobject.Bs.v(i/2,j/2)(k/2,l/2);
-                    //sm += equalfunc(i%2,j%2)*equalfunc(k%2,l%2)*UHFC(a,i)*UHFC(b,j)*UHFC(c,k)*UHFC(d,l)*hfobject.Bs.v(i/2,j/2)(k/2,l/2); //this is the active one
-                    sm += UHFC(i,a)*UHFC(j,b)*UHFC(k,c)*UHFC(l,d)*hfobject.Bs.v(i/2,j/2)(k/2,l/2);
-
-                }
-            }
-        }
-    }
-    return sm;
-}
 
 double ccsolve::GetCoupledElement(int a, int b, int c, int d){
     //Unsure about this transformation
@@ -161,9 +152,31 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
     return sm;
 }
 
+double ccsolve::GetCoupledUHFElement(int a, int b, int c, int d){
+    double sm = 0.0;
+    for(int i=0; i<nStates; i++){
+        for(int j=0; j<nStates; j++){
+            for(int k=0; k<nStates; k++){
+                for(int l=0; l<nStates; l++){
+                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
+                    //sm += UHFCoefficient(i,j,k,l,a,b,c,d)*hfobject.Bs.v(i,j)(k,l);
+
+                    //sm += equalfunc(i%2,k%2)*equalfunc(j%2,l%2)*UHFC(a,i)*UHFC(b,j)*UHFC(c,k)*UHFC(d,l)*hfobject.Bs.v(i/2,j/2)(k/2,l/2);
+                    sm += equalfunc(i%2,k%2)*equalfunc(j%2,l%2)*UHFC(a,i/2)*UHFC(b,j/2)*UHFC(c,k/2)*UHFC(d,l/2)*hfobject.Bs.v(i/2,j/2)(k/2,l/2); //this is the active one
+                    //sm += UHFC(i,a)*UHFC(j,b)*UHFC(k,c)*UHFC(l,d)*hfobject.Bs.v(i/2,j/2)(k/2,l/2);
+                    //sm += CUD(i,a)*CUD(j,b)*CUD(k,c)*CUD(l,d)*hfobject.Bs.v(i,j)(k,l);
+
+                }
+            }
+        }
+    }
+    return sm;
+}
+
 void ccsolve::SetupMinimizedUHFBasis(){
     //cout << "Setting up the minimized basis." << endl;
     UHFC.print();
+    nStates *= 2;
     vmin.set_size(nStates,nStates);
     fmin.set_size(nStates,nStates);
     fmin.zeros();
@@ -182,8 +195,40 @@ void ccsolve::SetupMinimizedUHFBasis(){
             }
         }
     }
+    vmin.print();
     //cout << "Finished setting up the minimized basis." << endl;
 }
+
+void ccsolve::SetupMinimizedUHFBasis2(){
+    //cout << "Setting up the minimized basis." << endl;
+    UHFC.print();
+    vmin.set_size(nStates,nStates);
+    vminu.set_size(nStates,nStates);
+    fmin.set_size(nStates,nStates);
+    fmin.zeros();
+    for(int a=0; a<nStates; a++){
+        for(int b=0; b<nStates; b++){
+            //fmin(a,b) = GetUncoupledElement(a,b);
+            vmin(a,b) = zeros<mat>(nStates,nStates);
+            vminu(a,b) = zeros<mat>(nStates,nStates);
+        }
+    }
+    for(int p=0; p<nStates; p++){
+        //fmin(a,a) = hfobject.epsilon(a/2);
+        for(int q=0; q<nStates; q++){
+            for(int r=0; r<nStates; r++){
+                for(int s=0; s<nStates; s++){
+                    //vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
+                    //vmin(p,q)(r,s) = GetCoupledUHFElement(p,q,r,s) ; //Adjusting this parameter to compensate for notational differences
+                    vmin(p,q)(r,s) = GetCoupledUHFElement(p,q,r,s) ; //Adjusting this parameter to compensate for notational differences
+                    vminu(p,q)(r,s) = GetCoupledUHFElement(p,q,r,s) ; //Adjusting this parameter to compensate for notational differences
+                }
+            }
+        }
+    }
+    //cout << "Finished setting up the minimized basis." << endl;
+}
+
 
 void ccsolve::SetupMinimizedBasis(){
     //cout << "Setting up the minimized basis." << endl;

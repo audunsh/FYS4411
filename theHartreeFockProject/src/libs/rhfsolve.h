@@ -21,6 +21,7 @@ public:
     double energy();     //return ground state energy
     double solve();      //automated solving process, returns energy
     double coupledMatrixTilde(int p, int q, int r, int s); //return direct and exchange term
+    double getOrbitalEnergy(int i);
 
     //new code to debug, possibly for deletion
     void setupCoupledMatrix_unused();
