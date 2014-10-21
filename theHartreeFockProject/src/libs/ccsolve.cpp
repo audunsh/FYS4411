@@ -46,11 +46,11 @@ void ccsolve::init_UHF_basis(){
     nStates = hfobject.Cd.n_cols; // + hfobject.Cu.n_cols; //Double spin later
     CombineUHFCoefficients();
     UHFC.print();
+    cout << " " << endl;
     SetupMinimizedUHFBasis();
     //vmin.print();
     //vminu.print();
-
-    Antisymmetrize();
+    //Antisymmetrize();
     //ExpandMinimizedBasis();
     SetupT1();
     SetupT2();
@@ -108,6 +108,7 @@ void ccsolve::init_RHF_basis(){
     ExpandMinimizedBasis(); //Include spin orthogonality
     SetupT1();
     SetupT2();
+    //vmin.print();
 
 }
 
@@ -154,28 +155,25 @@ double ccsolve::GetCoupledElement(int a, int b, int c, int d){
 
 double ccsolve::GetCoupledUHFElement(int a, int b, int c, int d){
     double sm = 0.0;
-    for(int i=0; i<nStates; i++){
-        for(int j=0; j<nStates; j++){
-            for(int k=0; k<nStates; k++){
-                for(int l=0; l<nStates; l++){
-                    //sm += hfobject.C(i,a)*hfobject.C(j,b)*hfobject.C(k,c)*hfobject.C(l,d)*hfobject.Bs.v(i,j)(k,l);
-                    //sm += UHFCoefficient(i,j,k,l,a,b,c,d)*hfobject.Bs.v(i,j)(k,l);
-
-                    //sm += equalfunc(i%2,k%2)*equalfunc(j%2,l%2)*UHFC(a,i)*UHFC(b,j)*UHFC(c,k)*UHFC(d,l)*hfobject.Bs.v(i/2,j/2)(k/2,l/2);
-                    sm += equalfunc(i%2,k%2)*equalfunc(j%2,l%2)*UHFC(a,i/2)*UHFC(b,j/2)*UHFC(c,k/2)*UHFC(d,l/2)*hfobject.Bs.v(i/2,j/2)(k/2,l/2); //this is the active one
-                    //sm += UHFC(i,a)*UHFC(j,b)*UHFC(k,c)*UHFC(l,d)*hfobject.Bs.v(i/2,j/2)(k/2,l/2);
-                    //sm += CUD(i,a)*CUD(j,b)*CUD(k,c)*CUD(l,d)*hfobject.Bs.v(i,j)(k,l);
+    for(int i=0; i<nStates/2; i++){
+        for(int j=0; j<nStates/2; j++){
+            for(int k=0; k<nStates/2; k++){
+                for(int l=0; l<nStates/2; l++){
+                     //sm += UHFC(i,a)*UHFC(j,b)*UHFC(k,c)*UHFC(l,d)*hfobject.Bs.v(i,j)(k,l);
+                     sm += hfobject.Cu(i,a/2)*hfobject.Cu(j,b/2)*hfobject.Cu(k,c/2)*hfobject.Cu(l,d/2)*hfobject.Bs.v(i,j)(k,l);
+                     sm += hfobject.Cd(i,a/2)*hfobject.Cd(j,b/2)*hfobject.Cd(k,c/2)*hfobject.Cd(l,d/2)*hfobject.Bs.v(i,j)(k,l);
+                     sm +=4* hfobject.Cu(i,a/2)*hfobject.Cd(j,b/2)*hfobject.Cu(k,c/2)*hfobject.Cd(l,d/2)*hfobject.Bs.v(i,j)(k,l);
 
                 }
             }
         }
     }
-    return sm;
+    return  sm; //equalfunc(a%2,c%2)*equalfunc(b%2,d%2)*
 }
 
 void ccsolve::SetupMinimizedUHFBasis(){
     //cout << "Setting up the minimized basis." << endl;
-    UHFC.print();
+    //UHFC.print();
     nStates *= 2;
     vmin.set_size(nStates,nStates);
     fmin.set_size(nStates,nStates);
@@ -184,18 +182,23 @@ void ccsolve::SetupMinimizedUHFBasis(){
         for(int b=0; b<nStates; b++){
             //fmin(a,b) = GetUncoupledElement(a,b);
             vmin(a,b) = zeros<mat>(nStates,nStates);}}
+    double di = 0;
+    double ex = 0;
     for(int p=0; p<nStates; p++){
         //fmin(a,a) = hfobject.epsilon(a/2);
         for(int q=0; q<nStates; q++){
             for(int r=0; r<nStates; r++){
                 for(int s=0; s<nStates; s++){
                     //vmin(a,b)(c,d) = hfobject.P(b,c)*hfobject.P(a,d)*hfobject.Bs.v(a,b)(c,d);
-                    vmin(p,q)(r,s) = GetCoupledUHFElement(p,q,r,s) ; //Adjusting this parameter to compensate for notational differences
+                    //di = equalfunc(p%2,q%2)*equalfunc(r%2,s%2)*GetCoupledUHFElement(p,q,r,s) ;
+                    //ex = equalfunc(p%2,s%2)*equalfunc(r%2,q%2)*GetCoupledUHFElement(p,s,r,q) ;
+                    //vmin(p,r)(q,s) =di-ex; // equalfunc(p%2,r%2)*equalfunc(q%2,s%2)*GetCoupledUHFElement(p,q,r,s) ; //Adjusting this parameter to compensate for notational differences
+                    vmin(p,r)(q,s) = GetCoupledUHFElement(p,q,r,s);
                 }
             }
         }
     }
-    vmin.print();
+    //vmin.print();
     //cout << "Finished setting up the minimized basis." << endl;
 }
 
@@ -232,7 +235,7 @@ void ccsolve::SetupMinimizedUHFBasis2(){
 
 void ccsolve::SetupMinimizedBasis(){
     //cout << "Setting up the minimized basis." << endl;
-    hfobject.C.print();
+    //hfobject.C.print();
     vmin.set_size(nStates,nStates);
     fmin.set_size(nStates,nStates);
     fmin.zeros();
