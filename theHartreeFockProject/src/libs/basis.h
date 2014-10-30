@@ -17,6 +17,7 @@ class basis
 public:
     basis();
     void set_size(int N);                                         //set size of basis, N=number of orbitals
+    void reset(); //reset all basis information
     void read(string filename, int Zn);                           //read basis from file
     void set_orthonormal();                                       //if true: set the overlap matrix to I
     void expand();                                                //expand basis for explicit spin-dependence

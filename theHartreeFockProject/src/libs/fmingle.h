@@ -27,6 +27,11 @@ public:
     void ccd_solve(int nElectrons);
     void ccsd_solve(int nElectrons);
     void initialize();
+    void reset();
+
+    //sweep functions
+    void sweep_h2(double x0, double x1, int N);
+
     int initialized;
     //basis fminglebasis;
     basisbank fminglebasisbank;

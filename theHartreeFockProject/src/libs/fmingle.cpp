@@ -109,6 +109,46 @@ void fmingle::ccsd_solve(int nElectrons){
 
 }
 
+void fmingle::reset(){
+    //fminglebasisbank.bs = basis ();
+    //fminglebasisbank.bs.set_size(0);
+    fminglebasisbank.bs.reset();
+    fminglebasisbank.bs.set_size(0);
+    initialized = 0;
+}
+
+void fmingle::sweep_h2(double x0, double x1, int N){
+    //perform a sweep for h2
+    double dx = (x1-x0)/(N-1);
+    vec xpos = zeros(N);
+    vec enrg = zeros(N);
+    vec3 corePos1 = {0,0,0};
+    vec3 corePos2 = {0,0,0};
+    for(int i = 0; i<N ; i++){
+        //wrapped = basisbank();
+        //BS = basis();
+        //basisbank wrapped (BS);
+
+        cout << "Reset basisbank" << endl;
+        //fminglebasisbank.bs = basis();
+        fminglebasisbank.bs.reset();
+        xpos(i) = x0 + dx*i;
+        corePos1 = {0,0,0};
+        corePos2 = {0,0,xpos(i)};
+
+        fminglebasisbank.bs.add_nucleus(corePos1, 1);
+        fminglebasisbank.bs.add_nucleus(corePos2, 1);
+        fminglebasisbank.add_STO_6G_h(corePos1);  //creating an electron positioned at core 1 using STO-6G basis set
+        fminglebasisbank.add_STO_6G_h(corePos2);  //creating an electron positioned at core 2 using STO-6G basis set
+        initialize();
+        //myparty.rhf_solve(2);
+        //e(i) = myparty.rhf_energy;
+
+    }
+
+
+}
+
 void fmingle::ccd_solve(int nElectrons){
 
 }

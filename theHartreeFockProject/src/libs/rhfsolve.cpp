@@ -75,7 +75,7 @@ double rhfsolve::solve(){
         iterations += 1;
         //cout << energy() << endl;
     }
-    cout << nElectrons << endl;
+    //cout << nElectrons << endl;
     //cout << "Converged in " << iterations << " iterations." << endl;
     //printMatrices();
     //createDensityMap();

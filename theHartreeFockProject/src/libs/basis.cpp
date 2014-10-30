@@ -849,6 +849,8 @@ void basis::init_integrals(){
     Primitive C(0,0,0,0,0,{0,0,0});
     Primitive D(0,0,0,0,0,{0,0,0});
 
+
+
     for(int p=0; p<Nstates; p++){
         for(int q=0; q<Nstates; q++){
             for(int i=0; i<nPrimitivesInState(p);i++){
@@ -940,6 +942,16 @@ void basis::set_size(int N){
     nPrimitivesInState.set_size(0);
 
 
+}
+
+void basis::reset(){
+    for(int i = 0; i<Nstates;i++){
+        nPrimitivesInState(i) = 0;
+    }
+    nPrimitivesInState.set_size(0);
+    nPrimitivesInState = vec ();
+    basisSts.resize(3);
+    set_size(0);
 }
 
 void basis::printAllContracted(){
