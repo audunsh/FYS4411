@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
         myparty1.uhf_solve(1,2);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
     }
 
-    if(false){
+    if(true){
         cout << "Performing UHF+CCSD on H2 using STO-6G set" << endl;
         vec3 corePos1 = {0,0,0};                            //setting up some position vectors for the cores
         vec3 corePos2 = {0,0,1.4};
@@ -55,8 +55,8 @@ int main(int argc, char* argv[]) {
         myparty2.add_nucleus(corePos2, 1);                //creating a nucleus with charge 1
         myparty2.fminglebasisbank.add_STO_6G_h(corePos1);  //creating an electrons positioned at core 1 using STO-6G basis set
         myparty2.fminglebasisbank.add_STO_6G_h(corePos2); //creating an electrons positioned at core 2 using STO-6G basis set
-        myparty2.uhf_solve(1,1);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
-        //myparty2.ccsd_solve(2);
+        myparty2.rhf_solve(2);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
+        myparty2.ccsd_solve(2);
 
     }
 
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 
     }
 
-    if(true){
+    if(false){
         double x0 = 0.1;
         double x1 = 6.0;
         int N = 100;

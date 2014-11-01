@@ -741,6 +741,102 @@ double ccsolve::CCDL2(int a, int b, int i, int j, field<mat> tf, double L1ac, do
 
 }
 
+double ccsolve::CCD_comp(int a, int b, int i, int j, field <mat> tf){
+    double CC0_0a = 0.0;
+    for(int c = nElectrons; c < nStates; c ++){
+        CC0_0a += vmin(a)(c)*tf(c,b)(i,j)-(vmin(b)(c)*tf(c,a)(i,j));
+    }
+    CC0_0a *= 1.000000;
+
+
+    double CC1_0a = 0.0;
+    for(int k = 0; k < nElectrons; k ++){
+        CC1_0a += vmin(k)(j)*tf(a,b)(i,k)-(vmin(k)(i)*tf(a,b)(j,k));
+    }
+    CC1_0a *= -1.000000;
+
+
+    double CC4_0a = 0.0;
+    for(int d = nElectrons; d < nStates; d ++){
+        for(int c = nElectrons; c < nStates; c ++){
+            CC4_0a += vmin(a,b)(c,d)*tf(c,d)(i,j);
+        }
+    }
+    CC4_0a *= 0.500000;
+
+
+    double CC5_0a = 0.0;
+    for(int l = 0; l < nElectrons; l ++){
+        for(int k = 0; k < nElectrons; k ++){
+            CC5_0a += vmin(k,l)(i,j)*tf(a,b)(k,l);
+        }
+    }
+    CC5_0a *= 0.500000;
+
+
+    double CC6_0a = 0.0;
+    for(int k = 0; k < nElectrons; k ++){
+        for(int c = nElectrons; c < nStates; c ++){
+            CC6_0a += vmin(a,k)(c,j)*tf(c,b)(i,k)-(vmin(b,k)(c,j)*tf(c,a)(i,k))-(vmin(a,k)(c,i)*tf(c,b)(j,k)-(vmin(b,k)(c,i)*tf(c,a)(j,k)));
+        }
+    }
+    CC6_0a *= -1.000000;
+
+
+    double CC12_1a = 0.0;
+    for(int l = 0; l < nElectrons; l ++){
+        for(int k = 0; k < nElectrons; k ++){
+            for(int d = nElectrons; d < nStates; d ++){
+                for(int c = nElectrons; c < nStates; c ++){
+                    CC12_1a += vmin(k,l)(c,d)*tf(c,d)(i,k)*tf(a,b)(j,l)-(vmin(k,l)(c,d)*tf(c,d)(j,k)*tf(a,b)(i,l));
+                }
+            }
+        }
+    }
+    CC12_1a *= 0.500000;
+
+
+    double CC12_1b = 0.0;
+    for(int l = 0; l < nElectrons; l ++){
+        for(int k = 0; k < nElectrons; k ++){
+            for(int d = nElectrons; d < nStates; d ++){
+                for(int c = nElectrons; c < nStates; c ++){
+                    CC12_1b += vmin(k,l)(c,d)*tf(c,d)(i,j)*tf(a,b)(k,l);
+                }
+            }
+        }
+    }
+    CC12_1b *= 0.250000;
+
+
+    double CC12_1c = 0.0;
+    for(int d = nElectrons; d < nStates; d ++){
+        for(int l = 0; l < nElectrons; l ++){
+            for(int k = 0; k < nElectrons; k ++){
+                for(int c = nElectrons; c < nStates; c ++){
+                    CC12_1c += vmin(k,l)(c,d)*tf(c,a)(k,l)*tf(d,b)(i,j)-(vmin(k,l)(c,d)*tf(c,b)(k,l)*tf(d,a)(i,j));
+                }
+            }
+        }
+    }
+    CC12_1c *= 0.500000;
+
+
+    double CC12_1d = 0.0;
+    for(int l = 0; l < nElectrons; l ++){
+        for(int d = nElectrons; d < nStates; d ++){
+            for(int k = 0; k < nElectrons; k ++){
+                for(int c = nElectrons; c < nStates; c ++){
+                    CC12_1d += vmin(k,l)(c,d)*tf(c,a)(i,k)*tf(d,b)(j,l)-(vmin(k,l)(c,d)*tf(c,b)(i,k)*tf(d,a)(j,l))-(vmin(k,l)(c,d)*tf(c,a)(j,k)*tf(d,b)(i,l)-(vmin(k,l)(c,d)*tf(c,b)(j,k)*tf(d,a)(i,l)));
+                }
+            }
+        }
+    }
+    CC12_1d *= 0.500000;
+
+    return CC12_1d + CC12_1c + CC12_1b + CC12_1a + CC6_0a + CC5_0a + CC4_0a + 0*CC1_0a + 0*CC0_0a;
+}
+
 double ccsolve::CCDL(int a, int b, int i, int j){
     //Linear contributions to the CCD amplitude equation.
     double L1a = 0.0;
@@ -820,6 +916,11 @@ void ccsolve::CCSD(int N_electrons){
                     for(int i=j+1; i<nElectrons; i++){
                         CCLinear = CCDL2(a,b,i,j, t2c,0.0,0.0,0.5,  0.5,  1.0);
                         CCQuadratic = CCDQ2(a,b,i,j, t2c,0.25,1.0,0.5,0.5);
+
+                        //CCLinear = CCD_comp(a,b,i,j, t2c); //Experimenting with code generation from CCAlgebra
+                        //CCQuadratic = 0;
+
+
                         //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Working
                         t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCSD_Double(a,b,i,j) +  CCLinear + CCQuadratic)/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Refining
                         t2new(b,a)(i,j) = -t2new(a,b)(i,j);

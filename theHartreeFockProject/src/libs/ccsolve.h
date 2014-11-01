@@ -30,6 +30,8 @@ public:
     double CCDQ(int a, int b, int i, int j);
     double CCDL(int a, int b, int i, int j);
 
+    double CCD_comp(int a, int b, int i, int j, field<mat> tf);
+
     double CCDQ2(int a, int b, int i, int j, field<mat> tf, double Qac, double Qbc, double Qcc, double Qdc);
     double CCDL2(int a, int b, int i, int j, field<mat> tf, double L1ac, double L1bc,double L2ac,double L2bc,double L2cc);
     void retranslate();
