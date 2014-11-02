@@ -744,16 +744,16 @@ double ccsolve::CCDL2(int a, int b, int i, int j, field<mat> tf, double L1ac, do
 double ccsolve::CCD_comp(int a, int b, int i, int j, field <mat> tf){
     double CC0_0a = 0.0;
     for(int c = nElectrons; c < nStates; c ++){
-        CC0_0a += vmin(a)(c)*tf(c,b)(i,j)-(vmin(b)(c)*tf(c,a)(i,j));
+        CC0_0a += fmin(a,c)*tf(c,b)(i,j)-(fmin(b,c)*tf(c,a)(i,j));
     }
-    CC0_0a *= 1.000000;
+    CC0_0a *= -1.000000;
 
 
     double CC1_0a = 0.0;
     for(int k = 0; k < nElectrons; k ++){
-        CC1_0a += vmin(k)(j)*tf(a,b)(i,k)-(vmin(k)(i)*tf(a,b)(j,k));
+        CC1_0a += fmin(k,j)*tf(a,b)(i,k)-(fmin(k,i)*tf(a,b)(j,k));
     }
-    CC1_0a *= -1.000000;
+    CC1_0a *= 1.000000;
 
 
     double CC4_0a = 0.0;
@@ -793,7 +793,7 @@ double ccsolve::CCD_comp(int a, int b, int i, int j, field <mat> tf){
             }
         }
     }
-    CC12_1a *= 0.500000;
+    CC12_1a *= -0.500000;
 
 
     double CC12_1b = 0.0;
@@ -819,7 +819,7 @@ double ccsolve::CCD_comp(int a, int b, int i, int j, field <mat> tf){
             }
         }
     }
-    CC12_1c *= 0.500000;
+    CC12_1c *= -0.500000;
 
 
     double CC12_1d = 0.0;
@@ -914,11 +914,11 @@ void ccsolve::CCSD(int N_electrons){
             for(int a = b+1; a<nStates; a++){
                 for(int j = 0; j<nElectrons; j++){
                     for(int i=j+1; i<nElectrons; i++){
-                        CCLinear = CCDL2(a,b,i,j, t2c,0.0,0.0,0.5,  0.5,  1.0);
-                        CCQuadratic = CCDQ2(a,b,i,j, t2c,0.25,1.0,0.5,0.5);
+                        //CCLinear = CCDL2(a,b,i,j, t2c,0.0,0.0,0.5,  0.5,  1.0);
+                        //CCQuadratic = CCDQ2(a,b,i,j, t2c,0.25,1.0,0.5,0.5);
 
-                        //CCLinear = CCD_comp(a,b,i,j, t2c); //Experimenting with code generation from CCAlgebra
-                        //CCQuadratic = 0;
+                        CCLinear = CCD_comp(a,b,i,j, t2c); //Experimenting with code generation from CCAlgebra, proof-of-consept: CCD generated equations working!
+                        CCQuadratic = 0;
 
 
                         //t2new(a,b)(i,j) = (vmin(a,b)(i,j) + CCSD_Double(a,b,i,j) +  CCDL(a,b,i,j) + CCDQ(a,b,i,j))/(fmin(i,i) + fmin(j,j) - fmin(a,a) - fmin(b,b)); //Working
