@@ -312,6 +312,7 @@ void uhfsolve::setupP(){
     //Pd = Cd*Cd.t();
 
     Pu = Cu.submat(0,0,nStates-1, nElectronsU-1)*Cu.submat(0,0,nStates-1, nElectronsU-1).t(); //new
+    Pu(0,1) = 0.1; //non-interacting initial condition
     Pd = Cd.submat(0,0,nStates-1, nElectronsD-1)*Cd.submat(0,0,nStates-1, nElectronsD-1).t();
 }
 
