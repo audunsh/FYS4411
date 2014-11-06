@@ -59,6 +59,7 @@ public:
     mat Cprimeu; //transformed Coefficient matric
     mat Cprimed; //transformed Coefficient matric
 
+
 private:
     cube densityMap;
 
@@ -82,10 +83,11 @@ private:
     vec epsilonu_prev; //eigenvalues from previous diagonalization
     vec epsilond_prev; //eigenvalues from previous diagonalization
     vec s_diag;       //diagonalized S matrix
+    int iterations; //number of iterations (counter)
 
 
     int nProtons;   //number of protons, can be removed
-    int iterations; //number of iterations (counter)
+
 
     double energyPrev = 10e10;
     double tolerance = 10e-10; //-10

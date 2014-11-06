@@ -42,6 +42,7 @@ public:
     mat P;          //Density matrix
     mat Cprime; //transformed Coefficient matric
 
+
 private:
     cube densityMap;
 

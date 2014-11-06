@@ -239,9 +239,11 @@ bool rhfsolve::convergenceCriteria(){
     bool condition = true;
     if(iterations>5000){
         condition = false;
+
     }
     if(abs(energyPrev-energy())<tolerance){
         condition = false;
+        //cout << "Energy convergence at " << iterations << endl;
     }
     return condition;
 }

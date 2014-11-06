@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
     if(true){
         double x0 = 0.1;
         double x1 = 6.0;
-        int N = 100;
+        int N = 50;
         double dx = (x1-x0)/(N-1);
         mat energyVsPosition = zeros(N,2);
         //vec enrg = zeros(N);
@@ -116,13 +116,14 @@ int main(int argc, char* argv[]) {
             myparty2.fminglebasisbank.add_STO_6G_h(corePos1);  //creating an electron positioned at core 1 using STO-6G basis set
             myparty2.fminglebasisbank.add_STO_6G_h(corePos2);  //creating an electron positioned at core 2 using STO-6G basis set
 
-            myparty2.uhf_solve(1,1);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
-            //myparty2.ccsd_solve(2);
+            myparty2.rhf_solve(2);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
+            myparty2.ccsd_solve(2);
 
-            energyVsPosition(i,1) = myparty2.uhf_energy;// + myparty2.correlation_energy;
+            energyVsPosition(i,1) = myparty2.rhf_energy + myparty2.correlation_energy;
             if(i>1){
                 if(abs(energyVsPosition(i-1,1) - energyVsPosition(i,1))>1.0){
-                    cout << "A convergence error is likely to have occured." << endl;
+                    cout << "A convergence likely occured." << endl;
+                    //cout << myparty2.fminglesolver_rhf.iterations << endl;
                 }
             }
             myparty2.reset();
@@ -131,7 +132,7 @@ int main(int argc, char* argv[]) {
 
         }
         energyVsPosition.print();
-        energyVsPosition.save("h2_UHF_fixed.txt", raw_ascii);
+        energyVsPosition.save("STO6G_h2_RHF_CCSD_N40.txt", raw_ascii);
     }
 
     return 0;
