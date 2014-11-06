@@ -89,7 +89,7 @@ private:
 
     double energyPrev = 10e10;
     double tolerance = 10e-10; //-10
-    double dampingFactor = 0.95; //0.95
+    double dampingFactor = 0.99; //0.95
 };
 
 #endif // UHFSOLVE_H

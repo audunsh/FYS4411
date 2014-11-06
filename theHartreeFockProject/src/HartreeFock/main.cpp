@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
         myparty1.uhf_solve(1,2);                            //perform a unrestricted hartree fock procedure for 1 up electron, 2 down electrons
     }
 
-    if(true){
+    if(false){
         cout << "Performing UHF+CCSD on H2 using STO-6G set" << endl;
         vec3 corePos1 = {0,0,0};                            //setting up some position vectors for the cores
         vec3 corePos2 = {0,0,6.0};
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 
     }
 
-    if(false){
+    if(true){
         double x0 = 0.1;
         double x1 = 6.0;
         int N = 100;
@@ -120,13 +120,18 @@ int main(int argc, char* argv[]) {
             //myparty2.ccsd_solve(2);
 
             energyVsPosition(i,1) = myparty2.uhf_energy;// + myparty2.correlation_energy;
+            if(i>1){
+                if(abs(energyVsPosition(i-1,1) - energyVsPosition(i,1))>1.0){
+                    cout << "A convergence error is likely to have occured." << endl;
+                }
+            }
             myparty2.reset();
             //myparty.rhf_solve(2);
             //e(i) = myparty.rhf_energy;
 
         }
         energyVsPosition.print();
-        energyVsPosition.save("h2_UHF.txt", raw_ascii);
+        energyVsPosition.save("h2_UHF_fixed.txt", raw_ascii);
     }
 
     return 0;
